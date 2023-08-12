@@ -1,6 +1,21 @@
 import Head from "next/head";
 import Link from "next/link";
 import { api } from "@/lib/utils/api";
+import { createServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
+import { type GetServerSidePropsContext } from 'next';
+
+export async function getServerSideProps(
+  context: GetServerSidePropsContext
+) {
+  const serverSideHelpers = await createServerSideHelpers(context);
+  await serverSideHelpers.example.hello.prefetch({ text: "from tRPC" });
+
+  return {
+    props: {
+      trpcState: serverSideHelpers.dehydrate(),
+    }
+  }
+}
 
 export default function Home() {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
