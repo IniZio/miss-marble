@@ -1,0 +1,7 @@
+version: '3'
+
+dotenv:
+  - "../.env"
+
+tasks:
+  prisma: ./node_modules/.bin/prisma {{.CLI_ARGS}}

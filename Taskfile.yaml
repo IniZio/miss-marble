@@ -1,0 +1,27 @@
+version: '3'
+
+dotenv:
+  - ".env"
+
+tasks:
+  setup:
+    cmds:
+      - curl -s https://raw.githubusercontent.com/oursky/devsecops-secret/v1.0/generate-secret.sh \
+        | bash -s -- \
+          .env.example .env
+
+  dev:
+    deps:
+      - dev:app
+      - dev:cloud
+
+  dev:cloud:
+    cmds: [docker compose up]
+
+  dev:app:
+    dir: app
+    cmds: [pnpm dev]
+
+  vendor:
+    cmds:
+      - cd app && pnpm i
