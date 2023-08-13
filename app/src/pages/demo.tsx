@@ -2,6 +2,7 @@ import { type Metadata } from "next"
 import Image from "next/image"
 
 import { MainNav } from "@/components/MainNav"
+import { api } from '@/lib/utils/api'
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -9,6 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default function DashboardPage() {
+  const { data: products } = api.product.paginate.useInfiniteQuery({}, { getNextPageParam: (lastPage) => lastPage.nextCursor });
+  // console.log(products?.pages.flatMap((page) => page.items))
+
   return (
     <>
       <div className="flex-col :flex">
@@ -21,8 +25,8 @@ export default function DashboardPage() {
         </div>
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
+              <pre className="w-full h-200">{JSON.stringify(products?.pages.flatMap((page) => page.items), null, 4)}</pre>
             </div>
           </div>
         </div>
