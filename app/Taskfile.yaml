@@ -4,4 +4,11 @@ dotenv:
   - "../.env"
 
 tasks:
-  prisma: ./node_modules/.bin/prisma {{.CLI_ARGS}}
+  prisma:
+    pnpm prisma {{.CLI_ARGS}}
+
+  db:reset:
+    cmds:
+      - pnpm prisma generate
+      - pnpm prisma db push --force-reset
+      - pnpm prisma db seed

@@ -1,0 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+import { PrismaClient } from '@prisma/client'
+import { seed as seedCustomizedCake } from './products/customizedCake';
+
+const prisma = new PrismaClient()
+
+async function main() {
+  await seedCustomizedCake(prisma);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

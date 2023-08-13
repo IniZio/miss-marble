@@ -2,10 +2,71 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Translation {
+  id   String @id @default(uuid())
+  text Json
+
+  products            Product[]
+  productFields       ProductField[]
+  productFieldOptions ProductFieldValue[]
+}
+
+model Asset {
+  id        String @id @default(uuid())
+  provider  String
+  objectKey String
+  mimeType  String
+
+  products Product[]
+}
+
+model Product {
+  id String @id @default(uuid())
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  gallery Asset[]
+  fields  ProductField[]
+}
+
+model ProductField {
+  id   String @id @default(uuid())
+  // SELECT | MULTISELECT | TEXT | ASSET
+  type String
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  fieldValues ProductFieldValue[]
+}
+
+model ProductFieldValue {
+  id String @id @default(uuid())
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  field   ProductField @relation(fields: [fieldId], references: [id])
+  fieldId String
+
+  variants ProductVariant[]
+}
+
+model ProductVariant {
+  id    String @id @default(uuid())
+  price String
+
+  fieldValues ProductFieldValue[]
 }
