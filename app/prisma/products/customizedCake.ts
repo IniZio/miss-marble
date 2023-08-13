@@ -2,9 +2,8 @@ import { type PrismaClient } from '@prisma/client';
 
 export async function seed(prisma: PrismaClient) {
   // Product
-  const customizedCake = await prisma.product.create({
+  const product = await prisma.product.create({
     data: {
-      id: '0000000-0000-0000-0000-000000000000',
       name: {
         create: {
           id: '0000000-0000-0000-0000-000000000000',
@@ -15,38 +14,27 @@ export async function seed(prisma: PrismaClient) {
   });
 
   // Fields
-  await prisma.productField.create({
+  const fields = [];
+  const fieldTaste = await prisma.productField.create({
     data: {
-      id: '0000000-0000-0000-0000-000000000000',
       name: {
-        create: {
-          id: '0000000-0000-0000-0000-000000000001',
-          text: { zh_Hant_HK: '蛋糕味道' },
-        },
+        create: { text: { zh_Hant_HK: '蛋糕味道' } },
       },
-      product: { connect: { id: customizedCake.id } },
+      product: { connect: { id: product.id } },
       type: 'SELECT',
-      fieldValues: {
-        create: {
-          id: '0000000-0000-0000-0000-000000000000',
-          name: {
-            create: {
-              id: '0000000-0000-0000-0000-000000000002',
-              text: { zh_Hant_HK: '朱古力' },
-            },
-          },
-        },
-      },
     }
   });
+  fields.push(fieldTaste);
+  const fieldTasteValues = [
+    await prisma.productFieldValue.create({
+      data: {
+        name: {
+          create: { text: { zh_Hant_HK: '朱古力' } },
+        },
+        field: { connect: { id: fieldTaste.id } }
+      }
+    }),
+  ];
 
-  await prisma.productVariant.create({
-    data: {
-      id: '0000000-0000-0000-0000-000000000000',
-      fieldValues: {
-        connect: { id: '0000000-0000-0000-0000-000000000000' }
-      },
-      price: "0"
-    }
-  })
+  return product;
 }

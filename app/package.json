@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "codegen": "prisma generate && next-route-manifest",
     "build": "next build",
+    "prebuild": "pnpm run codegen",
     "dev": "next dev",
-    "_postinstall": "prisma generate",
+    "postinstall": "pnpm run codegen",
     "lint": "next lint",
     "start": "next start"
   },
@@ -43,6 +45,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "^8.40.0",
     "eslint-config-next": "^13.4.2",
+    "next-route-manifest": "^0.2.1",
     "postcss": "^8.4.27",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.2.8",

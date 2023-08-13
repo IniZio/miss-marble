@@ -17,6 +17,7 @@ model Translation {
   products            Product[]
   productFields       ProductField[]
   productFieldOptions ProductFieldValue[]
+  ProductCollection   ProductCollection[]
 }
 
 model Asset {
@@ -34,8 +35,10 @@ model Product {
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
-  gallery Asset[]
-  fields  ProductField[]
+  gallery             Asset[]
+  fields              ProductField[]
+
+  collections   ProductCollection[]
 }
 
 model ProductField {
@@ -69,4 +72,14 @@ model ProductVariant {
   price String
 
   fieldValues ProductFieldValue[]
+}
+
+model ProductCollection {
+  id String @id @default(uuid())
+  slug String @unique
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  products Product[]
 }

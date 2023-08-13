@@ -52,6 +52,8 @@ export const api = createTRPCNext<AppRouter>({
   ssr: false,
 });
 
+export type Api = typeof api;
+
 /**
  * Inference helper for inputs.
  *

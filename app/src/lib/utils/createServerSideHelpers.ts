@@ -14,3 +14,5 @@ export async function createServerSideHelpers(opt: GetServerSidePropsContext) {
     transformer: superjson, // optional - adds superjson serialization
   });
 }
+
+export type ServerSideHelpers = Awaited<ReturnType<typeof createServerSideHelpers>>;
