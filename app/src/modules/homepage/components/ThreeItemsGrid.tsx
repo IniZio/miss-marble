@@ -36,16 +36,14 @@ function ThreeItemGridItem({
 }
 
 export function ThreeItemGrid({ products }: { products: RecommendedProduct[] }) {
-  // if (!products[0] || !products[1] || !products[2]) return null;
   if (!products[0]) return null;
-
-  const [firstProduct, secondProduct, thirdProduct] = products;
 
   return (
     <section className="mx-auto grid max-w-screen-2xl gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2">
-      <ThreeItemGridItem size="full" item={firstProduct} priority={true} />
-      {/* <ThreeItemGridItem size="half" item={secondProduct} priority={true} />
-      <ThreeItemGridItem size="half" item={thirdProduct} /> */}
+      <ThreeItemGridItem size="full" item={products[0]} priority={true} />
+      {products.slice(1).map((product) => (
+        <ThreeItemGridItem size="half" key={product.id} item={product} />
+      ))}
     </section>
   );
 }

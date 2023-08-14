@@ -20,7 +20,7 @@ tasks:
 
   dev:app:
     dir: app
-    cmds: [pnpm dev]
+    cmds: [task dev]
 
   vendor:
     cmds:

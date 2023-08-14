@@ -1,6 +1,26 @@
 import Link from "next/link"
 
 import { cn } from "@/lib/utils/ui"
+import { FormattedMessage } from 'react-intl'
+import { Routes } from 'generated'
+import React, { PropsWithChildren } from 'react'
+import { Url } from 'url';
+
+const MainNavLink: React.FC<PropsWithChildren & { href: Url | string }> = ({
+  href,
+  children,
+  ...props
+}) => {
+  return (
+    <Link
+      href={href}
+      className="text-sm font-medium transition-colors hover:text-primary"
+      {...props}
+    >
+      {children}
+    </Link>
+  )
+}
 
 export function MainNav({
   className,
@@ -11,30 +31,9 @@ export function MainNav({
       className={cn("flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium transition-colors hover:text-primary"
-      >
-        Overview
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Customers
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Products
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Settings
-      </Link>
+      <MainNavLink href={Routes.Home()}>
+        <FormattedMessage id="mainnav.link.all" defaultMessage="全部蛋糕" />
+      </MainNavLink>
     </nav>
   )
 }

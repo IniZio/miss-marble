@@ -5,12 +5,9 @@ export const apiAssetSchema = z.object({
   provider: z.string(),
   objectKey: z.string(),
   mimeType: z.string(),
+  url: z.string(),
 })
 
-export const assetSchema = apiAssetSchema
-  .transform((asset) => ({
-    ...asset,
-    url: `${process.env.NEXT_PUBLIC_ASSET_URL}/${asset.objectKey}`,
-  }));
+export const assetSchema = apiAssetSchema;
 
 export type Asset = z.infer<typeof assetSchema>;

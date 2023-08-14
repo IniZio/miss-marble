@@ -2,13 +2,16 @@ version: '3'
 
 dotenv:
   - "../.env"
+  - "./.env"
 
 tasks:
+  dev:
+    pnpm dev
+
   prisma:
     pnpm prisma {{.CLI_ARGS}}
 
   db:reset:
     cmds:
-      - pnpm prisma generate
       - pnpm prisma db push --force-reset
       - pnpm prisma db seed
