@@ -11,7 +11,7 @@ export async function seed(prisma: PrismaClient, products: Awaited<ReturnType<ty
         }
       },
       products: {
-        connect: { id: products.customizedCake.id }
+        connect: [{ id: products.customizedCake.id }, { id: products.lavaCake.id }]
       }
     },
   });
