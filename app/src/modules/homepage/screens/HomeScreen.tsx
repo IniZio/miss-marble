@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThreeItemGrid } from '../components/ThreeItemsGrid';
+import { ProductsGrid } from '../components/ProductsGrid';
 import { type ServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
 import { prefetchRecommendedProducts, useRecommendedProducts } from '../api/getRecommendedProducts';
 import StorefrontLayout from '@/layouts/Storefronts';
@@ -14,7 +14,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <StorefrontLayout>
-      <ThreeItemGrid products={recommendedProducts} />
+      <ProductsGrid products={recommendedProducts} />
     </StorefrontLayout>
   );
 }

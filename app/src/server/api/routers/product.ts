@@ -2,6 +2,26 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const productRouter = createTRPCRouter({
+  detail: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
+    const product = await ctx.prisma.product.findUnique({
+      where: { id: input },
+      include: {
+        name: true,
+        gallery: true,
+        fields: {
+          include: {
+            name: true,
+            fieldValues: {
+              include: {
+                name: true,
+              }
+            }
+          },
+        }
+      }
+    });
+    return product;
+  }),
   paginate: publicProcedure.input(
     z.object({
       limit: z.number().min(1).max(100).nullish(),

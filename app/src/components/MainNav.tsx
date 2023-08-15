@@ -3,8 +3,8 @@ import Link from "next/link"
 import { cn } from "@/lib/utils/ui"
 import { FormattedMessage } from 'react-intl'
 import { Routes } from 'generated'
-import React, { PropsWithChildren } from 'react'
-import { Url } from 'url';
+import React, { type PropsWithChildren } from 'react'
+import { type Url } from 'url';
 
 const MainNavLink: React.FC<PropsWithChildren & { href: Url | string }> = ({
   href,
@@ -14,7 +14,7 @@ const MainNavLink: React.FC<PropsWithChildren & { href: Url | string }> = ({
   return (
     <Link
       href={href}
-      className="text-sm font-medium transition-colors hover:text-primary"
+      className="text-sm font-bold transition-colors hover:text-primary"
       {...props}
     >
       {children}
@@ -31,7 +31,7 @@ export function MainNav({
       className={cn("flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
-      <MainNavLink href={Routes.Home()}>
+      <MainNavLink href={Routes.IndexPage()}>
         <FormattedMessage id="mainnav.link.all" defaultMessage="全部蛋糕" />
       </MainNavLink>
     </nav>
