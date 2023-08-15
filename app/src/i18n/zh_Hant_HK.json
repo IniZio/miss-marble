@@ -1,3 +1,5 @@
 {
-  "mainnav.link.home": "ABC"
+  "mainnav.link.all": "全部蛋糕",
+  "productDetail.addToCart": "添加到購物車",
+  "productDetail.checkboxes.other.placeholder": "其他"
 }

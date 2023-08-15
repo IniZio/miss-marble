@@ -15,7 +15,11 @@ export async function seed(prisma: PrismaClient , productFields: Awaited<ReturnT
         create: asset,
       },
       fields: {
-        connect: { id: productFields.fieldTaste.id },
+        connect: [
+          { id: productFields.fieldTaste.id },
+          { id: productFields.fieldChocolateWriting.id },
+          { id: productFields.fieldCakeToppingDecoration.id },
+        ],
       }
     }
   });

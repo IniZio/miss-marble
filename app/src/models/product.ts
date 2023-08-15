@@ -7,12 +7,20 @@ export const apiProductFieldValueSchema = z.object({
   name: apiTranslationSchema,
 });
 
+export enum ProductFieldType {
+  Text = 'TEXT',
+  Select = 'SELECT',
+  Checkboxes = 'CHECKBOXES',
+}
+
 export const apiProductFieldSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
-  type: z.string(),
+  type: z.nativeEnum(ProductFieldType),
   fieldValues: z.array(apiProductFieldValueSchema),
 });
+
+export type ProductField = z.infer<typeof apiProductFieldSchema>;
 
 export const apiProductSchema = z.object({
   id: z.string(),
