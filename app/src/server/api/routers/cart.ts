@@ -99,4 +99,31 @@ export const cartRouter = createTRPCRouter({
 
       return cart;
     }),
+    get: publicProcedure
+      .input(z.string())
+      .query(async ({ input }) => {
+        const cart = await prisma.cart.findUnique({
+          where: {
+            id: input,
+          },
+          include: {
+            currency: true,
+            items: {
+              include: {
+                product: {
+                  include: {
+                    name: true,
+                    gallery: true,
+                  },
+                },
+              },
+            },
+            billingAddress: true,
+            shippingAddress: true,
+          },
+        });
+
+        return cart;
+      }
+    ),
 });
