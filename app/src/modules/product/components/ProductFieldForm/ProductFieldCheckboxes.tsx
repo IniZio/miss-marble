@@ -22,7 +22,7 @@ const ProductFieldCheckboxes: React.FC<ProductFieldCheckboxesProps> = ({ field, 
 
   return (
     <div className="space-y-4">
-      {field.fieldValues.map((fieldValue) => (
+      {field.fieldOptions.map((fieldValue) => (
         <div key={fieldValue.id} className="flex items-center space-x-2 cursor-pointer">
           <Checkbox
             id={fieldValue.id}

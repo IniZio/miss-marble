@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { apiAssetSchema } from './asset';
 import { apiTranslationSchema } from './translation';
 
-export const apiProductFieldValueSchema = z.object({
+export const apiProductFieldOptionSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
 });
@@ -17,7 +17,7 @@ export const apiProductFieldSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
   type: z.nativeEnum(ProductFieldType),
-  fieldValues: z.array(apiProductFieldValueSchema),
+  fieldOptions: z.array(apiProductFieldOptionSchema),
 });
 
 export type ProductField = z.infer<typeof apiProductFieldSchema>;

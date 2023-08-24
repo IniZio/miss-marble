@@ -16,7 +16,7 @@ const ProductFieldSelect: React.FC<ProductFieldSelectProps> = ({ field, value, o
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {field.fieldValues.map((item) => (
+        {field.fieldOptions.map((item) => (
           <SelectItem key={item.id} value={item.id} onClick={() => onChange(item.id)}>
             <Translated t={item.name} />
           </SelectItem>

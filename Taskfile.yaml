@@ -4,11 +4,18 @@ dotenv:
   - ".env"
 
 tasks:
-  setup:
+  secret:
     cmds:
       - curl -s https://raw.githubusercontent.com/oursky/devsecops-secret/v1.0/generate-secret.sh \
         | bash -s -- \
           .env.example .env
+
+  db:reset:
+    cmds:
+      - docker compose down --volume
+      - docker compose up -d
+      - sleep 3
+      - task -d app db:reset
 
   dev:
     deps:
@@ -22,6 +29,6 @@ tasks:
     dir: app
     cmds: [task dev]
 
-  vendor:
+  dep:
     cmds:
       - cd app && pnpm i

@@ -15,7 +15,7 @@ const ProductFieldForm: React.FC<{fields: ProductField[]}> = ({ fields }) => {
     defaultValues: fields.reduce((acc, field) => {
       switch(field.type) {
         case ProductFieldType.Select:
-          acc[field.id] = field.fieldValues[0]?.id;
+          acc[field.id] = field.fieldOptions[0]?.id;
           break;
         default:
       }

@@ -1,6 +1,7 @@
 import { type PrismaClient } from '@prisma/client';
+import { type seed as seedCurrencies } from './shared/currencies'
 
-export async function seed(prisma: PrismaClient) {
+export async function seed(prisma: PrismaClient, currencies: Awaited<ReturnType<typeof seedCurrencies>>) {
   // Taste
   const fieldTaste = await prisma.productField.create({
     data: {
@@ -10,13 +11,13 @@ export async function seed(prisma: PrismaClient) {
       type: 'SELECT',
     }
   });
-  const fieldTasteValues = [
-    await prisma.productFieldValue.create({
+  const fieldTasteOptions = [
+    await prisma.productFieldOption.create({
       data: {
         name: {
           create: { text: { zh_Hant_HK: '朱古力' } },
         },
-        field: { connect: { id: fieldTaste.id } }
+        field: { connect: { id: fieldTaste.id } },
       }
     }),
   ];
@@ -40,8 +41,8 @@ export async function seed(prisma: PrismaClient) {
       type: 'CHECKBOXES',
     }
   });
-  const fieldCakeToppingDecorationValues = [
-    await prisma.productFieldValue.create({
+  const fieldCakeToppingDecorationOptions = [
+    await prisma.productFieldOption.create({
       data: {
         name: {
           create: { text: { zh_Hant_HK: '追加自家製焦糖脆脆 (包含捶子, 焦糖脆脆)' } },
@@ -49,7 +50,7 @@ export async function seed(prisma: PrismaClient) {
         field: { connect: { id: fieldCakeToppingDecoration.id } }
       }
     }),
-    await prisma.productFieldValue.create({
+    await prisma.productFieldOption.create({
       data: {
         name: {
           create: { text: { zh_Hant_HK: '追加迷你麻糬粒 (+$10)' } },

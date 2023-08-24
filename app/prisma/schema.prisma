@@ -16,8 +16,9 @@ model Translation {
 
   products            Product[]
   productFields       ProductField[]
-  productFieldOptions ProductFieldValue[]
-  ProductCollection   ProductCollection[]
+  productFieldOptions ProductFieldOption[]
+  productCollections  ProductCollection[]
+  currencies          Currency[]
 }
 
 model Asset {
@@ -28,7 +29,8 @@ model Asset {
   mimeType  String
   url       String
 
-  products Product[]
+  products               Product[]
+  cartProductFieldValues CartProductFieldValue[]
 }
 
 model Product {
@@ -37,10 +39,13 @@ model Product {
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
-  gallery             Asset[]
-  fields              ProductField[]
+  gallery Asset[]
+  fields  ProductField[]
 
-  collections   ProductCollection[]
+  collections ProductCollection[]
+  cartItems   CartItem[]
+
+  deletedAt DateTime?
 }
 
 model ProductField {
@@ -51,11 +56,18 @@ model ProductField {
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
-  products Product[]
-  fieldValues ProductFieldValue[]
+  price   MoneyAmount? @relation(fields: [priceId], references: [id])
+  priceId String?
+
+  products     Product[]
+  fieldOptions ProductFieldOption[]
+
+  remarks String?
+
+  deletedAt DateTime?
 }
 
-model ProductFieldValue {
+model ProductFieldOption {
   id String @id @default(uuid())
 
   name              Translation @relation(fields: [nameTranslationId], references: [id])
@@ -64,22 +76,145 @@ model ProductFieldValue {
   field   ProductField @relation(fields: [fieldId], references: [id])
   fieldId String
 
-  variants ProductVariant[]
+  variants               ProductVariant[]
+  cartProductFieldValues CartProductFieldValue[]
+  variantFieldValues     ProductVariantFieldValue[]
+
+  price   MoneyAmount? @relation(fields: [priceId], references: [id])
+  priceId String?
+
+  deletedAt DateTime?
 }
 
 model ProductVariant {
-  id    String @id @default(uuid())
-  price String
+  id String @id @default(uuid())
 
-  fieldValues ProductFieldValue[]
+  price   MoneyAmount? @relation(fields: [priceId], references: [id])
+  priceId String?
+
+  fieldOptions ProductFieldOption[]
+  cartItems    CartItem[]
+  fieldValues  ProductVariantFieldValue[]
+
+  deletedAt DateTime?
+}
+
+model ProductVariantFieldValue {
+  id String @id @default(uuid())
+
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variantId String
+
+  fieldOption   ProductFieldOption @relation(fields: [fieldOptionId], references: [id])
+  fieldOptionId String
+
+  deletedAt DateTime?
 }
 
 model ProductCollection {
-  id String @id @default(uuid())
+  id   String @id @default(uuid())
   slug String @unique
 
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
   products Product[]
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  items CartItem[]
+
+  email String?
+
+  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
+  billingAddresssId String?
+
+  shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
+  shippingAddresssId String?
+
+  currency   Currency @relation(fields: [currencyId], references: [id])
+  currencyId String
+
+  subtotal      Int
+  total         Int
+  discountTotal Int
+  shippingTotal Int
+}
+
+model CartItem {
+  id String @id @default(uuid())
+
+  quantity Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+  productVariantId String?
+
+  cart   Cart?   @relation(fields: [cartId], references: [id])
+  cartId String?
+
+  productFieldValues CartProductFieldValue[]
+
+  subtotal      Int
+  shippingTotal Int
+  total         Int
+}
+
+model CartProductFieldValue {
+  id String @id @default(uuid())
+
+  cartItem   CartItem @relation(fields: [cartItemId], references: [id])
+  cartItemId String
+
+  fieldOption   ProductFieldOption? @relation(fields: [fieldOptionId], references: [id])
+  fieldOptionId String?
+
+  fieldFieldValue String?
+
+  fieldOptionAsset   Asset?  @relation(fields: [fieldOptionAssetId], references: [id])
+  fieldOptionAssetId String?
+}
+
+model Address {
+  id String @id @default(uuid())
+
+  firstName String?
+  lastName  String
+  address1  String
+  address2  String?
+  // city          String
+  // zip           String
+  // countryCode  String
+
+  billingCarts  Cart[] @relation("billingAddress")
+  shippingCarts Cart[] @relation("shippingAddress")
+}
+
+model Currency {
+  id String @id @default(uuid())
+
+  code   String @unique
+  symbol String
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  carts        Cart[]
+  moneyAmounts MoneyAmount[]
+}
+
+model MoneyAmount {
+  id String @id @default(uuid())
+
+  currency   Currency @relation(fields: [currencyId], references: [id])
+  currencyId String
+
+  amount              Int
+  productFields       ProductField[]
+  productVariants     ProductVariant[]
+  productFieldOptions ProductFieldOption[]
 }

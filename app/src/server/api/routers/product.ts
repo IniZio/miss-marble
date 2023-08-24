@@ -12,7 +12,7 @@ export const productRouter = createTRPCRouter({
         fields: {
           include: {
             name: true,
-            fieldValues: {
+            fieldOptions: {
               include: {
                 name: true,
               }
@@ -51,7 +51,7 @@ export const productRouter = createTRPCRouter({
         fields: {
           include: {
             name: true,
-            fieldValues: {
+            fieldOptions: {
               include: {
                 name: true,
               }
