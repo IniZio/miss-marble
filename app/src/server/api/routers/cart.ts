@@ -38,7 +38,7 @@ export const cartRouter = createTRPCRouter({
         },
       });
 
-      const cartItems = input.items.map(item => {
+      const lineItems = input.items.map(item => {
         const product = products.find(product => product.id === item.productId);
         const variant = product?.variants?.find(variant => variant.id === item.productVariantId);
         const price = variant?.prices?.find(price => price.currencyCode === currencyCode) ?? product?.prices?.find(price => price.currencyCode === currencyCode);
@@ -65,14 +65,14 @@ export const cartRouter = createTRPCRouter({
         };
       });
 
-      const subtotal = cartItems.reduce((acc, item) => acc + item.subtotal, 0);
-      const shippingTotal = cartItems.reduce((acc, item) => acc + item.shippingTotal, 0);
-      const total = cartItems.reduce((acc, item) => acc + item.total, 0);
+      const subtotal = lineItems.reduce((acc, item) => acc + item.subtotal, 0);
+      const shippingTotal = lineItems.reduce((acc, item) => acc + item.shippingTotal, 0);
+      const total = lineItems.reduce((acc, item) => acc + item.total, 0);
 
       const cart = await prisma.cart.create({
         data: {
           items: {
-            create: cartItems,
+            create: lineItems,
           },
           currencyCode,
           subtotal,

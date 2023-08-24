@@ -46,7 +46,7 @@ model Product {
 
   variants    ProductVariant[]
   collections ProductCollection[]
-  cartItems   CartItem[]
+  lineItems   LineItem[]
 
   deletedAt DateTime?
 }
@@ -96,7 +96,7 @@ model ProductVariant {
   prices MoneyAmount[]
 
   fieldOptions ProductFieldOption[]
-  cartItems    CartItem[]
+  lineItems    LineItem[]
   fieldValues  ProductVariantFieldValue[]
 
   deletedAt DateTime?
@@ -127,7 +127,7 @@ model ProductCollection {
 model Cart {
   id String @id @default(uuid())
 
-  items CartItem[]
+  items LineItem[]
 
   email String?
 
@@ -146,7 +146,7 @@ model Cart {
   shippingTotal Int
 }
 
-model CartItem {
+model LineItem {
   id String @id @default(uuid())
 
   quantity Int
@@ -170,8 +170,8 @@ model CartItem {
 model CartProductFieldValue {
   id String @id @default(uuid())
 
-  cartItem   CartItem @relation(fields: [cartItemId], references: [id])
-  cartItemId String
+  lineItem   LineItem @relation(fields: [lineItemId], references: [id])
+  lineItemId String
 
   fieldOption   ProductFieldOption? @relation(fields: [fieldOptionId], references: [id])
   fieldOptionId String?
