@@ -60,5 +60,14 @@ export async function seed(prisma: PrismaClient, currencies: Awaited<ReturnType<
     }),
   ];
 
-  return { fieldTaste, fieldChocolateWriting, fieldCakeToppingDecoration } as const;
+  const fieldUpload = await prisma.productField.create({
+    data: {
+      name: {
+        create: { text: { zh_Hant_HK: '上傳D野' } },
+      },
+      type: 'ASSET',
+    }
+  });
+
+  return { fieldTaste, fieldChocolateWriting, fieldCakeToppingDecoration, fieldUpload } as const;
 }

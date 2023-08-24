@@ -1,0 +1,1 @@
+export const PUBLIC_STORAGE_BUCKET_NAME = 'missmarble';

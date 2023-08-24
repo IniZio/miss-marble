@@ -28,7 +28,7 @@ export const env = createEnv({
     DB_URL: process.env.DB_URL,
     NODE_ENV: process.env.NODE_ENV,
     SUPABASE_URL: process.env.SUPABASE_URL,
-    SUPABASE_API_KEY: process.env.SUPABASE_API_KEY,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

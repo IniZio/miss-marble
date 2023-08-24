@@ -11,6 +11,7 @@ export enum ProductFieldType {
   Text = 'TEXT',
   Select = 'SELECT',
   Checkboxes = 'CHECKBOXES',
+  Asset = 'ASSET',
 }
 
 export const apiProductFieldSchema = z.object({

@@ -19,6 +19,7 @@ export async function seed(prisma: PrismaClient, productFields: Awaited<ReturnTy
           { id: productFields.fieldTaste.id },
           { id: productFields.fieldChocolateWriting.id },
           { id: productFields.fieldCakeToppingDecoration.id },
+          productFields.fieldUpload
         ],
       }
     }

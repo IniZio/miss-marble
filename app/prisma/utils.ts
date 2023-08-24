@@ -28,7 +28,7 @@ export const uploadPublicAsset = async (filename: string): Promise<{
       await readAsset(filename),
       { upsert: true, contentType: mime.contentType(filename) as string }
     );
-  const assetUrl = supabase.storage.from('missmarble').getPublicUrl(filename);
+  const assetUrl = supabase.storage.from(bucketName).getPublicUrl(filename);
   return {
     provider: 'supabase',
     mimeType: 'image/jpeg',

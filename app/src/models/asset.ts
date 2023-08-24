@@ -11,3 +11,10 @@ export const apiAssetSchema = z.object({
 export const assetSchema = apiAssetSchema;
 
 export type Asset = z.infer<typeof assetSchema>;
+
+export const apiAssetUploadSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+});
+
+export type AssetUpload = z.infer<typeof apiAssetUploadSchema>;
