@@ -42,6 +42,9 @@ model Product {
   gallery Asset[]
   fields  ProductField[]
 
+  prices MoneyAmount[]
+
+  variants    ProductVariant[]
   collections ProductCollection[]
   cartItems   CartItem[]
 
@@ -56,8 +59,7 @@ model ProductField {
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
-  price   MoneyAmount? @relation(fields: [priceId], references: [id])
-  priceId String?
+  prices MoneyAmount[]
 
   products     Product[]
   fieldOptions ProductFieldOption[]
@@ -80,8 +82,7 @@ model ProductFieldOption {
   cartProductFieldValues CartProductFieldValue[]
   variantFieldValues     ProductVariantFieldValue[]
 
-  price   MoneyAmount? @relation(fields: [priceId], references: [id])
-  priceId String?
+  prices MoneyAmount[]
 
   deletedAt DateTime?
 }
@@ -89,8 +90,10 @@ model ProductFieldOption {
 model ProductVariant {
   id String @id @default(uuid())
 
-  price   MoneyAmount? @relation(fields: [priceId], references: [id])
-  priceId String?
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  prices MoneyAmount[]
 
   fieldOptions ProductFieldOption[]
   cartItems    CartItem[]
@@ -134,8 +137,8 @@ model Cart {
   shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
   shippingAddresssId String?
 
-  currency   Currency @relation(fields: [currencyId], references: [id])
-  currencyId String
+  currency   Currency @relation(fields: [currencyCode], references: [code])
+  currencyCode String
 
   subtotal      Int
   total         Int
@@ -195,8 +198,6 @@ model Address {
 }
 
 model Currency {
-  id String @id @default(uuid())
-
   code   String @unique
   symbol String
 
@@ -210,11 +211,12 @@ model Currency {
 model MoneyAmount {
   id String @id @default(uuid())
 
-  currency   Currency @relation(fields: [currencyId], references: [id])
-  currencyId String
+  currency   Currency @relation(fields: [currencyCode], references: [code])
+  currencyCode String
 
   amount              Int
   productFields       ProductField[]
   productVariants     ProductVariant[]
   productFieldOptions ProductFieldOption[]
+  products             Product[]
 }

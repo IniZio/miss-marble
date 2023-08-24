@@ -1,7 +1,6 @@
 import { type PrismaClient } from '@prisma/client';
-import { type seed as seedCurrencies } from './shared/currencies'
 
-export async function seed(prisma: PrismaClient, currencies: Awaited<ReturnType<typeof seedCurrencies>>) {
+export async function seed(prisma: PrismaClient) {
   // Taste
   const fieldTaste = await prisma.productField.create({
     data: {
