@@ -124,6 +124,16 @@ export const cartRouter = createTRPCRouter({
         });
 
         return cart;
-      }
-    ),
+      }),
+    delete: publicProcedure
+      .input(z.string())
+      .mutation(async ({ input }) => {
+        const cart = await prisma.cart.delete({
+          where: {
+            id: input,
+          },
+        });
+
+        return cart;
+      }),
 });

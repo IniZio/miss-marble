@@ -4,14 +4,16 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Cake, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react';
+import React, { use } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useGetCart } from '../api/getCart';
 import Translated from '@/components/Translated';
 import { Separator } from '@/components/ui/separator';
+import { useRemoveLineItem } from '../api/removeLineItem';
 
 const ViewShoppingCartButton: React.FC = () => {
   const { data: cart, isSuccess } = useGetCart();
+  const [removeLineItem] = useRemoveLineItem();
 
   if (!isSuccess) {
     return null;
@@ -49,7 +51,10 @@ const ViewShoppingCartButton: React.FC = () => {
                       <Cake size={20} />
                     </div>
                   )}
-                  <button className="rounded-full bg-black w-4 h-4 flex items-center justify-center opacity-50 absolute right-0 top-0 translate-x-1/2 -translate-y-1/2">
+                  <button
+                    className="rounded-full bg-black w-4 h-4 flex items-center justify-center opacity-50 absolute right-0 top-0 translate-x-1/2 -translate-y-1/2"
+                    onClick={() => removeLineItem(item.id)}
+                  >
                     <X size={12} color='white' />
                   </button>
                 </div>
