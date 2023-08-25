@@ -1,8 +1,8 @@
 import { assetSchema } from '@/models/asset';
-import { apiProductFieldSchema, apiProductSchema } from '@/models/product'
+import { apiProductSchema, productFieldSchema } from '@/models/product'
 import { z } from 'zod'
 
-export const productDetailFieldSchema = apiProductFieldSchema;
+export const productDetailFieldSchema = productFieldSchema;
 
 export const productDetailSchema = apiProductSchema
   .transform((product) => {

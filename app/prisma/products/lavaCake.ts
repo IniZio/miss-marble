@@ -14,14 +14,15 @@ export async function seed(prisma: PrismaClient , productFields: Awaited<ReturnT
       gallery: {
         create: asset,
       },
-      fields: {
-        connect: [
-          { id: productFields.fieldTaste.id },
-          { id: productFields.fieldChocolateWriting.id },
-          { id: productFields.fieldCakeToppingDecoration.id },
-        ],
-      }
     }
+  });
+
+  await prisma.productFieldToProduct.createMany({
+    data: [
+      { productId: product.id, fieldId: productFields.fieldChocolateWriting.id },
+      { productId: product.id, fieldId: productFields.fieldCakeToppingDecoration.id },
+      { productId: product.id, fieldId: productFields.fieldUpload.id },
+    ]
   });
 
   return product;

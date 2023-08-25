@@ -11,10 +11,14 @@ export const productRouter = createTRPCRouter({
         gallery: true,
         fields: {
           include: {
-            name: true,
-            fieldOptions: {
+            field: {
               include: {
                 name: true,
+                fieldOptions: {
+                  include: {
+                    name: true,
+                  }
+                }
               }
             }
           },
@@ -50,10 +54,14 @@ export const productRouter = createTRPCRouter({
         gallery: true,
         fields: {
           include: {
-            name: true,
-            fieldOptions: {
+            field: {
               include: {
                 name: true,
+                fieldOptions: {
+                  include: {
+                    name: true,
+                  }
+                }
               }
             }
           },

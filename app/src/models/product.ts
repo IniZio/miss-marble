@@ -21,11 +21,22 @@ export const apiProductFieldSchema = z.object({
   fieldOptions: z.array(apiProductFieldOptionSchema),
 });
 
-export type ProductField = z.infer<typeof apiProductFieldSchema>;
+export const apiProductFieldToProductSchema = z.object({
+  field: apiProductFieldSchema,
+  required: z.boolean().default(false),
+});
+
+export const productFieldSchema = apiProductFieldToProductSchema
+  .transform((productFieldToProduct) => ({
+    ...productFieldToProduct.field,
+    required: productFieldToProduct.required,
+  }))
+
+export type ProductField = z.infer<typeof productFieldSchema>;
 
 export const apiProductSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
   gallery: z.array(apiAssetSchema).nullish(),
-  fields: z.array(apiProductFieldSchema)
+  fields: z.array(apiProductFieldToProductSchema)
 })

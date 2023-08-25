@@ -7,6 +7,9 @@ import { Routes } from 'generated'
 import React, { type PropsWithChildren } from 'react'
 import { type Url } from 'url';
 import Image from 'next/image'
+import { Button } from './ui/button'
+import { ShoppingCart } from 'lucide-react'
+import ViewShoppingCartButton from '@/modules/cart/components/ViewShoppingCartButton'
 
 const MainNavLink: React.FC<PropsWithChildren & { href: Url | string }> = ({
   href,
@@ -39,6 +42,8 @@ export function MainNav({
       <MainNavLink href={Routes.IndexPage()}>
         <FormattedMessage id="mainnav.link.all" defaultMessage="全部蛋糕" />
       </MainNavLink>
+      <div className="flex-1"></div>
+      <ViewShoppingCartButton />
     </nav>
   )
 }

@@ -1,5 +1,6 @@
 {
   "mainnav.link.all": "全部蛋糕",
   "productDetail.addToCart": "添加到購物車",
-  "productDetail.checkboxes.other.placeholder": "其他"
+  "productDetail.checkboxes.other.placeholder": "其他",
+  "shoppingCart.sheet.title": "購物車"
 }

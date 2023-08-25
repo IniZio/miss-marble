@@ -4,6 +4,7 @@ import { type seed as seedProductFields } from '../productFields';
 
 export async function seed(prisma: PrismaClient, productFields: Awaited<ReturnType<typeof seedProductFields>>) {
   const asset = await uploadPublicAsset('customized-cake.jpeg');
+
   const product = await prisma.product.create({
     data: {
       name: {
@@ -14,15 +15,15 @@ export async function seed(prisma: PrismaClient, productFields: Awaited<ReturnTy
       gallery: {
         create: asset,
       },
-      fields: {
-        connect: [
-          { id: productFields.fieldTaste.id },
-          { id: productFields.fieldChocolateWriting.id },
-          { id: productFields.fieldCakeToppingDecoration.id },
-          productFields.fieldUpload
-        ],
-      }
     }
+  });
+
+  await prisma.productFieldToProduct.createMany({
+    data: [
+      { productId: product.id, fieldId: productFields.fieldChocolateWriting.id },
+      { productId: product.id, fieldId: productFields.fieldCakeToppingDecoration.id },
+      { productId: product.id, fieldId: productFields.fieldUpload.id },
+    ]
   });
 
   return product;

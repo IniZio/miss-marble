@@ -1,5 +1,5 @@
 import { type AppType } from "next/app";
-import { Inter, PT_Sans, Roboto } from 'next/font/google';
+import { Inter, PT_Sans, Roboto, Noto_Sans } from 'next/font/google';
 import { api } from "@/lib/utils/api";
 import "@/styles/globals.css";
 import I18nProvider from '@/providers/I18nProvider';
@@ -15,10 +15,16 @@ const ptsans = PT_Sans({
   variable: '--font-ptsans',
   weight: ["400", "700"],
 });
-const roboto = Roboto({
+// const roboto = Roboto({
+//   subsets: ['latin'],
+//   display: 'swap',
+//   variable: '--font-roboto',
+//   weight: ["400", "500", "700"],
+// });
+const notosans = Noto_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-roboto',
+  variable: '--font-notosans',
   weight: ["400", "500", "700"],
 });
 
@@ -27,7 +33,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <I18nProvider>
       <style jsx global>{`
         html {
-          font-family: ${roboto.style.fontFamily};
+          font-family: ${notosans.style.fontFamily};
         }
       `}
       </style>

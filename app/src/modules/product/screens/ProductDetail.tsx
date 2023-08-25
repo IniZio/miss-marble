@@ -5,8 +5,9 @@ import { prefetchProductDetail, useProductDetail } from '../api/getProductDetail
 import { type ServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
 import { cn } from '@/lib/utils/ui';
 import Translated from '@/components/Translated';
-import ProductFieldForm from '../components/ProductFieldForm/ProductFieldForm';
+import ProductFieldForm, { ProductFieldValues } from '../components/ProductFieldForm/ProductFieldForm';
 import { Separator } from '@/components/ui/separator';
+import { useAddToCart } from '../../cart/api/addToCart';
 
 export const prefetch = async (helpers: ServerSideHelpers, productId: string) => {
   await prefetchProductDetail(helpers, productId);
@@ -14,6 +15,14 @@ export const prefetch = async (helpers: ServerSideHelpers, productId: string) =>
 
 const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
   const { data: productDetail } = useProductDetail(productId)
+  const [addToCart] = useAddToCart();
+
+  const handleAddToCart = async (values: ProductFieldValues) => {
+    await addToCart({
+      productId,
+      quantity: 1,
+    });
+  }
 
   if (productDetail === null) {
     return null;
@@ -33,7 +42,7 @@ const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
           <div className="w-80 max-w-full">
             <h1 className="mb-2 text-4xl font-medium"><Translated t={productDetail.name} /></h1>
             <Separator className="my-4" />
-            <ProductFieldForm fields={productDetail.fields} />
+            <ProductFieldForm fields={productDetail.fields} onAddToCart={handleAddToCart} />
           </div>
         </div>
       </div>

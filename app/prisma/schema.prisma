@@ -40,7 +40,7 @@ model Product {
   nameTranslationId String
 
   gallery Asset[]
-  fields  ProductField[]
+  fields  ProductFieldToProduct[]
 
   prices MoneyAmount[]
 
@@ -48,7 +48,7 @@ model Product {
   collections ProductCollection[]
   lineItems   LineItem[]
 
-  deletedAt DateTime?
+  deletedAt             DateTime?
 }
 
 model ProductField {
@@ -61,12 +61,24 @@ model ProductField {
 
   prices MoneyAmount[]
 
-  products     Product[]
+  products     ProductFieldToProduct[]
   fieldOptions ProductFieldOption[]
 
   remarks String?
 
-  deletedAt DateTime?
+  deletedAt             DateTime?
+}
+
+model ProductFieldToProduct {
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  field   ProductField @relation(fields: [fieldId], references: [id])
+  fieldId String
+
+  required Boolean @default(false)
+
+  @@id([productId, fieldId])
 }
 
 model ProductFieldOption {
@@ -137,7 +149,7 @@ model Cart {
   shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
   shippingAddresssId String?
 
-  currency   Currency @relation(fields: [currencyCode], references: [code])
+  currency     Currency @relation(fields: [currencyCode], references: [code])
   currencyCode String
 
   subtotal      Int
@@ -211,12 +223,12 @@ model Currency {
 model MoneyAmount {
   id String @id @default(uuid())
 
-  currency   Currency @relation(fields: [currencyCode], references: [code])
+  currency     Currency @relation(fields: [currencyCode], references: [code])
   currencyCode String
 
   amount              Int
   productFields       ProductField[]
   productVariants     ProductVariant[]
   productFieldOptions ProductFieldOption[]
-  products             Product[]
+  products            Product[]
 }
