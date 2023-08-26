@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Image from 'next/image';
 import StorefrontLayout from '@/layouts/Storefronts';
 import { prefetchProductDetail, useProductDetail } from '../api/getProductDetail';
 import { type ServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
 import { cn } from '@/lib/utils/ui';
 import Translated from '@/components/Translated';
-import ProductFieldForm, { ProductFieldValues } from '../components/ProductFieldForm/ProductFieldForm';
+import ProductFieldForm, { type ProductFieldValues } from '../components/ProductFieldForm/ProductFieldForm';
 import { Separator } from '@/components/ui/separator';
-import { useAddToCart } from '../../cart/api/addToCart';
+import { useCartStore } from '../../cart/actions/cart';
 
 export const prefetch = async (helpers: ServerSideHelpers, productId: string) => {
   await prefetchProductDetail(helpers, productId);
@@ -15,14 +15,14 @@ export const prefetch = async (helpers: ServerSideHelpers, productId: string) =>
 
 const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
   const { data: productDetail } = useProductDetail(productId)
-  const [addToCart] = useAddToCart();
+  const { addToCart } = useCartStore();
 
-  const handleAddToCart = async (values: ProductFieldValues) => {
+  const handleAddToCart = useCallback(async (values: ProductFieldValues) => {
     await addToCart({
       productId,
       quantity: 1,
     });
-  }
+  }, [addToCart, productId])
 
   if (productDetail === null) {
     return null;

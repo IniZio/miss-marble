@@ -4,20 +4,13 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Cake, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
-import React, { use } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useGetCart } from '../api/getCart';
+import { useCartStore } from '../actions/cart';
 import Translated from '@/components/Translated';
-import { Separator } from '@/components/ui/separator';
-import { useRemoveLineItem } from '../api/removeLineItem';
 
 const ViewShoppingCartButton: React.FC = () => {
-  const { data: cart, isSuccess } = useGetCart();
-  const [removeLineItem] = useRemoveLineItem();
-
-  if (!isSuccess) {
-    return null;
-  }
+  const { cart, removeLineItem } = useCartStore();
 
   return (
     <Sheet>

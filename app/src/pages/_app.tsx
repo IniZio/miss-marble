@@ -3,6 +3,7 @@ import { Inter, PT_Sans, Roboto, Noto_Sans } from 'next/font/google';
 import { api } from "@/lib/utils/api";
 import "@/styles/globals.css";
 import I18nProvider from '@/providers/I18nProvider';
+import { CartContext, CartProvider } from '@/modules/cart/provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,13 +32,15 @@ const notosans = Noto_Sans({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <I18nProvider>
-      <style jsx global>{`
-        html {
-          font-family: ${notosans.style.fontFamily};
-        }
-      `}
-      </style>
-      <Component {...pageProps} />
+      <CartProvider>
+        <style jsx global>{`
+          html {
+            font-family: ${notosans.style.fontFamily};
+          }
+        `}
+        </style>
+        <Component {...pageProps} />
+      </CartProvider>
     </I18nProvider>
   );
 };

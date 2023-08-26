@@ -1,7 +1,7 @@
 import { Controller, type FieldValues, type SubmitHandler, useForm } from 'react-hook-form';
 import Translated from '@/components/Translated';
 import { ProductFieldType, type ProductField } from '@/models/product';
-import React from 'react';
+import React, { useCallback } from 'react';
 import ProductFieldInput from './ProductFieldInput';
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
@@ -32,10 +32,10 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     , {} as Record<string, any>),
   });
-  const onSubmit: SubmitHandler<FieldValues> = (data: unknown) => {
+  const onSubmit: SubmitHandler<FieldValues> = useCallback((data: unknown) => {
     console.log('=== submit', data);
     onAddToCart(data as ProductFieldValues);
-  }
+  }, [onAddToCart]);
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises

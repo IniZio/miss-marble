@@ -125,6 +125,159 @@ export const cartRouter = createTRPCRouter({
 
         return cart;
       }),
+    addLineItem: publicProcedure
+      .input(z.object({
+        cartId: z.string(),
+        item: z.object({
+          productId: z.string(),
+          productVariantId: z.string().nullish(),
+          quantity: z.number(),
+        })
+      }))
+      .mutation(async ({ input }) => {
+        const cart = await prisma.cart.findUnique({
+          where: {
+            id: input.cartId,
+          },
+          include: {
+            items: true,
+          },
+        });
+
+        if (!cart) {
+          throw new Error('Cart not found');
+        }
+
+        const item = input.item;
+        const product = await prisma.product.findUnique({
+          where: {
+            id: item.productId,
+          },
+          include: {
+            prices: true,
+            variants: {
+              include: {
+                prices: true,
+              },
+              where: item.productVariantId ? {
+                id: item.productVariantId,
+              } : undefined,
+            },
+          },
+        });
+
+        if (!product) {
+          throw new Error('Product not found');
+        }
+
+        const variant = product?.variants?.find(variant => variant.id === item.productVariantId);
+        const price = variant?.prices?.find(price => price.currencyCode === cart.currencyCode) ?? product?.prices?.find(price => price.currencyCode === cart.currencyCode);
+
+        const subtotal = price?.amount ?? 0;
+        const shippingTotal = 0;
+        const total = subtotal + shippingTotal;
+
+        await prisma.lineItem.create({
+          data: {
+            cart: {
+              connect: {
+                id: input.cartId,
+              },
+            },
+            product: {
+              connect: {
+                id: item.productId,
+              },
+            },
+            productVariant: item.productVariantId ? {
+              connect: {
+                id: item.productVariantId,
+              },
+            } : undefined,
+            quantity: item.quantity,
+            subtotal,
+            shippingTotal,
+            total,
+          },
+        });
+
+        return prisma.cart.findUnique({
+          where: {
+            id: input.cartId,
+          },
+          include: {
+            currency: true,
+            items: {
+              include: {
+                product: {
+                  include: {
+                    name: true,
+                    gallery: true,
+                  },
+                },
+              },
+            },
+            billingAddress: true,
+            shippingAddress: true,
+          },
+        });
+      }),
+    removeLineItem: publicProcedure
+      .input(z.object({
+        cartId: z.string(),
+        lineItemId: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const cart = await prisma.cart.findUnique({
+          where: {
+            id: input.cartId,
+          },
+          include: {
+            items: true,
+          },
+        });
+
+        if (!cart) {
+          throw new Error('Cart not found');
+        }
+
+        if (cart.items.length <= 1) {
+          await prisma.cart.delete({
+            where: {
+              id: input.cartId,
+            },
+          });
+
+          return null;
+        }
+
+        await prisma.lineItem.delete({
+          where: {
+            id: input.lineItemId,
+          },
+        });
+
+        return prisma.cart.findUnique({
+          where: {
+            id: input.cartId,
+          },
+          include: {
+            currency: true,
+            items: {
+              include: {
+                product: {
+                  include: {
+                    name: true,
+                    gallery: true,
+                  },
+                },
+              },
+            },
+            billingAddress: true,
+            shippingAddress: true,
+          },
+        });
+      }),
     delete: publicProcedure
       .input(z.string())
       .mutation(async ({ input }) => {
