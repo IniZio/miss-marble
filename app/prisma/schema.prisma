@@ -19,6 +19,8 @@ model Translation {
   productFieldOptions ProductFieldOption[]
   productCollections  ProductCollection[]
   currencies          Currency[]
+  shippingOption      ShippingOption[]
+  shippingProvider    ShippingProvider[]
 }
 
 model Asset {
@@ -48,7 +50,7 @@ model Product {
   collections ProductCollection[]
   lineItems   LineItem[]
 
-  deletedAt             DateTime?
+  deletedAt DateTime?
 }
 
 model ProductField {
@@ -66,7 +68,7 @@ model ProductField {
 
   remarks String?
 
-  deletedAt             DateTime?
+  deletedAt DateTime?
 }
 
 model ProductFieldToProduct {
@@ -141,7 +143,8 @@ model Cart {
 
   items LineItem[]
 
-  email String?
+  phoneNumber String?
+  socialHandle  String?
 
   billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
   billingAddresssId String?
@@ -152,10 +155,17 @@ model Cart {
   currency     Currency @relation(fields: [currencyCode], references: [code])
   currencyCode String
 
-  subtotal      Int
-  total         Int
-  discountTotal Int
-  shippingTotal Int
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId String?
+
+  deliveryDate DateTime?
+
+  remark String?
+
+  subtotal         Int
+  total            Int
+  discountTotal    Int
+  shippingTotal    Int
 }
 
 model LineItem {
@@ -197,8 +207,7 @@ model CartProductFieldValue {
 model Address {
   id String @id @default(uuid())
 
-  firstName String?
-  lastName  String
+  name String?
   address1  String
   address2  String?
   // city          String
@@ -231,4 +240,33 @@ model MoneyAmount {
   productVariants     ProductVariant[]
   productFieldOptions ProductFieldOption[]
   products            Product[]
+  shippingOptions      ShippingOption[]
+}
+
+model ShippingOption {
+  id String @id @default(uuid())
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  // FLAT_RATE | CALCULATED | MANUAL
+  priceType String
+
+  price     MoneyAmount? @relation(fields: [priceId], references: [id])
+  priceId      String?
+
+  carts              Cart[]
+
+  shippingProvider   ShippingProvider? @relation(fields: [shippingProviderId], references: [id])
+  shippingProviderId String?
+}
+
+// Ths "plugin code" part of shipping
+model ShippingProvider {
+  id String @id @default(uuid())
+
+  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  options ShippingOption[]
 }
