@@ -1,15 +1,178 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from '@/server/db';
+import { type Prisma } from '@prisma/client';
+
+const lineItemInputSchema = z.object({
+  productId: z.string(),
+  productFieldValues: z.array(z.object({
+    fieldId: z.string(),
+    fieldOptionId: z.string().nullish(),
+    asset: z.object({
+      id: z.string(),
+    }).nullish(),
+    value: z.string().nullish(),
+  })),
+  quantity: z.number(),
+});
+
+type LineItemInput = z.infer<typeof lineItemInputSchema>;
 
 const createCartSchema = z.object({
   currencyCode: z.string(),
-  items: z.array(z.object({
-    productId: z.string(),
-    productVariantId: z.string().nullish(),
-    quantity: z.number(),
-  })),
+  items: z.array(lineItemInputSchema),
 });
+
+async function constructLineItem(inputs: LineItemInput[], currencyCode: string) {
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: inputs.map(item => item.productId),
+      },
+    },
+    include: {
+      prices: true,
+      fields: {
+        include: {
+          field: {
+            include: {
+              name: true,
+              prices: true,
+              fieldOptions: {
+                include: {
+                  prices: true,
+                }
+              },
+            },
+          },
+        },
+      },
+      variants: {
+        include: {
+          prices: true,
+          fieldOptions: {
+            include: {
+              prices: true,
+            }
+          },
+        },
+      },
+    },
+  });
+
+  const lineItems = inputs.map((item) => {
+    const product = products.find(product => product.id === item.productId);
+    const variant = product?.variants?.find(variant => variant.fieldOptions.every(option => item.productFieldValues.some(value => value.fieldId === option.fieldId && value.fieldOptionId === option.id)));
+    const variantPrice = variant?.prices?.find(price => price.currencyCode === currencyCode) ?? product?.prices?.find(price => price.currencyCode === currencyCode);
+
+    const optionPrices = product?.fields?.flatMap(field =>
+      field.field.fieldOptions.filter(option => item.productFieldValues
+        .some(value => value.fieldId === option.fieldId && value.fieldOptionId === option.id))
+        .map(option => ({
+          fieldId: field.field.id,
+          fieldOptionId: option.id,
+          price: option.prices.find(price => price.currencyCode === currencyCode),
+        }))
+    ) ?? [];
+
+    const subtotal = variantPrice?.amount ?? 0 + optionPrices.reduce((acc, option) => acc + (option.price?.amount ?? 0), 0);
+    const shippingTotal = 0;
+    const total = subtotal + shippingTotal;
+
+    return {
+      product: {
+        connect: {
+          id: item.productId,
+        },
+      },
+      productVariant: variant ? {
+        connect: {
+          id: variant.id,
+        },
+      } : undefined,
+      productFieldValues: {
+        createMany: {
+          data: item.productFieldValues.map(value => ({
+            fieldId: value.fieldId,
+            fieldOptionId: value.fieldOptionId,
+            fieldOptionAssetId: value.asset?.id,
+            fieldValue: value.value,
+          })) satisfies Prisma.CartProductFieldValueCreateManyLineItemInput[],
+        },
+      },
+      quantity: item.quantity,
+      subtotal,
+      shippingTotal,
+      total,
+    };
+  });
+
+  return lineItems;
+}
+
+async function queryCart(cartId: string) {
+  return prisma.cart.findUniqueOrThrow({
+    where: {
+      id: cartId,
+    },
+    include: {
+      currency: true,
+      items: {
+        include: {
+          product: {
+            include: {
+              name: true,
+              gallery: true,
+            },
+          },
+          productFieldValues: {
+            include: {
+              field: {
+                include: {
+                  name: true,
+                }
+              },
+              fieldOption: {
+                include: {
+                  name: true,
+                }
+              },
+              fieldOptionAsset: true,
+            }
+          },
+        },
+      },
+      billingAddress: true,
+      shippingAddress: true,
+    },
+  });
+}
+
+async function recalculateCart(cartId : string) {
+  const cart = await queryCart(cartId);
+
+  if (!cart) {
+    throw new Error('Cart not found');
+  }
+
+  const lineItems = cart.items;
+  const subtotal = lineItems.reduce((acc, item) => acc + item.subtotal, 0);
+  const shippingTotal = lineItems.reduce((acc, item) => acc + item.shippingTotal, 0);
+  const total = lineItems.reduce((acc, item) => acc + item.total, 0);
+
+  await prisma.cart.update({
+    where: {
+      id: cartId,
+    },
+    data: {
+      subtotal,
+      shippingTotal,
+      total,
+    },
+  });
+
+  return queryCart(cartId);
+}
 
 export const cartRouter = createTRPCRouter({
   create: publicProcedure
@@ -17,210 +180,55 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const currencyCode = input.currencyCode;
 
-      const products = await prisma.product.findMany({
-        where: {
-          id: {
-            in: input.items.map(item => item.productId),
-          },
-        },
-        include: {
-          prices: true,
-          variants: {
-            include: {
-              prices: true,
-            },
-            where: {
-              id: {
-                in: input.items.map(item => item.productVariantId).filter((item): item is string => !!item),
-              },
-            },
-          },
-        },
-      });
-
-      const lineItems = input.items.map(item => {
-        const product = products.find(product => product.id === item.productId);
-        const variant = product?.variants?.find(variant => variant.id === item.productVariantId);
-        const price = variant?.prices?.find(price => price.currencyCode === currencyCode) ?? product?.prices?.find(price => price.currencyCode === currencyCode);
-
-        const subtotal = price?.amount ?? 0;
-        const shippingTotal = 0;
-        const total = subtotal + shippingTotal;
-
-        return {
-          product: {
-            connect: {
-              id: item.productId,
-            },
-          },
-          productVariant: item.productVariantId ? {
-            connect: {
-              id: item.productVariantId,
-            },
-          } : undefined,
-          quantity: item.quantity,
-          subtotal,
-          shippingTotal,
-          total,
-        };
-      });
-
-      const subtotal = lineItems.reduce((acc, item) => acc + item.subtotal, 0);
-      const shippingTotal = lineItems.reduce((acc, item) => acc + item.shippingTotal, 0);
-      const total = lineItems.reduce((acc, item) => acc + item.total, 0);
-
+      const lineItems = await constructLineItem(input.items, currencyCode);
       const cart = await prisma.cart.create({
         data: {
           items: {
             create: lineItems,
           },
           currencyCode,
-          subtotal,
+          subtotal: 0,
           discountTotal: 0,
-          shippingTotal,
-          total,
-        },
-        include: {
-          currency: true,
-          items: {
-            include: {
-              product: {
-                include: {
-                  name: true,
-                  gallery: true,
-                },
-              },
-            },
-          },
-          billingAddress: true,
-          shippingAddress: true,
+          shippingTotal: 0,
+          total: 0,
         },
       });
 
-      return cart;
+      return recalculateCart(cart.id);
     }),
     get: publicProcedure
       .input(z.string())
       .query(async ({ input }) => {
-        const cart = await prisma.cart.findUnique({
-          where: {
-            id: input,
-          },
-          include: {
-            currency: true,
-            items: {
-              include: {
-                product: {
-                  include: {
-                    name: true,
-                    gallery: true,
-                  },
-                },
-              },
-            },
-            billingAddress: true,
-            shippingAddress: true,
-          },
-        });
+        const cart = await queryCart(input);
 
         return cart;
       }),
     addLineItem: publicProcedure
       .input(z.object({
         cartId: z.string(),
-        item: z.object({
-          productId: z.string(),
-          productVariantId: z.string().nullish(),
-          quantity: z.number(),
-        })
+        item: lineItemInputSchema
       }))
       .mutation(async ({ input }) => {
-        const cart = await prisma.cart.findUnique({
-          where: {
-            id: input.cartId,
-          },
-          include: {
-            items: true,
-          },
-        });
-
+        const cart = await queryCart(input.cartId);
         if (!cart) {
           throw new Error('Cart not found');
         }
 
-        const item = input.item;
-        const product = await prisma.product.findUnique({
-          where: {
-            id: item.productId,
-          },
-          include: {
-            prices: true,
-            variants: {
-              include: {
-                prices: true,
-              },
-              where: item.productVariantId ? {
-                id: item.productVariantId,
-              } : undefined,
-            },
-          },
-        });
-
-        if (!product) {
-          throw new Error('Product not found');
-        }
-
-        const variant = product?.variants?.find(variant => variant.id === item.productVariantId);
-        const price = variant?.prices?.find(price => price.currencyCode === cart.currencyCode) ?? product?.prices?.find(price => price.currencyCode === cart.currencyCode);
-
-        const subtotal = price?.amount ?? 0;
-        const shippingTotal = 0;
-        const total = subtotal + shippingTotal;
-
-        await prisma.lineItem.create({
-          data: {
-            cart: {
-              connect: {
-                id: input.cartId,
-              },
-            },
-            product: {
-              connect: {
-                id: item.productId,
-              },
-            },
-            productVariant: item.productVariantId ? {
-              connect: {
-                id: item.productVariantId,
-              },
-            } : undefined,
-            quantity: item.quantity,
-            subtotal,
-            shippingTotal,
-            total,
-          },
-        });
-
-        return prisma.cart.findUnique({
+        await prisma.cart.update({
           where: {
             id: input.cartId,
           },
-          include: {
-            currency: true,
+          data: {
             items: {
-              include: {
-                product: {
-                  include: {
-                    name: true,
-                    gallery: true,
-                  },
-                },
-              },
+              create: await constructLineItem([input.item], cart.currencyCode),
+              connect: cart.items.map(item => ({
+                id: item.id,
+              })),
             },
-            billingAddress: true,
-            shippingAddress: true,
           },
         });
+
+        return recalculateCart(input.cartId);
       }),
     removeLineItem: publicProcedure
       .input(z.object({
@@ -251,32 +259,18 @@ export const cartRouter = createTRPCRouter({
           return null;
         }
 
+        await prisma.cartProductFieldValue.deleteMany({
+          where: {
+            lineItemId: input.lineItemId,
+          },
+        });
         await prisma.lineItem.delete({
           where: {
             id: input.lineItemId,
           },
         });
 
-        return prisma.cart.findUnique({
-          where: {
-            id: input.cartId,
-          },
-          include: {
-            currency: true,
-            items: {
-              include: {
-                product: {
-                  include: {
-                    name: true,
-                    gallery: true,
-                  },
-                },
-              },
-            },
-            billingAddress: true,
-            shippingAddress: true,
-          },
-        });
+        return recalculateCart(input.cartId);
       }),
     delete: publicProcedure
       .input(z.string())

@@ -66,9 +66,8 @@ model ProductField {
   products     ProductFieldToProduct[]
   fieldOptions ProductFieldOption[]
 
-  remarks String?
-
-  deletedAt DateTime?
+  deletedAt             DateTime?
+  cartProductFieldValues CartProductFieldValue[]
 }
 
 model ProductFieldToProduct {
@@ -143,8 +142,8 @@ model Cart {
 
   items LineItem[]
 
-  phoneNumber String?
-  socialHandle  String?
+  phoneNumber  String?
+  socialHandle String?
 
   billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
   billingAddresssId String?
@@ -162,10 +161,10 @@ model Cart {
 
   remark String?
 
-  subtotal         Int
-  total            Int
-  discountTotal    Int
-  shippingTotal    Int
+  subtotal      Int
+  total         Int
+  discountTotal Int
+  shippingTotal Int
 }
 
 model LineItem {
@@ -195,10 +194,13 @@ model CartProductFieldValue {
   lineItem   LineItem @relation(fields: [lineItemId], references: [id])
   lineItemId String
 
+  field   ProductField @relation(fields: [fieldId], references: [id])
+  fieldId String
+
   fieldOption   ProductFieldOption? @relation(fields: [fieldOptionId], references: [id])
   fieldOptionId String?
 
-  fieldFieldValue String?
+  fieldValue String?
 
   fieldOptionAsset   Asset?  @relation(fields: [fieldOptionAssetId], references: [id])
   fieldOptionAssetId String?
@@ -207,9 +209,9 @@ model CartProductFieldValue {
 model Address {
   id String @id @default(uuid())
 
-  name String?
-  address1  String
-  address2  String?
+  name     String?
+  address1 String
+  address2 String?
   // city          String
   // zip           String
   // countryCode  String
@@ -240,7 +242,7 @@ model MoneyAmount {
   productVariants     ProductVariant[]
   productFieldOptions ProductFieldOption[]
   products            Product[]
-  shippingOptions      ShippingOption[]
+  shippingOptions     ShippingOption[]
 }
 
 model ShippingOption {
@@ -252,10 +254,10 @@ model ShippingOption {
   // FLAT_RATE | CALCULATED | MANUAL
   priceType String
 
-  price     MoneyAmount? @relation(fields: [priceId], references: [id])
-  priceId      String?
+  price   MoneyAmount? @relation(fields: [priceId], references: [id])
+  priceId String?
 
-  carts              Cart[]
+  carts Cart[]
 
   shippingProvider   ShippingProvider? @relation(fields: [shippingProviderId], references: [id])
   shippingProviderId String?

@@ -24,6 +24,7 @@ const ProductFieldFile: React.FC<ProductFieldFileProps> = ({ field, onChange }) 
       file
     );
 
+    console.log('=== asset', asset);
     onChange(asset);
   }, [onChange, presignUpload]);
 

@@ -8,6 +8,7 @@ import Translated from '@/components/Translated';
 import ProductFieldForm, { type ProductFieldValues } from '../components/ProductFieldForm/ProductFieldForm';
 import { Separator } from '@/components/ui/separator';
 import { useCartStore } from '../../cart/actions/cart';
+import { type AssetUpload } from '@/models/asset';
 
 export const prefetch = async (helpers: ServerSideHelpers, productId: string) => {
   await prefetchProductDetail(helpers, productId);
@@ -18,11 +19,54 @@ const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
   const { addToCart } = useCartStore();
 
   const handleAddToCart = useCallback(async (values: ProductFieldValues) => {
+    const fieldValues =  Object.entries(values).reduce((acc, [fieldId, value]) => {
+      const field = productDetail!.fields.find(field => field.id === fieldId)!;
+      switch (field.type) {
+        case 'TEXT':
+          acc.push({
+            fieldId,
+            value: value as string,
+          });
+          break;
+        case 'SELECT':
+          acc.push({
+            fieldId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+            fieldOptionId: (value as any).value as string,
+          });
+          break;
+        case 'CHECKBOXES':
+          const _value = value as { selected: string[], otherSelected: boolean, other: string } | null;
+          _value?.selected.forEach(val => acc.push({
+            fieldId,
+            fieldOptionId: val,
+          }));
+          if (_value?.otherSelected && _value?.other) {
+            acc.push({
+              fieldId,
+              value: _value.other,
+            });
+          }
+          break;
+        case 'ASSET':
+          acc.push({
+            fieldId,
+            asset: value as AssetUpload,
+          });
+          break;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return acc;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }, [] as any[]);
+
     await addToCart({
       productId,
+      productFieldValues: fieldValues,
       quantity: 1,
     });
-  }, [addToCart, productId])
+  }, [addToCart, productDetail, productId])
 
   if (productDetail === null) {
     return null;

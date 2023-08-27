@@ -10,7 +10,7 @@ export function useCartStore() {
   const createCart = api.cart.create.useMutation();
   const addLineItem = api.cart.addLineItem.useMutation();
   const removeLineItem = api.cart.removeLineItem.useMutation();
-  const { data: cart, remove: removeCart, refetch: refetchCart } = api.cart.get.useQuery(cartId!);
+  const { data: cart, remove: removeCart, refetch: refetchCart } = api.cart.get.useQuery(cartId!, { enabled: !!cartId });
 
   const addToCart = useCallback(async (lineItem: LineItem) => {
     if (cartId) {
@@ -18,8 +18,8 @@ export function useCartStore() {
         cartId,
         item: lineItem,
       });
-      setCartId(newCart!.id);
-      apiContext.cart.get.setData(newCart!.id, newCart);
+      setCartId(newCart.id);
+      apiContext.cart.get.setData(newCart.id, newCart);
       void refetchCart();
       return;
     }

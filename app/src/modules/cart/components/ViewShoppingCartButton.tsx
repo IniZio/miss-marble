@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,12 +17,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { useShippingOptions } from '../actions/getShippingOptions';
 import { Separator } from '@/components/ui/separator';
 import ShippingOptionsSelect from './ShippingOptionsSelect';
+import { ProductField } from '@/models/product';
 
 const ViewShoppingCartButton: React.FC = () => {
   const [stage, setStage] = React.useState<'cart' | 'checkout'>('cart');
   const { cart, removeLineItem } = useCartStore();
   const { data: shippingOptions } = useShippingOptions();
 
+  // Reset stage when cart is empty
   useEffect(() => {
     if (cart?.items.length ?? 0 === 0) {
       setStage('cart');
@@ -45,7 +50,7 @@ const ViewShoppingCartButton: React.FC = () => {
           <ShoppingCart size={16} />
         </Button>
       </SheetTrigger>
-      <SheetContent className={cn("w-full max-w-[100vw] transition-[min-width]", stage === "checkout" ? "min-w-[800px]" : 'min-w-[400px]')}>
+      <SheetContent className={cn("w-full max-w-[100vw] transition-[min-width]", stage === "checkout" ? "min-w-[1000px]" : 'min-w-[400px]')}>
         <SheetHeader>
           <SheetTitle>
             <FormattedMessage id="shoppingCart.sheet.title" defaultMessage="購物車" />
@@ -108,7 +113,7 @@ const ViewShoppingCartButton: React.FC = () => {
               </form>
             </div>
           )}
-          <div className={cn(stage === "checkout" && "w-100 border-l", "pl-4 h-full")}>
+          <div className={cn(stage === "checkout" && "border-l", "w-[400px] pl-4 h-full")}>
             <div className="grid gap-4 py-4">
               {cart?.items.map((item) => {
                 const image = item.product.gallery[0];
@@ -130,11 +135,46 @@ const ViewShoppingCartButton: React.FC = () => {
                         <X size={12} color='white' />
                       </button>
                     </div>
-                    <div className="grid grid-cols-4 col-span-3">
-                      <div className="col-span-3">
-                        <Label className="font-bold text-lg"><Translated t={item.product.name} /></Label>
-                      </div>
-                      <span className="text-sm">{cart.currency.symbol}{item.total}</span>
+                    <div className="flex col-span-3">
+                    <div className="flex-1">
+                      <Label className="font-bold text-lg"><Translated t={item.product.name} /></Label>
+                      {Object.values(item.productFieldValues
+                        .filter((productFieldValue) => productFieldValue.fieldOptionAsset ?? productFieldValue.fieldOption ?? productFieldValue.fieldValue)
+                        .reduce((acc, productFieldValue) => {
+                          if (!acc[productFieldValue.fieldId]) {
+                            acc[productFieldValue.field.id] = {
+                              field: productFieldValue.field,
+                              values: []
+                            };
+                          }
+
+                          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                          acc[productFieldValue.field.id]!.values.push(productFieldValue);
+                          return acc;
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        }, {} as Record<string, any>))
+                        .map((groupedProductFieldValues: any) => (
+                          <div
+                            key={groupedProductFieldValues.field.id}
+                            className={cn(groupedProductFieldValues.values.length == 1 && "flex")}
+                          >
+                            <div className="flex-shrink-0 mr-2"><Translated t={groupedProductFieldValues.field.name} />:</div>
+                            {groupedProductFieldValues.values.map((productFieldValue: any) => (
+                              <div key={productFieldValue.id} className="text-sm">
+                                {groupedProductFieldValues.values.length != 1 && '- '}
+                                {productFieldValue.fieldOption
+                                  ? <Translated t={productFieldValue.fieldOption?.name} />
+                                  : productFieldValue.fieldOptionAsset
+                                  ? <a href={productFieldValue.fieldOptionAsset?.url} target='_blank'>
+                                      <Image alt="" src={productFieldValue.fieldOptionAsset?.url} width={60} height={60} />
+                                    </a>
+                                  : productFieldValue.fieldValue}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
+                      <span className="text-sm text-right">{cart.currency.symbol}{item.total}</span>
                     </div>
                   </div>
                 )
