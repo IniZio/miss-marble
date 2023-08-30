@@ -6,11 +6,11 @@ export const apiMoneyAmountSchema = z.object({
   amount: z.number(),
 });
 
-export const spiShippingOptionSchema = z.object({
+export const apiShippingOptionSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
   priceType: z.enum(['FLAT_RATE', 'MANUAL']),
   price: apiMoneyAmountSchema.nullable(),
 })
 
-export type ShippingOption = z.infer<typeof spiShippingOptionSchema>;
+export type ShippingOption = z.infer<typeof apiShippingOptionSchema>;

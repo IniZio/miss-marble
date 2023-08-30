@@ -7,22 +7,25 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Cake, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCartStore } from '../actions/cart';
 import Translated from '@/components/Translated';
 import { cn } from '@/lib/utils/ui';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { useShippingOptions } from '../actions/getShippingOptions';
 import { Separator } from '@/components/ui/separator';
 import ShippingOptionsSelect from './ShippingOptionsSelect';
 import { ProductField } from '@/models/product';
+import { usePaymentOptions } from '../actions/getPaymentOptions';
+import PaymentOptionsSelect from './PaymentOptionsSelect';
 
 const ViewShoppingCartButton: React.FC = () => {
   const [stage, setStage] = React.useState<'cart' | 'checkout'>('cart');
   const { cart, removeLineItem } = useCartStore();
   const { data: shippingOptions } = useShippingOptions();
+  const { data: paymentOptions } = usePaymentOptions();
 
   // Reset stage when cart is empty
   useEffect(() => {
@@ -33,6 +36,8 @@ const ViewShoppingCartButton: React.FC = () => {
 
   // Delivery
   const { register, control, handleSubmit } = useForm();
+  const selectedPaymentOptionId = useWatch({ control, name: 'paymentOption' });
+  const selectedPaymentOption = useMemo(() => paymentOptions?.find((paymentOption) => paymentOption.id === selectedPaymentOptionId), [paymentOptions, selectedPaymentOptionId]);
 
   const onSubmit = React.useCallback((data: unknown) => {
     console.log('=== submit', data);
@@ -88,7 +93,7 @@ const ViewShoppingCartButton: React.FC = () => {
                   <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.delivery" defaultMessage="送貨方式" /></h3>
                   <div>
                     <Label>
-                      <FormattedMessage id="shoppingCart.sheet.checkout.address" defaultMessage="地址" />
+                      <FormattedMessage id="shoppingCart.sheet.checkout.address" defaultMessage="送貨方式" />
                       <span className="text-destructive">*</span>
                     </Label>
                     <Controller control={control} name="shippingOption" render={({field}) => (
@@ -108,6 +113,19 @@ const ViewShoppingCartButton: React.FC = () => {
                       <FormattedMessage id="shoppingCart.sheet.checkout.remark" defaultMessage="備註" />
                     </Label>
                     <Textarea className="mt-1" {...register('remark', { required: true })} />
+                  </div>
+                  <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.payment" defaultMessage="付款方式" /></h3>
+                  <div>
+                    <Label>
+                      <FormattedMessage id="shoppingCart.sheet.checkout.paymentMethod" defaultMessage="付款方式" />
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Controller control={control} name="paymentOption" render={({field}) => (
+                      <PaymentOptionsSelect options={paymentOptions ?? []} {...field} className="mt-1 w-full" />
+                    )} />
+                    {selectedPaymentOption?.instructions &&
+                      <p className="mt-1 text-sm"><Translated t={selectedPaymentOption?.instructions} /></p>
+                    }
                   </div>
                 </div>
               </form>

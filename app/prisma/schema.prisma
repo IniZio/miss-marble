@@ -14,13 +14,17 @@ model Translation {
   id   String @id @default(uuid())
   text Json
 
-  products            Product[]
-  productFields       ProductField[]
-  productFieldOptions ProductFieldOption[]
-  productCollections  ProductCollection[]
-  currencies          Currency[]
-  shippingOption      ShippingOption[]
-  shippingProvider    ShippingProvider[]
+  products                   Product[]
+  productFields              ProductField[]
+  productFieldOptions        ProductFieldOption[]
+  productCollections         ProductCollection[]
+  currenciess                Currency[]
+  shippingOptionNames        ShippingOption[]     @relation("name")
+  shippingOptionInstructions ShippingOption[]     @relation("instructions")
+  shippingProviderNames      ShippingProvider[]   @relation("name")
+  paymentProviderName        PaymentProvider[]    @relation("name")
+  paymentOptionNames         PaymentOption[]      @relation("name")
+  paymentOptionInstructions  PaymentOption[]      @relation("instructions")
 }
 
 model Asset {
@@ -66,7 +70,7 @@ model ProductField {
   products     ProductFieldToProduct[]
   fieldOptions ProductFieldOption[]
 
-  deletedAt             DateTime?
+  deletedAt              DateTime?
   cartProductFieldValues CartProductFieldValue[]
 }
 
@@ -248,8 +252,11 @@ model MoneyAmount {
 model ShippingOption {
   id String @id @default(uuid())
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
   nameTranslationId String
+
+  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id])
+  instructionsTranslationId String?
 
   // FLAT_RATE | CALCULATED | MANUAL
   priceType String
@@ -267,8 +274,30 @@ model ShippingOption {
 model ShippingProvider {
   id String @id @default(uuid())
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
   nameTranslationId String
 
   options ShippingOption[]
+}
+
+model PaymentOption {
+  id String @id @default(uuid())
+
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id])
+  instructionsTranslationId String?
+
+  paymentProvider   PaymentProvider? @relation(fields: [paymentProviderId], references: [id])
+  paymentProviderId String?
+}
+
+model PaymentProvider {
+  id String @id @default(uuid())
+
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  nameTranslationId String
+
+  paymentOptions PaymentOption[]
 }
