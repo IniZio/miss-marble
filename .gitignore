@@ -42,4 +42,6 @@
 
 # Environment file
 .env
-.env.local
+.env.local/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
