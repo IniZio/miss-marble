@@ -45,3 +45,4 @@
 .env.local/.blackbox/pubring.gpg~
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
+/app/marble-service-account.json
