@@ -4,6 +4,7 @@ export async function seed(prisma: PrismaClient) {
   // Taste
   const fieldTaste = await prisma.productField.create({
     data: {
+      alias: 'taste',
       name: {
         create: { text: { zh_Hant_HK: '蛋糕味道' } },
       },
@@ -24,6 +25,7 @@ export async function seed(prisma: PrismaClient) {
   // 寫字朱古力牌
   const fieldChocolateWriting = await prisma.productField.create({
     data: {
+      alias: 'letter',
       name: {
         create: { text: { zh_Hant_HK: '寫字朱古力牌' } },
       },
@@ -34,6 +36,7 @@ export async function seed(prisma: PrismaClient) {
   // 蛋糕面裝飾
   const fieldCakeToppingDecoration = await prisma.productField.create({
     data: {
+      alias: 'decorations',
       name: {
         create: { text: { zh_Hant_HK: '蛋糕面裝飾' } },
       },
@@ -61,6 +64,7 @@ export async function seed(prisma: PrismaClient) {
 
   const fieldUpload = await prisma.productField.create({
     data: {
+      alias: 'upload',
       name: {
         create: { text: { zh_Hant_HK: '上傳D野' } },
       },

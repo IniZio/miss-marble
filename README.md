@@ -9,9 +9,9 @@ asdf plugin add pnpm
 
 asdf install
 
-task vendor
+task dep
 task secret
-trak db:reset
+task db:reset
 ```
 
 ### Run

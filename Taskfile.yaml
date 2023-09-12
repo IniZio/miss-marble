@@ -12,7 +12,7 @@ tasks:
 
   db:reset:
     cmds:
-      - docker compose down --volume
+      - docker compose down --volumes
       - docker compose up -d
       - sleep 3
       - task -d app db:reset

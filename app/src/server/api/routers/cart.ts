@@ -1,7 +1,15 @@
 import { z } from "zod";
+import day from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from '@/server/db';
 import { type Prisma } from '@prisma/client';
+import { type JsonObject } from '@prisma/client/runtime/library';
+import googlesheet from '../integrations/google-sheet';
+
+day.extend(utc);
+day.extend(timezone);
 
 const lineItemInputSchema = z.object({
   productId: z.string(),
@@ -144,6 +152,11 @@ async function queryCart(cartId: string) {
       },
       billingAddress: true,
       shippingAddress: true,
+      shippingOption: {
+        include: {
+          name: true,
+        }
+      },
     },
   });
 }
@@ -272,6 +285,67 @@ export const cartRouter = createTRPCRouter({
 
         return recalculateCart(input.cartId);
       }),
+
+    update: publicProcedure
+      .input(z.object({
+        cartId: z.string(),
+        phoneNumber: z.string(),
+        socialChannel: z.string(),
+        socialHandle: z.string(),
+        remark: z.string(),
+        shippingAddress: z.object({
+          name: z.string(),
+          address1: z.string(),
+          address2: z.string(),
+        }),
+        shippingOptionId: z.string(),
+        paymentOptionId: z.string(),
+        deliveryDate: z.date(),
+      }))
+      .mutation(async ({ input }) => {
+        const cart = await queryCart(input.cartId);
+        if (!cart) {
+          throw new Error('Cart not found');
+        }
+
+        await prisma.cart.update({
+          where: {
+            id: input.cartId,
+          },
+          data: {
+            phoneNumber: input.phoneNumber,
+            socialChannel: input.socialChannel,
+            socialHandle: input.socialHandle,
+            remark: input.remark,
+            shippingAddress: {
+              upsert: {
+                update: {
+                  name: input.shippingAddress.name,
+                  address1: input.shippingAddress.address1,
+                  address2: input.shippingAddress.address2,
+                },
+                create: {
+                  name: input.shippingAddress.name,
+                  address1: input.shippingAddress.address1,
+                  address2: input.shippingAddress.address2,
+                },
+                where: {
+                  id: cart.shippingAddress?.id,
+                },
+              },
+            },
+            shippingOption: {
+              connect: {
+                id: input.shippingOptionId,
+              },
+            },
+            deliveryDate: input.deliveryDate,
+          },
+        });
+
+        return recalculateCart(input.cartId);
+      }),
+
     delete: publicProcedure
       .input(z.string())
       .mutation(async ({ input }) => {
@@ -282,5 +356,88 @@ export const cartRouter = createTRPCRouter({
         });
 
         return cart;
+      }),
+
+    complete: publicProcedure
+      .input(z.string())
+      .mutation(async ({ input }) => {
+        const cart = await queryCart(input);
+
+        const fields = {
+          paid: 0,
+          created_at: 1,
+          name: 2,
+          phone: 3,
+          date: 4,
+          time: 5,
+          cake: [6, 7],
+          letter: 8,
+          taste: [10, 11, 12, 13],
+          inner_taste: [14],
+          bottom_taste: [15],
+          size: 18,
+          shape: [19, 20],
+          color: [9, 16],
+          sentence: 25,
+          paid_sentence: [26, 27],
+          toppings: 21,
+          decorations: [22, 23, 24],
+          social_name: 28,
+          order_from: 29,
+          delivery_method: 30,
+          delivery_address: [31, 32],
+          remarks: [33],
+          printed_at: 89,
+          printed: 90,
+          // index: 91,
+        };
+
+        const getFieldValueString = (item: typeof cart.items[0], alias: string): string => {
+          const fieldValues = item.productFieldValues.filter(i => i.field.alias === alias);
+
+          return fieldValues
+            .map((value) => {
+              return (
+                value.fieldOptionAsset?.url ??
+                (value.fieldOption?.name.text as JsonObject)?.zh_Hant_HK ??
+                value.fieldValue
+              );
+            })
+            .join(", ");
+        }
+
+        const googleSheetOrders: Record<keyof typeof fields, string>[] = cart.items.map(item => ({
+          paid: "",
+          created_at: day().tz("Asia/Hong_Kong").format('M/D/YYYY H:mm:ss'),
+          name: cart.shippingAddress?.name,
+          phone: cart.phoneNumber,
+          date: day(cart.deliveryDate).tz("Asia/Hong_Kong").format('M/D/YYYY H:mm:ss'),
+          time: day(cart.deliveryDate).tz("Asia/Hong_Kong").format('H:mm'),
+          cake: getFieldValueString(item, 'product'),
+          letter: getFieldValueString(item, 'letter'),
+          taste: getFieldValueString(item, 'taste'),
+          inner_taste: getFieldValueString(item, 'inner_taste'),
+          bottom_taste: getFieldValueString(item, 'bottom_taste'),
+          size: getFieldValueString(item, 'size'),
+          shape: getFieldValueString(item, 'shape'),
+          color: getFieldValueString(item, 'color'),
+          sentence: getFieldValueString(item, 'sentence'),
+          paid_sentence: getFieldValueString(item, 'paid_sentence'),
+          toppings: getFieldValueString(item, 'toppings'),
+          decorations: getFieldValueString(item, 'decorations'),
+          social_name: getFieldValueString(item, 'social_name'),
+          order_from: getFieldValueString(item, 'order_from'),
+          delivery_method: getFieldValueString(item, 'delivery_method'),
+          delivery_address: (cart.shippingAddress?.address1 ?? '') + (cart.shippingAddress?.address2 ?? ''),
+          remarks: cart.remark,
+        }) as Record<keyof typeof fields, string>);
+
+        for (const googleSheetOrder of googleSheetOrders) {
+          const row: string[] = [];
+          Object.entries(fields).forEach(([field, columns]) => {
+            row[Array.isArray(columns) ? columns[0]! : columns] = googleSheetOrder[field as keyof typeof fields];
+          })
+          await googlesheet.insertRow(row);
+        }
       }),
 });

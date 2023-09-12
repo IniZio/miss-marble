@@ -13,6 +13,7 @@ import { useCartStore } from '../actions/cart';
 import Translated from '@/components/Translated';
 import { cn } from '@/lib/utils/ui';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Textarea } from '@/components/ui/textarea';
 import { useShippingOptions } from '../actions/getShippingOptions';
 import { Separator } from '@/components/ui/separator';
@@ -20,28 +21,60 @@ import ShippingOptionsSelect from './ShippingOptionsSelect';
 import { ProductField } from '@/models/product';
 import { usePaymentOptions } from '../actions/getPaymentOptions';
 import PaymentOptionsSelect from './PaymentOptionsSelect';
+import { z } from 'zod';
+import SocialChannelSelect from './SocialChannelSelect';
+
+const CartUpdateSchema = z.object({
+  name: z.string(),
+  phoneNumber: z.string(),
+  socialHandle: z.string(),
+  socialChannel: z.string(),
+  remark: z.string(),
+  address1: z.string(),
+  address2: z.string(),
+  paymentOption: z.string(),
+  shippingOption: z.string(),
+  // deliveryDate: z.date(),
+})
 
 const ViewShoppingCartButton: React.FC = () => {
   const [stage, setStage] = React.useState<'cart' | 'checkout'>('cart');
-  const { cart, removeLineItem } = useCartStore();
+  const { cart, removeLineItem, updateCart, completeCart } = useCartStore();
   const { data: shippingOptions } = useShippingOptions();
   const { data: paymentOptions } = usePaymentOptions();
 
   // Reset stage when cart is empty
   useEffect(() => {
-    if (cart?.items.length ?? 0 === 0) {
+    if (cart?.items.length === 0) {
       setStage('cart');
     }
   }, [cart])
 
   // Delivery
-  const { register, control, handleSubmit } = useForm();
+  const { register, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof CartUpdateSchema>>({ resolver: zodResolver(CartUpdateSchema) });
   const selectedPaymentOptionId = useWatch({ control, name: 'paymentOption' });
   const selectedPaymentOption = useMemo(() => paymentOptions?.find((paymentOption) => paymentOption.id === selectedPaymentOptionId), [paymentOptions, selectedPaymentOptionId]);
 
-  const onSubmit = React.useCallback((data: unknown) => {
-    console.log('=== submit', data);
-  }, []);
+  const onSubmit = React.useCallback(async (data: z.infer<typeof CartUpdateSchema>) => {
+    console.log(data);
+    await updateCart({
+      phoneNumber: data.phoneNumber,
+      socialChannel: data.socialChannel,
+      socialHandle: data.socialHandle,
+      remark: data.remark,
+      shippingAddress: {
+        name: data.name,
+        address1: data.address1,
+        address2: data.address2,
+      },
+      shippingOptionId: data.shippingOption,
+      paymentOptionId: data.paymentOption,
+      deliveryDate: new Date(),
+    });
+    await completeCart();
+    setStage('cart');
+    alert("訂單已送出！");
+  }, [completeCart, updateCart]);
 
   return (
     <Sheet onOpenChange={(open) => { if (!open) setStage('cart') }}>
@@ -55,72 +88,83 @@ const ViewShoppingCartButton: React.FC = () => {
           <ShoppingCart size={16} />
         </Button>
       </SheetTrigger>
-      <SheetContent className={cn("w-full max-w-[100vw] transition-[min-width]", stage === "checkout" ? "min-w-[1000px]" : 'min-w-[400px]')}>
+      <SheetContent className={cn("!max-w-[100vw] transition-[min-width]", stage === "checkout" ? "w-[1000px]" : 'w-[400px] min-w-[400px]')}>
         <SheetHeader>
           <SheetTitle>
             <FormattedMessage id="shoppingCart.sheet.title" defaultMessage="購物車" />
           </SheetTitle>
         </SheetHeader>
-        <div className="flex gap-x-4 h-[calc(100%-100px)]">
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col-reverse sm:flex-row h-[calc(100%-100px)] overflow-y-auto">
           {stage === 'checkout' && (
-            <div className="flex-1">
-              <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex-1 pr-4 border-r">
                 <div className="grid gap-4 py-4">
                   <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.contact" defaultMessage="聯絡方法" /></h3>
+                  <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>
+                    <Label className={cn(errors.name && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.name" defaultMessage="姓名" />
                       <span className="text-destructive">*</span>
                     </Label>
                     <Input {...register('name', { required: true })} />
                   </div>
+                  <div>
+                    <Label className={cn(errors.phoneNumber && 'text-destructive')}>
+                      <FormattedMessage id="shoppingCart.sheet.checkout.phone" defaultMessage="電話" />
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Input {...register('phoneNumber', { required: true })} />
+                  </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>
-                        <FormattedMessage id="shoppingCart.sheet.checkout.phone" defaultMessage="電話" />
-                        <span className="text-destructive">*</span>
-                      </Label>
-                      <Input {...register('phoneNumber', { required: true })} />
-                    </div>
-                    <div>
-                      <Label>
+                      <Label className={cn(errors.socialHandle && 'text-destructive')}>
                         <FormattedMessage id="shoppingCart.sheet.checkout.socialHandle" defaultMessage="IG/FB 名稱" />
                       </Label>
                       <Input {...register('socialHandle')} />
+                    </div>
+                    <div>
+                      <Label className={cn(errors.socialChannel && 'text-destructive')}>
+                        <FormattedMessage id="shoppingCart.sheet.checkout.socialChannel" defaultMessage="從哪下單？" />
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Controller control={control} name="socialChannel" rules={{ required: true }} render={({field}) => (
+                        <SocialChannelSelect {...field} className="mt-1 w-full" />
+                      )} />
                     </div>
                   </div>
                   <Separator />
                   <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.delivery" defaultMessage="送貨方式" /></h3>
                   <div>
-                    <Label>
+                    <Label className={cn(errors.shippingOption && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.address" defaultMessage="送貨方式" />
                       <span className="text-destructive">*</span>
                     </Label>
-                    <Controller control={control} name="shippingOption" render={({field}) => (
+                    <Controller control={control} name="shippingOption" rules={{ required: true }} render={({field}) => (
                       <ShippingOptionsSelect options={shippingOptions ?? []} {...field} className="mt-1 w-full" />
                     )} />
                   </div>
                   <div>
-                    <Label>
+                    <Label className={cn((errors.address1 || errors.address2) && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.address" defaultMessage="地址" />
                       <span className="text-destructive">*</span>
                     </Label>
                     <Input className="mt-1" {...register('address1', { required: true })} />
-                    <Input className="mt-2" {...register('address2', { required: true })} />
+                    <Input className="mt-2" {...register('address2')} />
                   </div>
                   <div>
-                    <Label>
+                    <Label className={cn(errors.remark && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.remark" defaultMessage="備註" />
                     </Label>
-                    <Textarea className="mt-1" {...register('remark', { required: true })} />
+                    <Textarea className="mt-1" {...register('remark')} />
                   </div>
                   <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.payment" defaultMessage="付款方式" /></h3>
                   <div>
-                    <Label>
+                    <Label className={cn(errors.paymentOption && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.paymentMethod" defaultMessage="付款方式" />
                       <span className="text-destructive">*</span>
                     </Label>
-                    <Controller control={control} name="paymentOption" render={({field}) => (
+                    <Controller control={control} name="paymentOption" rules={{ required: true }} render={({field}) => (
                       <PaymentOptionsSelect options={paymentOptions ?? []} {...field} className="mt-1 w-full" />
                     )} />
                     {selectedPaymentOption?.instructions &&
@@ -128,10 +172,9 @@ const ViewShoppingCartButton: React.FC = () => {
                     }
                   </div>
                 </div>
-              </form>
             </div>
           )}
-          <div className={cn(stage === "checkout" && "border-l", "w-[400px] pl-4 h-full")}>
+          <div className={cn(stage === "checkout" && "hidden md:block", "pl-4 h-full")}>
             <div className="grid gap-4 py-4">
               {cart?.items.map((item) => {
                 const image = item.product.gallery[0];
@@ -201,10 +244,17 @@ const ViewShoppingCartButton: React.FC = () => {
           </div>
         </div>
         <div className="absolute bottom-6 inset-x-6">
-          <Button size="lg" className="w-full" onClick={() => setStage('checkout')}>
-            <FormattedMessage id="shoppingCart.sheet.checkout" defaultMessage="進行結賬" />
+          {stage === 'checkout' ? (
+            <Button size="lg" className="w-full" type="submit">
+              <FormattedMessage id="shoppingCart.sheet.checkout" defaultMessage="進行結賬" />
+            </Button>
+          ) : (
+          <Button size="lg" className="w-full" type="button" onClick={() => setStage('checkout')}>
+            <FormattedMessage id="shoppingCart.sheet.confirm" defaultMessage="確認" />
           </Button>
+          )}
         </div>
+        </form>
       </SheetContent>
     </Sheet>
   );

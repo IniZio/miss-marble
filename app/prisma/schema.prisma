@@ -59,6 +59,7 @@ model Product {
 
 model ProductField {
   id   String @id @default(uuid())
+  alias String
   // SELECT | MULTISELECT | TEXT | ASSET
   type String
 
@@ -148,6 +149,7 @@ model Cart {
 
   phoneNumber  String?
   socialHandle String?
+  socialChannel String?
 
   billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
   billingAddresssId String?
