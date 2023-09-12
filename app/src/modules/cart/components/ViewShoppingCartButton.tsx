@@ -4,6 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from "@/components/ui/use-toast"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Cake, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
@@ -38,6 +39,7 @@ const CartUpdateSchema = z.object({
 })
 
 const ViewShoppingCartButton: React.FC = () => {
+  const { toast } = useToast()
   const [stage, setStage] = React.useState<'cart' | 'checkout'>('cart');
   const { cart, removeLineItem, updateCart, completeCart } = useCartStore();
   const { data: shippingOptions } = useShippingOptions();
@@ -51,7 +53,7 @@ const ViewShoppingCartButton: React.FC = () => {
   }, [cart])
 
   // Delivery
-  const { register, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof CartUpdateSchema>>({ resolver: zodResolver(CartUpdateSchema) });
+  const { register, reset, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof CartUpdateSchema>>({ resolver: zodResolver(CartUpdateSchema) });
   const selectedPaymentOptionId = useWatch({ control, name: 'paymentOption' });
   const selectedPaymentOption = useMemo(() => paymentOptions?.find((paymentOption) => paymentOption.id === selectedPaymentOptionId), [paymentOptions, selectedPaymentOptionId]);
 
@@ -73,8 +75,11 @@ const ViewShoppingCartButton: React.FC = () => {
     });
     await completeCart();
     setStage('cart');
-    alert("訂單已送出！");
-  }, [completeCart, updateCart]);
+    reset();
+    toast({
+      title: "訂單已送出！",
+    })
+  }, [completeCart, reset, toast, updateCart]);
 
   return (
     <Sheet onOpenChange={(open) => { if (!open) setStage('cart') }}>
@@ -243,17 +248,21 @@ const ViewShoppingCartButton: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-6 inset-x-6">
-          {stage === 'checkout' ? (
-            <Button size="lg" className="w-full" type="submit">
-              <FormattedMessage id="shoppingCart.sheet.checkout" defaultMessage="進行結賬" />
+        {(cart?.items.length ?? 0) > 0 && (
+          <div className="absolute bottom-6 inset-x-6">
+            {stage === 'checkout' ? (
+              <Button size="lg" className="w-full" type="submit">
+                <FormattedMessage id="shoppingCart.sheet.checkout" defaultMessage="進行結賬" />
+              </Button>
+            ) : (
+            <Button size="lg" className="w-full" type="button" onClick={(event) => {
+              event.preventDefault(); setStage('checkout')
+            }}>
+              <FormattedMessage id="shoppingCart.sheet.confirm" defaultMessage="確認" />
             </Button>
-          ) : (
-          <Button size="lg" className="w-full" type="button" onClick={() => setStage('checkout')}>
-            <FormattedMessage id="shoppingCart.sheet.confirm" defaultMessage="確認" />
-          </Button>
-          )}
-        </div>
+            )}
+          </div>
+        )}
         </form>
       </SheetContent>
     </Sheet>

@@ -1,4 +1,5 @@
 import { MainNav } from '@/components/MainNav';
+import { Toaster } from "@/components/ui/toaster"
 import React, { type PropsWithChildren, Suspense } from 'react';
 
 const StorefrontLayout: React.FC<PropsWithChildren> = ({ children }) => {
@@ -11,6 +12,7 @@ const StorefrontLayout: React.FC<PropsWithChildren> = ({ children }) => {
       </div>
       <Suspense>
         <main className="flex-1 min-h-0">{children}</main>
+        <Toaster />
       </Suspense>
     </div>
   );
