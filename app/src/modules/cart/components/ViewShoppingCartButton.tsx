@@ -24,18 +24,22 @@ import { usePaymentOptions } from '../actions/getPaymentOptions';
 import PaymentOptionsSelect from './PaymentOptionsSelect';
 import { z } from 'zod';
 import SocialChannelSelect from './SocialChannelSelect';
+import { DatePicker } from '@/components/ui/date-picker';
+import TimeslotsSelect from './TimeslotsSelect';
+import dayjs from 'dayjs';
 
 const CartUpdateSchema = z.object({
-  name: z.string(),
-  phoneNumber: z.string(),
-  socialHandle: z.string(),
-  socialChannel: z.string(),
+  name: z.string().nonempty(),
+  phoneNumber: z.string().nonempty(),
+  socialHandle: z.string().nonempty(),
+  socialChannel: z.string().nonempty(),
   remark: z.string(),
-  address1: z.string(),
+  address1: z.string().nonempty(),
   address2: z.string(),
   paymentOption: z.string(),
   shippingOption: z.string(),
-  // deliveryDate: z.date(),
+  deliveryDate: z.date(),
+  deliveryHour: z.number(),
 })
 
 const ViewShoppingCartButton: React.FC = () => {
@@ -71,7 +75,7 @@ const ViewShoppingCartButton: React.FC = () => {
       },
       shippingOptionId: data.shippingOption,
       paymentOptionId: data.paymentOption,
-      deliveryDate: new Date(),
+      deliveryDate: dayjs(data.deliveryDate).set('hour', data.deliveryHour).set('minute', 0).toDate()
     });
     await completeCart();
     setStage('cart');
@@ -93,19 +97,19 @@ const ViewShoppingCartButton: React.FC = () => {
           <ShoppingCart size={16} />
         </Button>
       </SheetTrigger>
-      <SheetContent className={cn("!max-w-[100vw] transition-[min-width]", stage === "checkout" ? "w-[1000px]" : 'w-[400px] min-w-[400px]')}>
+      <SheetContent className={cn("!max-w-[100vw] transition-[width]", stage === "checkout" ? "w-[1000px]" : 'w-[400px]')}>
         <SheetHeader>
           <SheetTitle>
             <FormattedMessage id="shoppingCart.sheet.title" defaultMessage="購物車" />
           </SheetTitle>
         </SheetHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col-reverse sm:flex-row h-[calc(100%-100px)] overflow-y-auto">
+        <form className="h-full" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col-reverse sm:flex-row h-[calc(100%-100px)]">
           {stage === 'checkout' && (
-            <div className="flex-1 pr-4 border-r">
+            <div className="flex-1 pr-4 md:border-r overflow-y-auto">
                 <div className="grid gap-4 py-4">
                   <h3 className="font-bold"><FormattedMessage id="shoppingCart.sheet.checkout.contact" defaultMessage="聯絡方法" /></h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label className={cn(errors.name && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.name" defaultMessage="姓名" />
@@ -121,7 +125,7 @@ const ViewShoppingCartButton: React.FC = () => {
                     <Input {...register('phoneNumber', { required: true })} />
                   </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <Label className={cn(errors.socialHandle && 'text-destructive')}>
                         <FormattedMessage id="shoppingCart.sheet.checkout.socialHandle" defaultMessage="IG/FB 名稱" />
@@ -148,6 +152,26 @@ const ViewShoppingCartButton: React.FC = () => {
                     <Controller control={control} name="shippingOption" rules={{ required: true }} render={({field}) => (
                       <ShippingOptionsSelect options={shippingOptions ?? []} {...field} className="mt-1 w-full" />
                     )} />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label className={cn(errors.deliveryDate && 'text-destructive')}>
+                        <FormattedMessage id="shoppingCart.sheet.checkout.deliveryDate" defaultMessage="取貨日期" />
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Controller control={control} name="deliveryDate" rules={{ required: true }} render={({field}) => (
+                        <DatePicker {...field} className="mt-1 w-full" />
+                      )} />
+                    </div>
+                    <div>
+                      <Label className={cn(errors.shippingOption && 'text-destructive')}>
+                        <FormattedMessage id="shoppingCart.sheet.checkout.deliveryHour" defaultMessage="取貨時間" />
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Controller control={control} name="deliveryHour" rules={{ required: true }} render={({field}) => (
+                        <TimeslotsSelect {...field} className="mt-1 w-full" />
+                      )} />
+                    </div>
                   </div>
                   <div>
                     <Label className={cn((errors.address1 || errors.address2) && 'text-destructive')}>

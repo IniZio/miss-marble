@@ -33,15 +33,15 @@ export function MainNav({
 }: React.HTMLAttributes<HTMLElement>) {
   return (
     <nav
-      className={cn("px-4 w-full bg-opacity-30 bg-white rounded-2xl flex items-center space-x-4 lg:space-x-6", className)}
+      className={cn("px-4 w-full bg-opacity-30 rounded-2xl flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
       <MainNavLink href={Routes.IndexPage()}>
         <Image className="rounded-full" src={logoImage} alt="logo" width={64} height={64} />
       </MainNavLink>
-      <MainNavLink href={Routes.IndexPage()}>
+      {/* <MainNavLink href={Routes.IndexPage()}>
         <FormattedMessage id="mainnav.link.all" defaultMessage="全部蛋糕" />
-      </MainNavLink>
+      </MainNavLink> */}
       <div className="flex-1"></div>
       <ViewShoppingCartButton />
     </nav>
