@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import ProductFieldInput from './ProductFieldInput';
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils/ui';
+import { cn } from '@/lib/ui';
 
 export type ProductFieldValues = Record<string, unknown>;
 

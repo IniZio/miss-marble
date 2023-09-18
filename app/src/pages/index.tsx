@@ -1,5 +1,5 @@
 import { type GetServerSidePropsContext } from "next"
-import { createServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
+import { createServerSideHelpers } from '@/lib/createServerSideHelpers';
 import HomeScreen, { prefetch as prefetchHomeScreen } from '@/modules/homepage/screens/HomeScreen';
 
 export async function getServerSideProps(

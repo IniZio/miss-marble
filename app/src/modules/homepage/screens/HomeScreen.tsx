@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProductsGrid } from '../components/ProductsGrid';
-import { type ServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
+import { type ServerSideHelpers } from '@/lib/createServerSideHelpers';
 import { prefetchRecommendedProducts, useRecommendedProducts } from '../api/getRecommendedProducts';
 import StorefrontLayout from '@/layouts/Storefronts';
 

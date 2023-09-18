@@ -34,21 +34,20 @@ export const productRouter = createTRPCRouter({
 
     return product;
   }),
-  infinite: publicProcedure.input(
+  paginate: publicProcedure.input(
     z.object({
-      limit: z.number().min(1).max(100).nullish(),
-      cursor: z.string().nullish(),
-      filter: z.object({ collectionSlug: z.string().nullish() }).nullish(),
+      pageIndex: z.number().min(0).nullish(),
+      pageSize: z.number().min(1).max(100).nullish(),
     }),
   ).query(async ({ input, ctx }) => {
-    const limit = input.limit ?? 50;
-    const { cursor } = input;
+    const pageIndex = input.pageIndex ?? 0;
+    const pageSize = input.pageSize ?? 10;
 
     const totalCount = await ctx.prisma.product.count();
+    const pageCount = Math.ceil(totalCount / pageSize);
     const items = await ctx.prisma.product.findMany({
-      take: limit + 1, // get an extra item at the end which we'll use as next cursor
-      cursor: cursor ? { id: cursor } : undefined,
-      where: input.filter?.collectionSlug ? { collections: { some: { slug: input.filter.collectionSlug } } } : undefined,
+      skip: pageIndex * pageSize,
+      take: pageSize, // get an extra item at the end which we'll use as next cursor
       include: {
         name: true,
         gallery: true,
@@ -68,12 +67,11 @@ export const productRouter = createTRPCRouter({
         }
       }
     });
-    const nextCursor = items.length > limit ? items.pop()?.id : undefined;
 
     return {
       items,
+      pageCount,
       totalCount,
-      nextCursor,
     };
   }),
 });

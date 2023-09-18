@@ -3,7 +3,7 @@
 import * as React from "react"
 import { CalendarIcon } from "@radix-ui/react-icons"
 
-import { cn } from "@/lib/utils/ui"
+import { cn } from "@/lib/ui"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {

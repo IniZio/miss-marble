@@ -1,9 +1,12 @@
-import { type AppType } from "next/app";
+import { AppProps, type AppType } from "next/app";
 import { Inter, PT_Sans, Roboto, Noto_Sans } from 'next/font/google';
-import { api } from "@/lib/utils/api";
+import { api } from "@/lib/api";
 import "@/styles/globals.css";
 import I18nProvider from '@/providers/I18nProvider';
 import { CartContext, CartProvider } from '@/modules/cart/provider';
+import { NextPageWithLayout } from '@/lib/types';
+import { NextPage } from 'next';
+import { PropsWithChildren } from 'react';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +32,18 @@ const notosans = Noto_Sans({
   weight: ["400", "500", "700"],
 });
 
-const MyApp: AppType = ({ Component, pageProps }) => {
+type AppPropsWithLayout = AppProps & {
+  Component: NextPage | NextPageWithLayout
+}
+
+function hasLayout (Component: unknown): Component is NextPageWithLayout {
+  return typeof Component === 'function' && 'Layout' in Component
+}
+
+const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
+  const Layout = hasLayout(Component) ? Component.Layout : ((props: PropsWithChildren) => <>{props.children}</>)
+  console.log('Layout', Layout)
+
   return (
     <I18nProvider>
       <CartProvider>
@@ -39,7 +53,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           }
         `}
         </style>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </CartProvider>
     </I18nProvider>
   );

@@ -1,7 +1,7 @@
 import { type Metadata } from "next"
 
 import { MainNav } from "@/components/MainNav"
-import { api } from '@/lib/utils/api'
+import { api } from '@/lib/api'
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 }
 
 export default function DashboardPage() {
-  const { data: products } = api.product.paginate.useInfiniteQuery({}, { getNextPageParam: (lastPage) => lastPage.nextCursor });
+  const { data: products } = api.product.infinite.useInfiniteQuery({}, { getNextPageParam: (lastPage) => lastPage.nextCursor });
   // console.log(products?.pages.flatMap((page) => page.items))
 
   return (

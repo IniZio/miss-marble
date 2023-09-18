@@ -1,5 +1,5 @@
-import { api } from '@/lib/utils/api';
-import { type ServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
+import { api } from '@/lib/api';
+import { type ServerSideHelpers } from '@/lib/createServerSideHelpers';
 import { apiShippingOptionSchema } from '@/models/shipping';
 import { useMemo } from 'react';
 import { z } from 'zod';

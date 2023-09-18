@@ -1,4 +1,4 @@
-import { createServerSideHelpers } from '@/lib/utils/createServerSideHelpers';
+import { createServerSideHelpers } from '@/lib/createServerSideHelpers';
 import { prefetchProductDetail } from '@/modules/product/api/getProductDetail';
 import ProductDetailScreen from '@/modules/product/screens/ProductDetail';
 import { type GetServerSidePropsContext } from 'next';

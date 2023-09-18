@@ -12,7 +12,7 @@ import React, { useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCartStore } from '../actions/cart';
 import Translated from '@/components/Translated';
-import { cn } from '@/lib/utils/ui';
+import { cn } from '@/lib/ui';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Textarea } from '@/components/ui/textarea';

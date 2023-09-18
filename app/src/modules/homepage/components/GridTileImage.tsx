@@ -1,5 +1,5 @@
 import Translated from '@/components/Translated';
-import { cn } from '@/lib/utils/ui';
+import { cn } from '@/lib/ui';
 import { type Translation } from '@/models/translation';
 import Image from 'next/image';
 

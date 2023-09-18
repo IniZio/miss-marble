@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { cn } from "@/lib/utils/ui"
+import { cn } from "@/lib/ui"
 import logoImage from '@/assets/logo.png'
 import { FormattedMessage } from 'react-intl'
 import { Routes } from 'generated'

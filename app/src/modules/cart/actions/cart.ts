@@ -1,4 +1,4 @@
-import { api } from '@/lib/utils/api';
+import { api } from '@/lib/api';
 import { type LineItem } from '@/models/cart';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { CartContext } from '../provider';
