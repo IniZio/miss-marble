@@ -23,7 +23,7 @@ import { ModuleHeader, ModuleHeaderDescription, ModuleHeaderTitle } from '../../
 import { useGetProductFieldDetail } from '../actions/getProductFieldDetail';
 import ProductFieldForm from '../components/ProductFieldForm';
 import { useSaveProductField } from '../actions/saveProductField';
-import { EditAdminProductField } from '../models/productFIeld';
+import { type EditAdminProductField } from '../models/productFIeld';
 
 export interface CreateProductFieldProps {}
 
@@ -35,11 +35,12 @@ export interface CreateProductFieldProps {}
 
   const onSubmit = useCallback(async (data: EditAdminProductField) => {
     await saveProductField(data);
-    router.replace(Routes.AdminProductFieldListPage());
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await router.replace(Routes.AdminProductFieldListPage());
     toast({
       title: 'Product field created',
     });
-  }, [])
+  }, [router, saveProductField, toast])
 
   return (
     <div>

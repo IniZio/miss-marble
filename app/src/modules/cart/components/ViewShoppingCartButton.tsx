@@ -174,7 +174,7 @@ const ViewShoppingCartButton: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <Label className={cn((errors.address1 || errors.address2) && 'text-destructive')}>
+                    <Label className={cn((errors.address1 ?? errors.address2) && 'text-destructive')}>
                       <FormattedMessage id="shoppingCart.sheet.checkout.address" defaultMessage="地址" />
                       <span className="text-destructive">*</span>
                     </Label>
@@ -227,7 +227,7 @@ const ViewShoppingCartButton: React.FC = () => {
                     </div>
                     <div className="flex col-span-3">
                     <div className="flex-1">
-                      <Label className="font-bold text-lg"><Translated t={item.product.name} /></Label>
+                      <Label className="font-bold text-lg"><Translated t={item.product.name as unknown as any} /></Label>
                       {Object.values(item.productFieldValues
                         .filter((productFieldValue) => productFieldValue.fieldOptionAsset ?? productFieldValue.fieldOption ?? productFieldValue.fieldValue)
                         .reduce((acc, productFieldValue) => {

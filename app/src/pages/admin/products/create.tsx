@@ -1,5 +1,5 @@
 import { createServerSideHelpers } from '@/lib/createServerSideHelpers';
-import { NextPageWithLayout } from '@/lib/types';
+import { type NextPageWithLayout } from '@/lib/types';
 import { AdminLayout } from '@/modules/admin/layout';
 import CreateProductScreen from '@/modules/admin/modules/product/screens/CreateProduct.screen';
 import { type GetServerSidePropsContext } from 'next';

@@ -4,7 +4,7 @@ import { AdminLayout } from '../../../layout';
 import Translated from '@/components/Translated';
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { ListAdminProductField } from '../models/productFIeld';
+import { type ListAdminProductField } from '../models/productFIeld';
 import { FormattedMessage } from 'react-intl';
 import { type Translation } from '@/models/translation';
 import Image from 'next/image';

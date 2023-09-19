@@ -6,8 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  PaginationState,
-  OnChangeFn,
+  type PaginationState,
+  type OnChangeFn,
 } from "@tanstack/react-table"
 
 import {

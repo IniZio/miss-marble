@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { EditAdminProduct as EditAdminProduct, GetAdminProductDetail, editAdminProductSchema } from '../models/product';
+import { type EditAdminProduct as EditAdminProduct, type GetAdminProductDetail, editAdminProductSchema } from '../models/product';
 import { Button } from '@/components/ui/button';
 import { useGetProductFields } from '../../productField/actions/getProductFields';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -37,7 +37,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) =>
 
   const form = useForm<EditAdminProduct>({
     resolver: zodResolver(editAdminProductSchema),
-    defaultValues: mapper.parse(productDetail) ?? undefined,
+    defaultValues: productDetail ? mapper.parse(productDetail) : undefined,
   });
 
   const { isSubmitting, isSubmitSuccessful } = form.formState;
@@ -45,12 +45,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) =>
     if (isSubmitSuccessful) {
       form.reset(form.getValues());
     }
-  }, [isSubmitting]);
+  }, [form, isSubmitSuccessful, isSubmitting]);
   useEffect(() => {
     if (productDetail) {
       form.reset(mapper.parse(productDetail));
     }
-  }, [productDetail]);
+  }, [form, productDetail]);
 
   const fieldToProductFieldArray = useFieldArray({
     control: form.control,

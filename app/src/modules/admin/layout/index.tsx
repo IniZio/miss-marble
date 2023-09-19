@@ -1,7 +1,6 @@
 import Image from "next/image"
 import { type PropsWithChildren } from "react";
 
-import { Menu } from "./menu";
 import { MainNav } from './main-nav';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';

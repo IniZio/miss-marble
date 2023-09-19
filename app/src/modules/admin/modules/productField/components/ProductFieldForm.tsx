@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
-import { EditAdminProductField, GetAdminProductFieldDetail, editAdminProductFieldSchema } from '../models/productFIeld';
+import { type EditAdminProductField, type GetAdminProductFieldDetail, editAdminProductFieldSchema } from '../models/productFIeld';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductFieldType } from '@/models/admin/productField';
 import { X } from 'lucide-react';
@@ -35,12 +35,12 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ productFieldDetail,
     if (isSubmitSuccessful) {
       form.reset(form.getValues());
     }
-  }, [isSubmitting]);
+  }, [form, isSubmitSuccessful, isSubmitting]);
   useEffect(() => {
     if (productFieldDetail) {
       form.reset(productFieldDetail);
     }
-  }, [productFieldDetail]);
+  }, [form, productFieldDetail]);
 
   return (
     <Form {...form}>

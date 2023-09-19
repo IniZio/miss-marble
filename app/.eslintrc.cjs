@@ -18,7 +18,7 @@ const config = {
     "@typescript-eslint/no-misused-promises": "off",
     "react-hooks/exhaustive-deps": ["warn", {
       "additionalHooks": "(useLoadingCallback)",
-    }]
+    }],
 
     "@typescript-eslint/consistent-type-imports": [
       "warn",
@@ -27,10 +27,15 @@ const config = {
         fixStyle: "inline-type-imports",
       },
     ],
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    // "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
     "@typescript-eslint/no-unsafe-assignment": "off",
 
-    "formatjs/no-offset": "error"
+    "formatjs/no-offset": "error",
+
+    // FIXME: enable these rules
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-empty-interface": "off",
   },
 };
 

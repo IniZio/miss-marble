@@ -1,5 +1,5 @@
 import { Separator } from '@/components/ui/separator'
-import { PropsWithChildren } from 'react'
+import { type PropsWithChildren } from 'react'
 
 const ModuleHeader: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   return (

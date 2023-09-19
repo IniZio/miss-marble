@@ -1,5 +1,5 @@
 import { cn } from '@/lib/ui';
-import { VariantProps, cva } from 'class-variance-authority';
+import { type VariantProps, cva } from 'class-variance-authority';
 import React from 'react';
 
 const spinnerVariants = cva(

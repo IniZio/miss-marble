@@ -5,7 +5,7 @@ import { AdminLayout } from '../../../layout';
 import Translated from '@/components/Translated';
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { EditAdminProduct, editAdminProductSchema, type ListAdminProduct } from '../models/product';
+import { type EditAdminProduct, editAdminProductSchema, type ListAdminProduct } from '../models/product';
 import { DataTable } from '../components/DataTable';
 import { FormattedMessage } from 'react-intl';
 import { type Translation } from '@/models/translation';
@@ -43,7 +43,7 @@ export interface ProductDetailScreenProps {
     toast({
       title: 'Product updated',
     });
-  }, [])
+  }, [saveProduct, toast])
 
   if (!productDetail) {
     return <p>Loading...</p>

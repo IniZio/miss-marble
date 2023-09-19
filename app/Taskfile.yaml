@@ -11,6 +11,9 @@ tasks:
   prisma:
     pnpm prisma {{.CLI_ARGS}}
 
+  create-migration:
+    pnpm prisma migrate dev
+
   db:reset:
     cmds:
       - pnpm prisma db push --force-reset

@@ -1,12 +1,12 @@
-import { AppProps, type AppType } from "next/app";
+import { type AppProps, type AppType } from "next/app";
 import { Inter, PT_Sans, Roboto, Noto_Sans } from 'next/font/google';
 import { api } from "@/lib/api";
 import "@/styles/globals.css";
 import I18nProvider from '@/providers/I18nProvider';
 import { CartContext, CartProvider } from '@/modules/cart/provider';
-import { NextPageWithLayout } from '@/lib/types';
-import { NextPage } from 'next';
-import { PropsWithChildren } from 'react';
+import { type NextPageWithLayout } from '@/lib/types';
+import { type NextPage } from 'next';
+import { type PropsWithChildren } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({

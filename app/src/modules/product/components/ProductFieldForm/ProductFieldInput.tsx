@@ -4,7 +4,7 @@ import ProductFieldSelect from './ProductFieldSelect';
 import ProductFieldText from './ProductFieldText';
 import ProductFieldCheckboxes, { type ProductFieldCheckboxesValue } from './ProductFieldCheckboxes';
 import ProductFieldFile from './ProductFieldFile';
-import { AssetUpload } from '@/models/asset';
+import { type AssetUpload } from '@/models/asset';
 
 export interface ProductFieldInputProps {
   field: ProductField;

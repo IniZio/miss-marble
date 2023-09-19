@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
 import { type LineItem } from '@/models/cart';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CartContext } from '../provider';
 
 export type CartUpdate = Omit<Parameters<ReturnType<typeof api.cart.update.useMutation>['mutateAsync']>[0], 'cartId'>;

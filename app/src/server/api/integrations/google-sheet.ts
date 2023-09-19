@@ -11,7 +11,7 @@ const SCOPES = [
 // const spreadSheetId = '1E5v8Ilbl1Vk8d_hIGIJSjnmp_bS5K-MtT6QD9vhAGfM';
 const spreadSheetId = '1s_PcdLtCjsHOWZNEbZffH5uWsgdKqv-iaZcfqwt5pUI';
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
 const json = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'marble-service-account.json')) as unknown as string) as any;
 
 class GoogleSheetRespository {

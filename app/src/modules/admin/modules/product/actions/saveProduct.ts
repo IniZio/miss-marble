@@ -17,11 +17,11 @@ export function useSaveProduct() {
 
     if (isEditing) {
       await update.mutateAsync(input);
-      apiContext.admin.product.detail.invalidate(input.id);
+      await apiContext.admin.product.detail.invalidate(input.id);
     } else {
       await create.mutateAsync(input);
     }
 
-    apiContext.admin.product.paginate.invalidate();
-  }, [])
+    await apiContext.admin.product.paginate.invalidate();
+  }, [apiContext.admin.product.detail, apiContext.admin.product.paginate, create, update])
 }

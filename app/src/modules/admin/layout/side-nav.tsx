@@ -8,6 +8,7 @@ import { buttonVariants } from '@/components/ui/button'
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     href: any;
     title: string
   }[]
@@ -30,6 +31,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
           href={item.href}
           className={cn(
             buttonVariants({ variant: "ghost" }),
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             pathname.startsWith(item.href.pathname)
               ? "bg-muted hover:bg-muted"
               : "hover:bg-transparent hover:underline",

@@ -23,7 +23,7 @@ import { ModuleHeader, ModuleHeaderDescription, ModuleHeaderTitle } from '../../
 import { useGetProductFieldDetail } from '../actions/getProductFieldDetail';
 import ProductFieldForm from '../components/ProductFieldForm';
 import { useSaveProductField } from '../actions/saveProductField';
-import { EditAdminProductField } from '../models/productFIeld';
+import { type EditAdminProductField } from '../models/productFIeld';
 
 export interface ProductFieldDetailScreenProps {
   productFieldId: string;
@@ -41,7 +41,7 @@ export interface ProductFieldDetailScreenProps {
     toast({
       title: 'Product field updated',
     });
-  }, [])
+  }, [saveProductField, toast])
 
   if (!productFieldDetail) {
     return <p>Loading...</p>

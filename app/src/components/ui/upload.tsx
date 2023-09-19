@@ -1,6 +1,6 @@
 import React, { useCallback, type ChangeEvent } from 'react';
 import Image from 'next/image';
-import { Input, InputProps } from '@/components/ui/input';
+import { Input, type InputProps } from '@/components/ui/input';
 import { supabase } from '@/server/clients/supabase';
 import { api } from '@/lib/api';
 import { PUBLIC_STORAGE_BUCKET_NAME } from '@/constants';
@@ -26,16 +26,18 @@ const Upload = React.forwardRef<HTMLInputElement, UploadProps>((props, ref) => {
     );
 
     props.onChange(asset);
-  }, [presignUpload]);
+  }, [presignUpload, props]);
 
   return (
     <div className="flex items-center gap-x-4">
       {isLoading ? <Spinner /> : (
         props.value?.url && <Image alt="product" src={props.value?.url} height={64} width={64} />
       )}
-      <Input type="file" onChange={handleChange} />
+      <Input type="file" ref={ref} onChange={handleChange} />
     </div>
   );
 });
+
+Upload.displayName = 'Upload';
 
 export default Upload
