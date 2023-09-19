@@ -8,11 +8,10 @@ export const productRouter = createTRPCRouter({
     z.object({
       name: translationInputSchema,
       gallery: z.array(assetInputSchema),
-      // fields: z.array(z.object({
-      //   fieldId: z.string(),
-      //   value: z.string(),
-      //   required: z.boolean().default(false),
-      // })),
+      fields: z.array(z.object({
+        fieldId: z.string(),
+        required: z.boolean().default(false),
+      })),
     }),
   ).mutation(async ({ input, ctx }) => {
     const product = await ctx.prisma.product.create({
@@ -25,17 +24,16 @@ export const productRouter = createTRPCRouter({
             id: asset.id,
           })),
         },
-        // fields: {
-        //   create: input.fields.map(({ fieldId, value }) => ({
-        //     field: {
-        //       connect: {
-        //         id: fieldId,
-        //       },
-        //     },
-        //     value,
-        //     required: false,
-        //   })),
-        // },
+        fields: {
+          create: input.fields.map(({ fieldId, required }) => ({
+            field: {
+              connect: {
+                id: fieldId,
+              },
+            },
+            required,
+          })),
+        },
       },
       include: {
         name: true,
@@ -64,11 +62,10 @@ export const productRouter = createTRPCRouter({
       id: z.string(),
       name: translationInputSchema,
       gallery: z.array(assetInputSchema),
-      // fields: z.array(z.object({
-      //   fieldId: z.string(),
-      //   value: z.string(),
-      //   required: z.boolean().default(false),
-      // })),
+      fields: z.array(z.object({
+        fieldId: z.string(),
+        required: z.boolean().default(false),
+      })),
     }),
   ).mutation(async ({ input, ctx }) => {
     const product = await ctx.prisma.product.update({
@@ -82,17 +79,27 @@ export const productRouter = createTRPCRouter({
             id: asset.id,
           })),
         },
-        // fields: {
-        //   create: input.fields.map(({ fieldId, value }) => ({
-        //     field: {
-        //       connect: {
-        //         id: fieldId,
-        //       },
-        //     },
-        //     value,
-        //     required: false,
-        //   })),
-        // },
+        fields: {
+          upsert: input.fields.map(({ fieldId, required }) => ({
+            where: {
+              productId_fieldId: {
+                fieldId,
+                productId: input.id,
+              },
+            },
+            create: {
+              field: {
+                connect: {
+                  id: fieldId,
+                },
+              },
+              required,
+            },
+            update: {
+              required,
+            },
+          })),
+        },
       },
       include: {
         name: true,

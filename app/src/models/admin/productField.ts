@@ -19,7 +19,6 @@ export const apiListAdminProductFieldSchema = z.object({
   alias: z.string(),
   type: z.nativeEnum(ProductFieldType),
   name: apiTranslationSchema,
-  // fieldOptions: z.array(apiAdminProductFieldOptionSchema),
 })
 
 export type ApiListAdminProductField = z.infer<typeof apiListAdminProductFieldSchema>;
@@ -34,6 +33,3 @@ export const apiAdminProductFieldDetailSchema = z.object({
 })
 
 export type ApiAdminProductFieldDetail = z.infer<typeof apiAdminProductFieldDetailSchema>;
-
-export type ApiCreateAdminProductField = Parameters<ReturnType<typeof api.admin.productField.create.useMutation>['mutateAsync']>[0];
-export type ApiEditAdminProductField = Parameters<ReturnType<typeof api.admin.productField.create.useMutation>['mutateAsync']>[0];

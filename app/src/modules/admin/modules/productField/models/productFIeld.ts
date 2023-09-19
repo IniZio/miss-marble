@@ -13,7 +13,6 @@ export const listAdminProductFieldSchema = apiListAdminProductFieldSchema
       alias: field.alias,
       type: field.type,
       name: field.name,
-      options: field.fieldOptions,
     }
   })
 

@@ -152,7 +152,8 @@ export const productFieldRouter = createTRPCRouter({
   paginate: publicProcedure.input(
     z.object({
       pageIndex: z.number().min(0).nullish(),
-      pageSize: z.number().min(1).max(100).nullish(),
+      // FIXME: Set back to 100 after handled in admin product form
+      pageSize: z.number().min(1).max(1000).nullish(),
     }),
   ).query(async ({ input, ctx }) => {
     const pageIndex = input.pageIndex ?? 0;
