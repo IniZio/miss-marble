@@ -4,6 +4,7 @@ import { NextPage, type GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { AdminLayout } from '@/modules/admin/layout';
 import ProductListScreen from '@/modules/admin/modules/product/screens/ProductList.screen';
+import ProductFieldListScreen from '@/modules/admin/modules/productField/screens/ProductFieldList.screen';
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext
@@ -17,14 +18,14 @@ export async function getServerSideProps(
   }
 }
 
-const AdminProductsPage: NextPageWithLayout = () => {
+const AdminProductFieldListPage: NextPageWithLayout = () => {
   const router = useRouter()
 
   return (
-    <ProductListScreen />
+    <ProductFieldListScreen />
   );
 }
 
-AdminProductsPage.Layout = AdminLayout
+AdminProductFieldListPage.Layout = AdminLayout
 
-export default AdminProductsPage;
+export default AdminProductFieldListPage;

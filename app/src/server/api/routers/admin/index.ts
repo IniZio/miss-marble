@@ -8,10 +8,12 @@ import { type Prisma } from '@prisma/client';
 import { type JsonObject } from '@prisma/client/runtime/library';
 import googlesheet from '../../integrations/google-sheet';
 import { productRouter } from './product';
+import { productFieldRouter } from './productField';
 
 day.extend(utc);
 day.extend(timezone);
 
 export const adminRouter = createTRPCRouter({
   product: productRouter,
+  productField: productFieldRouter,
 });

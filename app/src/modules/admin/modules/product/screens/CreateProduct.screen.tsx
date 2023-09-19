@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useGetProducts } from '../actions/getProducts';
 import { NextPageWithLayout } from '@/lib/types';
-import { AdminLayout } from '../../layout';
+import { AdminLayout } from '../../../layout';
 import Translated from '@/components/Translated';
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -23,7 +23,7 @@ import Spinner from '@/components/ui/spinner';
 import { z } from 'zod';
 import ProductForm from '../components/ProductForm';
 import { useToast } from '@/components/ui/use-toast';
-import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../components/module-header';
+import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../../components/module-header';
 
 export interface ProductDetailScreenProps {
 }

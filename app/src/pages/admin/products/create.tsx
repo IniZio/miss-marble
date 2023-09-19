@@ -1,7 +1,7 @@
 import { createServerSideHelpers } from '@/lib/createServerSideHelpers';
 import { NextPageWithLayout } from '@/lib/types';
 import { AdminLayout } from '@/modules/admin/layout';
-import CreateProductScreen from '@/modules/admin/screens/products/CreateProduct.screen';
+import CreateProductScreen from '@/modules/admin/modules/product/screens/CreateProduct.screen';
 import { type GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';

@@ -3,6 +3,9 @@ import type { RouteUrlObject } from "next/types"
 
 export const Routes: {
   AdminIndexPage(query?: ParsedUrlQueryInput): RouteUrlObject;
+  AdminProductFieldDetailPage(query: { id: string | number } & ParsedUrlQueryInput): RouteUrlObject;
+  AdminCreateProductFieldPage(query?: ParsedUrlQueryInput): RouteUrlObject;
+  AdminProductFieldListPage(query?: ParsedUrlQueryInput): RouteUrlObject;
   AdminProductDetailPage(query: { id: string | number } & ParsedUrlQueryInput): RouteUrlObject;
   AdminCreateProductPage(query?: ParsedUrlQueryInput): RouteUrlObject;
   AdminProductsPage(query?: ParsedUrlQueryInput): RouteUrlObject;

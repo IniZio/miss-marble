@@ -6,14 +6,12 @@ import ProductDetailScreen from '@/modules/admin/modules/product/screens/Product
 import { type GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
+import ProductFieldDetailScreen from '@/modules/admin/modules/productField/screens/ProductFieldDetail.screen';
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext
 ) {
   const serverSideHelpers = await createServerSideHelpers(context);
-
-  const productId = context.params?.id as string;
-  await prefetchProductDetail(serverSideHelpers, productId);
 
   return {
     props: {
@@ -22,14 +20,14 @@ export async function getServerSideProps(
   }
 }
 
-const AdminProductDetailPage: NextPageWithLayout = () => {
+const AdminProductFieldDetailPage: NextPageWithLayout = () => {
   const router = useRouter()
 
   return (
-    <ProductDetailScreen productId={router.query.id as string} />
+    <ProductFieldDetailScreen productFieldId={router.query.id as string} />
   );
 }
 
-AdminProductDetailPage.Layout = AdminLayout
+AdminProductFieldDetailPage.Layout = AdminLayout
 
-export default AdminProductDetailPage;
+export default AdminProductFieldDetailPage;

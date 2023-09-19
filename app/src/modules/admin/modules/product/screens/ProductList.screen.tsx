@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGetProducts } from '../actions/getProducts';
 import { NextPageWithLayout } from '@/lib/types';
-import { AdminLayout } from '../../layout';
+import { AdminLayout } from '../../../layout';
 import Translated from '@/components/Translated';
 
 import { type ColumnDef } from "@tanstack/react-table"
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Routes } from 'generated';
 import { Plus } from 'lucide-react';
-import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../components/module-header';
+import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../../components/module-header';
 
 const columns: ColumnDef<ListAdminProduct>[] = [
   {

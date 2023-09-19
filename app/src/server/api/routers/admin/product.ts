@@ -1,15 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from '@trpc/server';
-
-const translationInputSchema = z.object({
-  id: z.string().optional(),
-  text: z.record(z.string()),
-});
-
-const assetInputSchema = z.object({
-  id: z.string(),
-});
+import { translationInputSchema, assetInputSchema } from './common';
 
 export const productRouter = createTRPCRouter({
   create: publicProcedure.input(

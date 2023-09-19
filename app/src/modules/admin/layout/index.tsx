@@ -7,11 +7,16 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { SidebarNav } from './side-nav';
 import { Toaster } from '@/components/ui/toaster';
+import { Routes } from 'generated';
 
 const sidebarNavItems = [
   {
     title: "Products",
-    href: "/admin/products",
+    href: Routes.AdminProductsPage(),
+  },
+  {
+    title: "Product Fields",
+    href: Routes.AdminProductFieldListPage(),
   }
 ]
 
