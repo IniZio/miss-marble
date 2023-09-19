@@ -1,6 +1,8 @@
 import { apiAdminProductSchema } from '@/models/admin/product'
-import { assetSchema } from '@/models/asset'
-import { type z } from 'zod'
+import { apiAssetUploadSchema, assetSchema } from '@/models/asset'
+import { apiTranslationInputSchema, apiTranslationSchema } from '@/models/translation'
+import { productDetailFieldSchema } from '@/modules/product/models/productDetail'
+import { z } from 'zod'
 
 export const listAdminProductSchema = apiAdminProductSchema
   .transform((product) => {
@@ -12,3 +14,22 @@ export const listAdminProductSchema = apiAdminProductSchema
   })
 
 export type ListAdminProduct = z.infer<typeof listAdminProductSchema>
+
+export const getAdminProductDetailSchema = apiAdminProductSchema
+  .transform((product) => {
+    return {
+      id: product.id,
+      name: product.name,
+      gallery: z.array(assetSchema).parse(product.gallery),
+      fields: z.array(productDetailFieldSchema).parse(product.fields),
+    }
+  });
+
+export const editAdminProductSchema = z.object({
+  id: z.string().optional(),
+  name: apiTranslationInputSchema,
+  gallery: z.array(apiAssetUploadSchema).default([]),
+  // fields: z.array(productDetailFieldSchema),
+});
+
+export type EditAdminProduct = z.infer<typeof editAdminProductSchema>;

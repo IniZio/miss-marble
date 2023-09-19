@@ -10,13 +10,19 @@ import { DataTable } from '../components/DataTable';
 import { FormattedMessage } from 'react-intl';
 import { type Translation } from '@/models/translation';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Routes } from 'generated';
+import { Plus } from 'lucide-react';
+import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../components/module-header';
 
 const columns: ColumnDef<ListAdminProduct>[] = [
   {
-    accessorKey: 'name',
+    id: 'name',
+    accessorFn: (row) => row,
     header: () => <FormattedMessage id="admin.productList.header.name" defaultMessage="Name" />,
-    cell: ({ cell }) => <Translated t={cell.getValue<Translation>()} />,
-    size: 100,
+    cell: ({ cell }) => <Button variant="link" asChild><Link href={Routes.AdminProductDetailPage({ id: cell.getValue<ListAdminProduct>?.().id })}><Translated t={cell.getValue<ListAdminProduct>().name} /></Link></Button>,
+    size: 75,
   },
   {
     accessorKey: "image.url",
@@ -26,25 +32,22 @@ const columns: ColumnDef<ListAdminProduct>[] = [
 ]
 
 const ProductListScreen: React.FC = () => {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 1 });
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const { data: productsPage } = useGetProducts(pagination);
 
   return (
     <div>
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Products</h2>
-        <div className="flex items-center space-x-2">
-        </div>
-      </div>
-      {/* <ul>
-        {data?.map((product) => (
-          <li key={product.id}>
-            <h2><Translated t={product.name}/></h2>
-            <p>{product.id}</p>
-          </li>
-        ))}
-      </ul> */}
-      <div className="mt-4">
+      <ModuleHeader>
+        <ModuleHeaderTitle>Products</ModuleHeaderTitle>
+        <ModuleHeaderActions>
+          <Button asChild>
+            <Link href={Routes.AdminCreateProductPage()}>
+              <Plus width={16} height={16} /> Create
+            </Link>
+          </Button>
+        </ModuleHeaderActions>
+      </ModuleHeader>
+      <div className="mt-4 max-w-2xl">
         {productsPage.items ? (
           <DataTable
             columns={columns}

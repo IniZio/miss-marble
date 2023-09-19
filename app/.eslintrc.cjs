@@ -16,6 +16,9 @@ const config = {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/no-misused-promises": "off",
+    "react-hooks/exhaustive-deps": ["warn", {
+      "additionalHooks": "(useLoadingCallback)",
+    }]
 
     "@typescript-eslint/consistent-type-imports": [
       "warn",

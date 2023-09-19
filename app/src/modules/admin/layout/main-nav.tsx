@@ -1,4 +1,5 @@
 import { cn } from '@/lib/ui'
+import { Routes } from 'generated'
 import Link from "next/link"
 
 export function MainNav({
@@ -11,28 +12,10 @@ export function MainNav({
       {...props}
     >
       <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium transition-colors hover:text-primary"
+        href={Routes.AdminIndexPage()}
+        className="text-lg font-semibold transition-colors hover:text-primary"
       >
-        Overview
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Customers
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Products
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Settings
+        Admin
       </Link>
     </nav>
   )

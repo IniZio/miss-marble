@@ -7,6 +7,7 @@ import { CartContext, CartProvider } from '@/modules/cart/provider';
 import { NextPageWithLayout } from '@/lib/types';
 import { NextPage } from 'next';
 import { PropsWithChildren } from 'react';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({
   subsets: ['latin'],

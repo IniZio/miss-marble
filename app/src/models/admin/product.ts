@@ -6,7 +6,7 @@ import { apiTranslationSchema } from '../translation';
 export const apiAdminProductSchema = z.object({
   id: z.string(),
   name: apiTranslationSchema,
-  gallery: z.array(apiAssetSchema).nullish(),
+  gallery: z.array(apiAssetSchema),
   fields: z.array(apiProductFieldToProductSchema)
 })
 
