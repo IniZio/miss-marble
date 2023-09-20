@@ -9,6 +9,7 @@ import ProductFieldForm, { type ProductFieldValues } from '../components/Product
 import { Separator } from '@/components/ui/separator';
 import { useCartStore } from '../../cart/actions/cart';
 import { type AssetUpload } from '@/models/asset';
+import { useToast } from '@/components/ui/use-toast';
 
 export const prefetch = async (helpers: ServerSideHelpers, productId: string) => {
   await prefetchProductDetail(helpers, productId);
@@ -17,6 +18,8 @@ export const prefetch = async (helpers: ServerSideHelpers, productId: string) =>
 const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
   const { data: productDetail } = useProductDetail(productId)
   const { addToCart } = useCartStore();
+
+  const { toast } = useToast();
 
   const handleAddToCart = useCallback(async (values: ProductFieldValues) => {
     const fieldValues =  Object.entries(values).reduce((acc, [fieldId, value]) => {
@@ -66,7 +69,10 @@ const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
       productFieldValues: fieldValues,
       quantity: 1,
     });
-  }, [addToCart, productDetail, productId])
+    toast({
+      title: '已加入購物車'
+    });
+  }, [addToCart, productDetail, productId, toast])
 
   if (productDetail === null) {
     return null;

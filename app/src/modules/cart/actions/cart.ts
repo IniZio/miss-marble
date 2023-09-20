@@ -18,7 +18,7 @@ export function useCartStore() {
   const complete = api.cart.complete.useMutation();
 
   const addToCart = useCallback(async (lineItem: LineItem) => {
-    if (cartId) {
+    if (cartId && cart) {
       const newCart = await addLineItem.mutateAsync({
         cartId,
         item: lineItem,
@@ -34,7 +34,7 @@ export function useCartStore() {
       currencyCode: 'hkd',
     });
     setCartId(newCart.id);
-  }, [addLineItem, apiContext.cart.get, cartId, createCart, refetchCart, setCartId]);
+  }, [addLineItem, apiContext.cart.get, cart, cartId, createCart, refetchCart, setCartId]);
 
   const updateCart = useCallback((cartUpdate: CartUpdate) => {
     if (!cart) {

@@ -6,12 +6,13 @@ import ProductFieldInput from './ProductFieldInput';
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/ui';
+import { useLoadingCallback } from '@/hooks/useLoadingCallback';
 
 export type ProductFieldValues = Record<string, unknown>;
 
 interface ProductFieldFormProps {
   fields: ProductField[];
-  onAddToCart: (values: ProductFieldValues) => void;
+  onAddToCart: (values: ProductFieldValues) => Promise<void>;
 }
 
 const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart }) => {
@@ -32,9 +33,9 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     , {} as Record<string, any>),
   });
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((data: unknown) => {
+  const [onSubmit, { isLoading: isSubmitting }] = useLoadingCallback(async (data: unknown) => {
     console.log('=== submit', data);
-    onAddToCart(data as ProductFieldValues);
+    await onAddToCart(data as ProductFieldValues);
   }, [onAddToCart]);
 
   return (
@@ -57,7 +58,7 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart
           </p> */}
         </div>
       ))}
-      <Button className="!mt-4" type="submit">
+      <Button className="!mt-4" type="submit" isLoading={isSubmitting}>
         <FormattedMessage id="productDetail.addToCart" defaultMessage="添加到購物車" />
       </Button>
     </form>
