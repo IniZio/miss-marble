@@ -46,3 +46,7 @@
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
 /app/marble-service-account.json
+/environments/dev/.blackbox/pubring.gpg~
+/environments/dev/.blackbox/pubring.kbx~
+/environments/dev/.blackbox/secring.gpg
+/environments/dev/app/.env

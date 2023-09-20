@@ -1,0 +1,27 @@
+name: CD
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+      name: Deploy app
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Install asdf & tools
+          uses: asdf-vm/actions/install@v2
+
+        # - name: Decrypt secrets
+        #   uses: jrmcdonald/blackbox-github-actions@v0.2.0
+        #   with:
+        #     bb_actions_subcommand: postdeploy
+        #   env:
+        #     BLACKBOX_PUBKEY: "BCD"
+        #     BLACKBOX_PRIVKEY: "ABC"

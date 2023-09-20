@@ -1,7 +1,7 @@
 import React, { useCallback, type ChangeEvent } from 'react';
 import { type ProductDetailField } from '../../models/productDetail';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/server/clients/supabase';
+import { getSupabase } from '@/server/clients/supabase';
 import { api } from '@/lib/api';
 import { PUBLIC_STORAGE_BUCKET_NAME } from '@/constants';
 import { type AssetUpload } from '@/models/asset';
@@ -18,7 +18,7 @@ const ProductFieldFile: React.FC<ProductFieldFileProps> = ({ field, onChange }) 
   const handleChange = useCallback(async (ev: ChangeEvent<HTMLInputElement>) => {
     const file = ev.target.files![0]!;
     const { presignedUpload, asset } = await presignUpload.mutateAsync({ mimeType: file.type })
-    await supabase.storage.from(PUBLIC_STORAGE_BUCKET_NAME).uploadToSignedUrl(
+    await getSupabase().storage.from(PUBLIC_STORAGE_BUCKET_NAME).uploadToSignedUrl(
       presignedUpload.path,
       presignedUpload.token,
       file

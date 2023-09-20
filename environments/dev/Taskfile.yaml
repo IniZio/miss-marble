@@ -1,0 +1,25 @@
+version: '3'
+
+output: prefixed
+
+env:
+  BLACKBOXDATA: environments/dev/.blackbox
+
+tasks:
+  setup-env:
+    cmds:
+      - fly launch --config app/fly.toml --force-machines --build-only ../../../app
+
+  decrypt:
+    blackbox_decrypt_all_files
+
+  deploy:
+    cmds:
+      - task: decrypt
+      - task: deploy:app
+
+  deploy:app:
+    dir: app
+    cmds:
+      - fly --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < .env
+      - fly --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app

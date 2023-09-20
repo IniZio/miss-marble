@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import mime from 'mime-types';
-import { supabase } from '@/server/clients/supabase';
+import { getSupabase } from '@/server/clients/supabase';
 
 export const readAsset = (filename: string): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -20,15 +20,15 @@ export const uploadPublicAsset = async (filename: string): Promise<{
   url: string,
 }> => {
   const bucketName = 'missmarble'
-  await supabase.storage.createBucket(bucketName, { public: true });
-  await supabase.storage
+  await getSupabase().storage.createBucket(bucketName, { public: true });
+  await getSupabase().storage
     .from(bucketName)
     .upload(
       filename,
       await readAsset(filename),
       { upsert: true, contentType: mime.contentType(filename) as string }
     );
-  const assetUrl = supabase.storage.from(bucketName).getPublicUrl(filename);
+  const assetUrl = getSupabase().storage.from(bucketName).getPublicUrl(filename);
   return {
     provider: 'supabase',
     mimeType: 'image/jpeg',
