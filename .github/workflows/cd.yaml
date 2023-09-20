@@ -3,10 +3,6 @@ name: CD
 on:
   workflow_call:
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   deploy:
       name: Deploy app
@@ -18,10 +14,21 @@ jobs:
         - name: Install asdf & tools
           uses: asdf-vm/actions/install@v2
 
-        # - name: Decrypt secrets
-        #   uses: jrmcdonald/blackbox-github-actions@v0.2.0
-        #   with:
-        #     bb_actions_subcommand: postdeploy
-        #   env:
-        #     BLACKBOX_PUBKEY: "BCD"
-        #     BLACKBOX_PRIVKEY: "ABC"
+        - name: Install blackbox
+          run:  ${PWD}/.github/tools/install-blackbox.sh
+
+        - name: Install flyctl
+          uses: superfly/flyctl-actions/setup-flyctl@1.4
+
+        - name: Import GPG keys
+          run: |
+            echo -e "${BLACKBOX_PUBKEY}" | gpg --import --no-tty --batch --yes
+            echo -e "${BLACKBOX_PRIVKEY}" | gpg --import --no-tty --batch --yes
+          env:
+            BLACKBOX_PUBKEY: ${{ secrets.BLACKBOX_PUBKEY }}
+            BLACKBOX_PRIVKEY: ${{ secrets.BLACKBOX_PRIVKEY }}
+
+        - name: Deploy app
+          run: task -d environments/dev deploy
+          env:
+            FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

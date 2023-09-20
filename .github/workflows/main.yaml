@@ -11,3 +11,4 @@ concurrency:
 jobs:
   ci:
     uses: ./.github/workflows/cd.yaml
+    secrets: inherit
