@@ -2,18 +2,17 @@ version: '3'
 
 output: prefixed
 
-env:
-  BLACKBOXDATA: environments/dev/.blackbox
-
 tasks:
   setup-env:
     cmds:
       - flyctl launch --config app/fly.toml --force-machines --build-only ../../../app
 
-  decrypt:
+  decrypt: |
+    BLACKBOXDATA=environments/dev/.blackbox blackbox_decrypt_all_files
     blackbox_decrypt_all_files
 
-  shred:
+  shred: |
+    BLACKBOXDATA=environments/dev/.blackbox blackbox_shred_all_files
     blackbox_shred_all_files
 
   deploy:
