@@ -4,8 +4,9 @@ output: prefixed
 
 tasks:
   setup-env:
+    interactive: true
     cmds:
-      - flyctl launch --config app/fly.toml --force-machines --build-only ../../../app
+      - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
 
   decrypt: |
     BLACKBOXDATA=environments/dev/.blackbox blackbox_decrypt_all_files
