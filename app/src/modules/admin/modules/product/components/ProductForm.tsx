@@ -26,6 +26,7 @@ export interface ProductFormProps {
 
 const mapper = productDetailSchema.transform(product => ({
   ...product,
+  gallery: product.image ? [product.image] : [],
   fields: product.fields.map(field => ({
     fieldId: field.id,
     required: field.required,

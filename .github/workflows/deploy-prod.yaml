@@ -1,9 +1,9 @@
-name: main
+name: deploy/prod
 
 on:
   push:
     branches:
-      - "main"
+      - "deploy/prod"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,4 +14,4 @@ jobs:
     uses: ./.github/workflows/cd.yaml
     secrets: inherit
     with:
-      environment: dev
+      environment: prod

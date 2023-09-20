@@ -9,11 +9,11 @@ tasks:
       - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
 
   decrypt: |
-    BLACKBOXDATA=environments/dev/.blackbox blackbox_decrypt_all_files
+    BLACKBOXDATA=environments/prod/.blackbox blackbox_decrypt_all_files
     blackbox_decrypt_all_files
 
   shred: |
-    BLACKBOXDATA=environments/dev/.blackbox blackbox_shred_all_files
+    BLACKBOXDATA=environments/prod/.blackbox blackbox_shred_all_files
     blackbox_shred_all_files
 
   deploy:

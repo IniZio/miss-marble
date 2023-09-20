@@ -54,6 +54,7 @@
     "react-hook-form": "^7.45.4",
     "react-intl": "^6.4.4",
     "react-use": "^17.4.0",
+    "sharp": "^0.32.6",
     "superjson": "^1.13.1",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.6",

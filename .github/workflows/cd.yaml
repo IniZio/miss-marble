@@ -1,7 +1,11 @@
-name: CD
+name: cd
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -29,6 +33,6 @@ jobs:
             BLACKBOX_PRIVKEY: ${{ secrets.BLACKBOX_PRIVKEY }}
 
         - name: Deploy app
-          run: task -d environments/dev deploy
+          run: task -d environments/${{ inputs.environment }} deploy
           env:
             FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

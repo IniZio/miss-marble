@@ -1,7 +1,7 @@
 import React, { useCallback, type ChangeEvent } from 'react';
 import { type ProductDetailField } from '../../models/productDetail';
 import { Input } from '@/components/ui/input';
-import { getSupabase } from '@/server/clients/supabase';
+import { getSupabase } from '@/clients/supabase';
 import { api } from '@/lib/api';
 import { PUBLIC_STORAGE_BUCKET_NAME } from '@/constants';
 import { type AssetUpload } from '@/models/asset';

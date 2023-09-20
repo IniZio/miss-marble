@@ -8,9 +8,9 @@ const prisma = new PrismaClient()
 
 async function main() {
   const shared = await seedShared(prisma);
-  const productFields = await seedProductFields(prisma);
-  const products = await seedProducts(prisma, productFields);
-  const collections = await seedCollections(prisma, products);
+  // const productFields = await seedProductFields(prisma);
+  // const products = await seedProducts(prisma, productFields);
+  // const collections = await seedCollections(prisma, products);
 }
 
 main()

@@ -8,6 +8,9 @@ tasks:
   dev:
     pnpm dev
 
+  start:
+    pnpm start
+
   prisma:
     pnpm prisma {{.CLI_ARGS}}
 
