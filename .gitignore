@@ -50,3 +50,10 @@
 /environments/dev/.blackbox/pubring.kbx~
 /environments/dev/.blackbox/secring.gpg
 /environments/dev/app/.env
+/environments/prod/pubring.gpg~
+/environments/prod/pubring.kbx~
+/environments/prod/secring.gpg
+/environments/prod/.blackbox/pubring.gpg~
+/environments/prod/.blackbox/pubring.kbx~
+/environments/prod/.blackbox/secring.gpg
+/environments/prod/app/.env
