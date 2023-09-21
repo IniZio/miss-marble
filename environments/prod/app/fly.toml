@@ -4,7 +4,7 @@
 #
 
 app = "missmarble"
-primary_region = "hkg"
+primary_region = "iad"
 
 [deploy]
   release_command = "pnpm prisma migrate deploy"
