@@ -7,6 +7,7 @@ tasks:
     interactive: true
     cmds:
       - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
+      - cd app && fly scale memory 512
 
   decrypt: |
     BLACKBOXDATA=environments/prod/.blackbox blackbox_decrypt_all_files
