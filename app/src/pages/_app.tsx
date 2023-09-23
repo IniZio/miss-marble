@@ -43,7 +43,6 @@ function hasLayout (Component: unknown): Component is NextPageWithLayout {
 
 const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
   const Layout = hasLayout(Component) ? Component.Layout : ((props: PropsWithChildren) => <>{props.children}</>)
-  console.log('Layout', Layout)
 
   return (
     <I18nProvider>

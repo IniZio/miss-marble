@@ -7,6 +7,7 @@ import { prisma } from '@/server/db';
 import { type Prisma } from '@prisma/client';
 import { type JsonObject } from '@prisma/client/runtime/library';
 import googlesheet from '../integrations/google-sheet';
+import { TRPCError } from '@trpc/server';
 
 day.extend(utc);
 day.extend(timezone);
@@ -119,7 +120,7 @@ async function constructLineItem(inputs: LineItemInput[], currencyCode: string) 
 }
 
 async function queryCart(cartId: string) {
-  return prisma.cart.findUniqueOrThrow({
+  const cart = await prisma.cart.findUnique({
     where: {
       id: cartId,
     },
@@ -159,6 +160,14 @@ async function queryCart(cartId: string) {
       },
     },
   });
+
+  if  (!cart) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+    });
+  }
+
+  return cart;
 }
 
 async function recalculateCart(cartId : string) {
@@ -439,5 +448,49 @@ export const cartRouter = createTRPCRouter({
           })
           await googlesheet.insertRow(row);
         }
+
+        await prisma.order.create({
+          data: {
+            cart: {
+              connect: {
+                id: input,
+              },
+            },
+            currency: {
+              connect: {
+                code: cart.currencyCode,
+              },
+            },
+            subtotal: cart.subtotal,
+            discountTotal: cart.discountTotal,
+            shippingTotal: cart.shippingTotal,
+            total: cart.total,
+            billingAddress: cart.billingAddress?.id ? {
+              connect: {
+                id: cart.billingAddress?.id,
+              }
+            } : undefined,
+            shippingAddress: cart.shippingAddress?.id ? {
+              connect: {
+                id: cart.shippingAddress?.id,
+              }
+            } : undefined,
+            shippingOption: cart.shippingOption?.id ? {
+              connect: {
+                id: cart.shippingOption?.id,
+              },
+            } : undefined,
+            deliveryDate: cart.deliveryDate,
+            phoneNumber: cart.phoneNumber,
+            socialChannel: cart.socialChannel,
+            socialHandle: cart.socialHandle,
+            remark: cart.remark,
+            items: {
+              connect: cart.items.map(item => ({
+                id: item.id,
+              })),
+            },
+          },
+        });
       }),
 });

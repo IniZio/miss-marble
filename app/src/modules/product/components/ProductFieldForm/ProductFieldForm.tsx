@@ -34,7 +34,6 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart
     , {} as Record<string, any>),
   });
   const [onSubmit, { isLoading: isSubmitting }] = useLoadingCallback(async (data: unknown) => {
-    console.log('=== submit', data);
     await onAddToCart(data as ProductFieldValues);
   }, [onAddToCart]);
 

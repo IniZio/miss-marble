@@ -58,10 +58,10 @@ model Product {
 }
 
 model ProductField {
-  id   String @id @default(uuid())
+  id    String @id @default(uuid())
   alias String
   // SELECT | MULTISELECT | TEXT | ASSET
-  type String
+  type  String
 
   name              Translation @relation(fields: [nameTranslationId], references: [id])
   nameTranslationId String
@@ -147,8 +147,8 @@ model Cart {
 
   items LineItem[]
 
-  phoneNumber  String?
-  socialHandle String?
+  phoneNumber   String?
+  socialHandle  String?
   socialChannel String?
 
   billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
@@ -171,6 +171,8 @@ model Cart {
   total         Int
   discountTotal Int
   shippingTotal Int
+
+  orders Order[]
 }
 
 model LineItem {
@@ -192,6 +194,9 @@ model LineItem {
   subtotal      Int
   shippingTotal Int
   total         Int
+
+  order   Order?  @relation(fields: [orderId], references: [id])
+  orderId String?
 }
 
 model CartProductFieldValue {
@@ -224,6 +229,9 @@ model Address {
 
   billingCarts  Cart[] @relation("billingAddress")
   shippingCarts Cart[] @relation("shippingAddress")
+
+  billingOrders  Order[] @relation("billingAddress")
+  shippingOrders Order[] @relation("shippingAddress")
 }
 
 model Currency {
@@ -235,6 +243,7 @@ model Currency {
 
   carts        Cart[]
   moneyAmounts MoneyAmount[]
+  orders       Order[]
 }
 
 model MoneyAmount {
@@ -270,6 +279,7 @@ model ShippingOption {
 
   shippingProvider   ShippingProvider? @relation(fields: [shippingProviderId], references: [id])
   shippingProviderId String?
+  orders             Order[]
 }
 
 // Ths "plugin code" part of shipping
@@ -302,4 +312,38 @@ model PaymentProvider {
   nameTranslationId String
 
   paymentOptions PaymentOption[]
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  cart Cart @relation(fields: [cartId], references: [id])
+
+  items LineItem[]
+
+  phoneNumber   String?
+  socialHandle  String?
+  socialChannel String?
+
+  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
+  billingAddresssId String?
+
+  shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
+  shippingAddresssId String?
+
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  currencyCode String
+
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId String?
+
+  deliveryDate DateTime?
+
+  remark String?
+
+  subtotal      Int
+  total         Int
+  discountTotal Int
+  shippingTotal Int
+  cartId        String
 }

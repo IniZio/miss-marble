@@ -13,8 +13,6 @@ export function useSaveProduct() {
   return useLoadingCallback(async (input: CreateProduct | UpdateProduct) => {
     const isEditing = 'id' in input;
 
-    console.log('input', input)
-
     if (isEditing) {
       await update.mutateAsync(input);
       await apiContext.admin.product.detail.invalidate(input.id);

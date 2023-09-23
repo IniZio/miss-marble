@@ -24,11 +24,14 @@ import { z } from 'zod';
 import ProductForm from '../components/ProductForm';
 import { useToast } from '@/components/ui/use-toast';
 import { ModuleHeader, ModuleHeaderActions, ModuleHeaderTitle } from '../../../components/module-header';
+import { useRouter } from 'next/router';
+import { Routes } from 'generated';
 
 export interface ProductDetailScreenProps {
 }
 
 const CreateProductScreen: React.FC<ProductDetailScreenProps> = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [saveProduct, { isLoading: isCreatingProduct }] = useSaveProduct();
 
@@ -37,7 +40,8 @@ const CreateProductScreen: React.FC<ProductDetailScreenProps> = () => {
     toast({
       title: 'Product created',
     });
-  }, [saveProduct, toast])
+    await router.push(Routes.AdminProductsPage());
+  }, [router, saveProduct, toast])
 
   return (
     <div>

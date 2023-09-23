@@ -83,7 +83,7 @@ const ProductDetailScreen: React.FC<{productId: string}> = ({ productId }) => {
       <div className="max-w-5xl mx-2 md:mx-auto rounded-lg border border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-black md:p-12 lg:flex-row lg:gap-8">
         <div className="mx-auto flex sm:flex-row flex-col sm:space-x-12 space-y-6 justify-center">
           <Image
-            className={cn('flex-1 relative object-contain')}
+            className={cn('flex-1 relative object-contain max-h-96')}
             src={productDetail.image?.url ?? ""}
             alt=""
             width={500}

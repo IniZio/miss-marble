@@ -28,7 +28,6 @@ const ProductFieldCheckboxes: React.FC<ProductFieldCheckboxesProps> = ({ field, 
             id={fieldValue.id}
             checked={value?.selected.includes(fieldValue.id)}
             onCheckedChange={(checked) => {
-              console.log("=== checked", checked);
               if (checked) {
                 onChange({
                   ...value,

@@ -57,12 +57,11 @@ const ViewShoppingCartButton: React.FC = () => {
   }, [cart])
 
   // Delivery
-  const { register, reset, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof CartUpdateSchema>>({ resolver: zodResolver(CartUpdateSchema) });
+  const { register, reset, control, handleSubmit, formState: { errors, isSubmitting } } = useForm<z.infer<typeof CartUpdateSchema>>({ resolver: zodResolver(CartUpdateSchema) });
   const selectedPaymentOptionId = useWatch({ control, name: 'paymentOption' });
   const selectedPaymentOption = useMemo(() => paymentOptions?.find((paymentOption) => paymentOption.id === selectedPaymentOptionId), [paymentOptions, selectedPaymentOptionId]);
 
   const onSubmit = React.useCallback(async (data: z.infer<typeof CartUpdateSchema>) => {
-    console.log(data);
     await updateCart({
       phoneNumber: data.phoneNumber,
       socialChannel: data.socialChannel,
@@ -212,7 +211,7 @@ const ViewShoppingCartButton: React.FC = () => {
                   <div key={item.id} className="grid grid-cols-4 space-x-4 px-1 py-4 border-b">
                     <div className="relative w-20 h-20 flex items-center justify-center">
                       {image ? (
-                        <Image src={image.url} alt="" width={80} height={80} />
+                        <Image src={image.url} alt="" width={80} height={80} className="max-h-20" />
                       ) : (
                         <div className="flex items-center justify-center">
                           <Cake size={20} />
@@ -275,7 +274,7 @@ const ViewShoppingCartButton: React.FC = () => {
         {(cart?.items.length ?? 0) > 0 && (
           <div className="absolute bottom-6 inset-x-6">
             {stage === 'checkout' ? (
-              <Button size="lg" className="w-full" type="submit">
+              <Button size="lg" className="w-full" type="submit" isLoading={isSubmitting}>
                 <FormattedMessage id="shoppingCart.sheet.checkout" defaultMessage="進行結賬" />
               </Button>
             ) : (
