@@ -8,6 +8,7 @@ tasks:
     cmds:
       - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
       - cd app && fly scale memory 512
+      - cd scheduler && flyctl launch --force-machines --build-only  --copy-config
 
   decrypt: |
     BLACKBOXDATA=environments/prod/.blackbox blackbox_decrypt_all_files
@@ -21,6 +22,7 @@ tasks:
     cmds:
       - task: decrypt
       - task: deploy:app
+      - task: deploy:scheduler
       - task: shred
 
   deploy:app:
@@ -28,3 +30,9 @@ tasks:
     cmds:
       - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < .env
       - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
+
+  deploy:scheduler:
+    dir: scheduler
+    cmds:
+      - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml secrets import --stage < ../app/.env
+      - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../scheduler

@@ -21,6 +21,7 @@ tasks:
     deps:
       - dev:app
       - dev:cloud
+      - dev:scheduler
 
   dev:cloud:
     cmds: [docker compose up]
@@ -28,6 +29,10 @@ tasks:
   dev:app:
     dir: app
     cmds: [task dev]
+
+  dev:scheduler:
+    dir: scheduler
+    cmds: [task start]
 
   dep:
     cmds:

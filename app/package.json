@@ -9,7 +9,7 @@
     "dev": "next dev",
     "format": "next lint --fix",
     "lint": "tsc --noEmit & next lint",
-    "start": "next start & node ./crons",
+    "start": "next start",
     "postinstall": "pnpm run codegen"
   },
   "prisma": {

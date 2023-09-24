@@ -1,0 +1,14 @@
+# fly.toml app configuration file generated for missmarble-scheduler on 2023-09-25T01:24:09+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "missmarble-scheduler"
+primary_region = "iad"
+
+[http_service]
+  internal_port = 0
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 1
+  processes = ["app"]
