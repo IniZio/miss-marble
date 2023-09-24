@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import { format } from "date-fns"
 // import isImage from "is-image"
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react"
+import { type ChangeEvent, useCallback, useMemo, useRef, useState } from "react"
 import { getSupabase } from '@/clients/supabase'
 import { isMobile } from '@/lib/isMobile'
 import dayjs from 'dayjs'
@@ -31,19 +31,6 @@ export interface OrderProps {
   order: ListOrder
   orderAssets: string[]
   onUpdate?: () => any
-}
-
-function get(obj: any, path: string, defValue: any = undefined) {
-  // If path is not defined or it has false value
-  if (!path) return undefined
-  // Check if path is string or array. Regex : ensure that we do not have '.' and brackets.
-  // Regex explained: https://regexr.com/58j0k
-  const pathArray = Array.isArray(path) ? path : (path as unknown as string).match(/([^[.\]])+/g)
-  // Find value if exist return otherwise return undefined value;
-  return (
-    pathArray?.reduce((prevObj: any, key: string) => prevObj?.[key], obj as any) ||
-    defValue
-  )
 }
 
 const getFieldValueString = (item: ListOrder['items'][0], alias: string): string => {
@@ -71,11 +58,11 @@ export const order2Lines = (order: ListOrder) =>
     [`🕐 `, `${dayjs(order.deliveryDate).format('MM/DD')}`, `${dayjs(order.deliveryDate).format('HH:mm')} - ${dayjs(order.deliveryDate).add(1, 'hour').format('HH:mm')}`],
 
     ...flatten(order.items.map((item) => [
-      [`🎂 `, item.product.name.text.zh_Hant_HK, getFieldValueString(item, 'taste')],
+      [`🎂 `, item.product?.name.text.zh_Hant_HK ?? getFieldValueString(item, 'cake'), getFieldValueString(item, 'size')],
       [`📿 `, getFieldValueString(item, 'decorations'), getFieldValueString(item, 'toppings')],
-      [`‎‎‎ `, getFieldValueString(item, 'shape'), getFieldValueString(item, 'color')],
-      [`‎‎ `, getFieldValueString(item, 'taste'), getFieldValueString(item, 'letter')],
-      [`‎‎ `, getFieldValueString(item, 'innerTaste'), getFieldValueString(item, 'bottomTaste')],
+      [`      `, getFieldValueString(item, 'shape'), getFieldValueString(item, 'color')],
+      [`      `, getFieldValueString(item, 'taste'), getFieldValueString(item, 'letter')],
+      [`      `, getFieldValueString(item, 'innerTaste'), getFieldValueString(item, 'bottomTaste')],
       [`✍️️ `, getFieldValueString(item, 'sentence')],
       [`🍫️ `, getFieldValueString(item, 'paidSentence')]
     ])),
@@ -93,7 +80,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
   const toggleEditMode = useCallback(() => setEditMode(!editMode), [editMode])
 
   const whatsappHref = useMemo(() => {
-    const encodedLines = encodeURIComponent(lines.join("\n"))
+    const encodedLines = encodeURIComponent(lines.map(line => line.join(' ')).join("\n"))
     let href: string
     if (isMobile.any) {
       href = `whatsapp://send?text=${encodedLines}`
@@ -109,7 +96,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
       navigator
         .share({
           title: `Order for ${dayjs(order.deliveryDate).format("MM/DD")}`,
-          text: lines.join("\n"),
+          text: lines.map(line => line.join(' ')).join("\n"),
           url: location.href,
         })
         .then(() => console.log("Successful share"))
@@ -122,8 +109,8 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
   const handleUploadFile = useCallback(
-    async (event) => {
-      const uploadedfile: File = event.target.files[0]
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const uploadedfile: File = event.target.files![0]!
       if (!order.createdAt?.toISOString()) {
         return Promise.resolve()
       }
@@ -189,7 +176,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
   return (
     <>
       <Card>
-        <CardContent className="relative p-3">
+        <CardContent className="relative h-full p-3 pb-8">
         <p className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
           {lines.map((line, index) => (
             <div key={index} className="my-0.5">

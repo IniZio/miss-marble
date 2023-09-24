@@ -49,7 +49,7 @@ const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
       <CartProvider>
         <style jsx global>{`
           html {
-            font-family: ${notosans.style.fontFamily};
+            font-family: ${notosans.style.fontFamily}, sans-serif;
           }
         `}
         </style>

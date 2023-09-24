@@ -13,7 +13,7 @@ import { getSupabase } from '@/clients/supabase';
 import OrderCard from '../components/OrderCard';
 
 const HomeScreen: React.FC = () => {
-  const [dateRange, setDateRange] = React.useState<DateRange>(() => ({
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(() => ({
     from: dayjs(new Date()).startOf('day').toDate(),
     to: dayjs(new Date()).endOf('day').toDate(),
   }));
@@ -48,8 +48,8 @@ const HomeScreen: React.FC = () => {
           <Button variant="outline"
             className="w-9 px-0 flex-shrink-0"
             onClick={() => setDateRange({
-              from: dayjs(dateRange.from).subtract(1, 'day').toDate(),
-              to: dayjs(dateRange.to).subtract(1, 'day').toDate()
+              from: dayjs(dateRange?.from).subtract(1, 'day').toDate(),
+              to: dayjs(dateRange?.to).subtract(1, 'day').toDate()
             })}
           >
             <ArrowLeftIcon
@@ -60,13 +60,14 @@ const HomeScreen: React.FC = () => {
           <DateRangePicker
             className="w-full"
             value={dateRange}
+            // @ts-expect-error Dunno
             onChange={setDateRange}
           />
           <Button variant="outline"
             className="w-9 px-0 flex-shrink-0"
             onClick={() => setDateRange({
-                from: dayjs(dateRange.from).add(1, 'day').toDate(),
-                to: dayjs(dateRange.to).add(1, 'day').toDate()
+                from: dayjs(dateRange?.from).add(1, 'day').toDate(),
+                to: dayjs(dateRange?.to).add(1, 'day').toDate()
               })}>
             <ArrowRightIcon
               className="h-5 w-5 cursor-pointer"

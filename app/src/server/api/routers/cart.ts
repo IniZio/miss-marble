@@ -8,6 +8,7 @@ import { type Prisma } from '@prisma/client';
 import { type JsonObject } from '@prisma/client/runtime/library';
 import googlesheet from '../integrations/google-sheet';
 import { TRPCError } from '@trpc/server';
+import { GOOGLE_FORM_ORDER_FIELDS } from '@/constants';
 
 day.extend(utc);
 day.extend(timezone);
@@ -374,34 +375,7 @@ export const cartRouter = createTRPCRouter({
       .mutation(async ({ input }) => {
         const cart = await queryCart(input);
 
-        const fields = {
-          paid: 0,
-          created_at: 1,
-          name: 2,
-          phone: 3,
-          date: 4,
-          time: 5,
-          cake: [6, 7],
-          letter: 8,
-          taste: [10, 11, 12, 13],
-          inner_taste: [14],
-          bottom_taste: [15],
-          size: 18,
-          shape: [19, 20],
-          color: [9, 16],
-          sentence: 25,
-          paid_sentence: [26, 27],
-          toppings: 21,
-          decorations: [22, 23, 24],
-          social_name: 28,
-          order_from: 29,
-          delivery_method: 30,
-          delivery_address: [31, 32],
-          remarks: [33],
-          printed_at: 89,
-          printed: 90,
-          // index: 91,
-        };
+        const fields = GOOGLE_FORM_ORDER_FIELDS;
 
         const getFieldValueString = (item: typeof cart.items[0], alias: string): string => {
           const fieldValues = item.productFieldValues.filter(i => i.field.alias === alias);
@@ -446,13 +420,17 @@ export const cartRouter = createTRPCRouter({
         for (const googleSheetOrder of googleSheetOrders) {
           const row: string[] = [];
           Object.entries(fields).forEach(([field, columns]) => {
+            // @ts-expect-error ???
             row[Array.isArray(columns) ? columns[0]! : columns] = googleSheetOrder[field as keyof typeof fields];
           })
           await googlesheet.insertRow(row);
         }
 
+        const createdAt = new Date();
         await prisma.order.create({
           data: {
+            externalId: `${createdAt.toISOString()}/${cart.phoneNumber}`,
+            createdAt,
             cart: {
               connect: {
                 id: input,
@@ -472,18 +450,19 @@ export const cartRouter = createTRPCRouter({
                 id: cart.billingAddress?.id,
               }
             } : undefined,
-            shippingAddress: cart.shippingAddress?.id ? {
+            shippingAddress: {
               connect: {
-                id: cart.shippingAddress?.id,
+                id: cart.shippingAddress!.id,
               }
-            } : undefined,
-            shippingOption: cart.shippingOption?.id ? {
+            },
+            shippingOption: {
               connect: {
-                id: cart.shippingOption?.id,
+                id: cart.shippingOption!.id,
               },
-            } : undefined,
-            deliveryDate: cart.deliveryDate,
-            name: cart.name,
+            },
+            deliveryDate: cart.deliveryDate!,
+            paymentStatus: 'CAPTURED',
+            name: cart.name!,
             phoneNumber: cart.phoneNumber,
             socialChannel: cart.socialChannel,
             socialHandle: cart.socialHandle,

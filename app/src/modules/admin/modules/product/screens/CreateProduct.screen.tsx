@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useGetProducts } from '../actions/getProducts';
 import { NextPageWithLayout } from '@/lib/types';

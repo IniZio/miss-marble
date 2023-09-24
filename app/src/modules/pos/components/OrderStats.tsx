@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import Spinner from '@/components/ui/spinner'
+import { type ListOrder } from '@/models/pos/list-order'
 import { type Order } from '@prisma/client'
 
 export interface OrderStatsProps {
-  orders?: Order[]
+  orders?: ListOrder[]
   isLoading: boolean
 }
 

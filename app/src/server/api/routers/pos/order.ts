@@ -12,7 +12,11 @@ export const orderRouter = createTRPCRouter({
     }),
   ).query(async ({ input, ctx }) => {
     const items = await ctx.prisma.order.findMany({
+      orderBy: {
+        deliveryDate: 'asc',
+      },
       where: {
+        paymentStatus: 'CAPTURED',
         deliveryDate: {
           gte: input.dateStart,
           lte: input.dateEnd,

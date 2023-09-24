@@ -33,7 +33,7 @@ export const orderLineItemSchema = z.object({
     id: z.string(),
     name: translationSchema,
     // gallery: z.array(assetSchema).nullish(),
-  }),
+  }).nullish(),
   productFieldValues: z.array(orderFieldValueSchema),
   subtotal: z.number(),
   shippingTotal: z.number(),

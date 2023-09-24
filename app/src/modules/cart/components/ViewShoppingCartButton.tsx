@@ -206,7 +206,7 @@ const ViewShoppingCartButton: React.FC = () => {
           <div className={cn(stage === "checkout" && "hidden md:block", "pl-4 h-full")}>
             <div className="grid gap-4 py-4">
               {cart?.items.map((item) => {
-                const image = item.product.gallery[0];
+                const image = item.product?.gallery[0];
 
                 return (
                   <div key={item.id} className="grid grid-cols-4 space-x-4 px-1 py-4 border-b">
@@ -227,7 +227,7 @@ const ViewShoppingCartButton: React.FC = () => {
                     </div>
                     <div className="flex col-span-3">
                     <div className="flex-1">
-                      <Label className="font-bold text-lg"><Translated t={item.product.name as unknown as any} /></Label>
+                      <Label className="font-bold text-lg"><Translated t={item.product?.name as unknown as any} /></Label>
                       {Object.values(item.productFieldValues
                         .filter((productFieldValue) => productFieldValue.fieldOptionAsset ?? productFieldValue.fieldOption ?? productFieldValue.fieldValue)
                         .reduce((acc, productFieldValue) => {
