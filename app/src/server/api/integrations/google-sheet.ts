@@ -8,8 +8,7 @@ import path from 'path';
 const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
 ];
-const spreadSheetId = '1E5v8Ilbl1Vk8d_hIGIJSjnmp_bS5K-MtT6QD9vhAGfM';
-// const spreadSheetId = '1s_PcdLtCjsHOWZNEbZffH5uWsgdKqv-iaZcfqwt5pUI';
+const spreadSheetId = process.env.GOOGLE_FORM_SPREADSHEET_ID!;
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
 const json = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'marble-service-account.json')) as unknown as string) as any;
