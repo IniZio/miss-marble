@@ -89,144 +89,148 @@ export default async function handler(
       },
     },
   });
-  await Promise.allSettled(records.map(r => prisma.order.upsert({
-    where: {
-      externalId: getExternalId(r),
-    },
-    create: {
-      paymentStatus: getField<string>(r, 'paid'),
-      externalId: getExternalId(r),
-      currency: {
-        connect: {
-          code: 'hkd',
-        },
+  for (const r of records) {
+    await prisma.order.upsert({
+      where: {
+        externalId: getExternalId(r),
       },
-      subtotal: 0,
-      discountTotal: 0,
-      shippingTotal: 0,
-      total: 0,
-      shippingAddress: {
-        create: {
-          name: getField<string>(r, 'name'),
-          address1: getField<string>(r, 'delivery_address') ?? '',
-          address2: '',
-        },
-      },
-      shippingOption: {
-        connect: {
-          id: getField<string>(r, 'delivery_method')?.includes('送上門') ? delivery?.id : pickup?.id,
-        },
-      },
-      deliveryDate: getField<Date>(r, 'date'),
-      name: getField<string>(r, 'name'),
-      phoneNumber: getField<string>(r, 'phone'),
-      socialChannel: getField<string>(r, 'order_from'),
-      socialHandle: getField<string>(r, 'social_name'),
-      remark: getField<string>(r, 'remarks'),
-      items: {
-        create: {
-          productFieldValues: {
-            create: productFields.map((field) => ({
-              field: {
-                connect: {
-                  id: field.id,
-                },
-              },
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-              fieldValue: getField<string>(r, field.alias as any),
-            })),
+      create: {
+        paymentStatus: getField<string>(r, 'paid'),
+        externalId: getExternalId(r),
+        currency: {
+          connect: {
+            code: 'hkd',
           },
-          quantity: 1,
-          subtotal: 0,
-          shippingTotal: 0,
-          total: 0,
         },
+        subtotal: 0,
+        discountTotal: 0,
+        shippingTotal: 0,
+        total: 0,
+        shippingAddress: {
+          create: {
+            name: getField<string>(r, 'name'),
+            address1: getField<string>(r, 'delivery_address') ?? '',
+            address2: '',
+          },
+        },
+        shippingOption: {
+          connect: {
+            id: getField<string>(r, 'delivery_method')?.includes('送上門') ? delivery?.id : pickup?.id,
+          },
+        },
+        deliveryDate: getField<Date>(r, 'date'),
+        name: getField<string>(r, 'name'),
+        phoneNumber: getField<string>(r, 'phone'),
+        socialChannel: getField<string>(r, 'order_from'),
+        socialHandle: getField<string>(r, 'social_name'),
+        remark: getField<string>(r, 'remarks'),
+        items: {
+          create: {
+            productFieldValues: {
+              create: productFields.map((field) => ({
+                field: {
+                  connect: {
+                    id: field.id,
+                  },
+                },
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+                fieldValue: getField<string>(r, field.alias as any),
+              })),
+            },
+            quantity: 1,
+            subtotal: 0,
+            shippingTotal: 0,
+            total: 0,
+          },
+        }
+      },
+      update: {
+        currency: {
+          connect: {
+            code: 'hkd',
+          },
+        },
+        subtotal: 0,
+        discountTotal: 0,
+        shippingTotal: 0,
+        total: 0,
+        shippingAddress: {
+          create: {
+            name: getField<string>(r, 'name'),
+            address1: getField<string>(r, 'delivery_address') ?? '',
+            address2: '',
+          },
+        },
+        shippingOption: {
+          connect: {
+            id: getField<string>(r, 'delivery_method')?.includes('送上門') ? delivery?.id : pickup?.id,
+          },
+        },
+        deliveryDate: getField<Date>(r, 'date'),
+        name: getField<string>(r, 'name'),
+        phoneNumber: getField<string>(r, 'phone'),
+        socialChannel: getField<string>(r, 'order_from'),
+        socialHandle: getField<string>(r, 'social_name'),
+        remark: getField<string>(r, 'remarks'),
+        // items: {
+        //   upsert: productFields.map((field) => ({
+        //     where: {
+        //       productFieldValues: {
+        //         some: {
+        //           field: {
+        //             alias: field.alias,
+        //           },
+        //         },
+        //       },
+        //     },
+        //     create: {
+        //       productFieldValues: {
+        //         create: productFields.map((field) => ({
+        //           field: {
+        //             connect: {
+        //               id: field.id,
+        //             },
+        //           },
+        //           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        //           fieldValue: getField<string>(r, field.alias as any),
+        //         })),
+        //       },
+        //       quantity: 1,
+        //       subtotal: 0,
+        //       shippingTotal: 0,
+        //       total: 0,
+        //     },
+        //     update: {
+        //       productFieldValues: {
+        //         upsert: {
+        //           where: {
+        //             field: {
+        //               alias: field.alias,
+        //             },
+        //           },
+        //           create: {
+        //             field: {
+        //               connect: {
+        //                 id: field.id,
+        //               },
+        //             },
+        //             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        //             fieldValue: getField<string>(r, field.alias as any),
+        //           },
+        //           update: {
+        //             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        //             fieldValue: getField<string>(r, field.alias as any),
+        //           },
+        //         },
+        //       },
+        //     },
+        //   })),
+        // },
       }
-    },
-    update: {
-      currency: {
-        connect: {
-          code: 'hkd',
-        },
-      },
-      subtotal: 0,
-      discountTotal: 0,
-      shippingTotal: 0,
-      total: 0,
-      shippingAddress: {
-        create: {
-          name: getField<string>(r, 'name'),
-          address1: getField<string>(r, 'delivery_address') ?? '',
-          address2: '',
-        },
-      },
-      shippingOption: {
-        connect: {
-          id: getField<string>(r, 'delivery_method')?.includes('送上門') ? delivery?.id : pickup?.id,
-        },
-      },
-      deliveryDate: getField<Date>(r, 'date'),
-      name: getField<string>(r, 'name'),
-      phoneNumber: getField<string>(r, 'phone'),
-      socialChannel: getField<string>(r, 'order_from'),
-      socialHandle: getField<string>(r, 'social_name'),
-      remark: getField<string>(r, 'remarks'),
-      // items: {
-      //   upsert: productFields.map((field) => ({
-      //     where: {
-      //       productFieldValues: {
-      //         some: {
-      //           field: {
-      //             alias: field.alias,
-      //           },
-      //         },
-      //       },
-      //     },
-      //     create: {
-      //       productFieldValues: {
-      //         create: productFields.map((field) => ({
-      //           field: {
-      //             connect: {
-      //               id: field.id,
-      //             },
-      //           },
-      //           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      //           fieldValue: getField<string>(r, field.alias as any),
-      //         })),
-      //       },
-      //       quantity: 1,
-      //       subtotal: 0,
-      //       shippingTotal: 0,
-      //       total: 0,
-      //     },
-      //     update: {
-      //       productFieldValues: {
-      //         upsert: {
-      //           where: {
-      //             field: {
-      //               alias: field.alias,
-      //             },
-      //           },
-      //           create: {
-      //             field: {
-      //               connect: {
-      //                 id: field.id,
-      //               },
-      //             },
-      //             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      //             fieldValue: getField<string>(r, field.alias as any),
-      //           },
-      //           update: {
-      //             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      //             fieldValue: getField<string>(r, field.alias as any),
-      //           },
-      //         },
-      //       },
-      //     },
-      //   })),
-      // },
-    }
-  })));
+    }).catch((e) => {
+      console.error(e);
+    });
+  }
 
   res.status(200).json({ message: 'Hello from Next.js!' })
 }
