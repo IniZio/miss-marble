@@ -147,6 +147,7 @@ model Cart {
 
   items LineItem[]
 
+  name String?
   phoneNumber   String?
   socialHandle  String?
   socialChannel String?
@@ -316,11 +317,14 @@ model PaymentProvider {
 
 model Order {
   id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   cart Cart @relation(fields: [cartId], references: [id])
 
   items LineItem[]
 
+  name String
   phoneNumber   String?
   socialHandle  String?
   socialChannel String?
@@ -328,16 +332,16 @@ model Order {
   billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
   billingAddresssId String?
 
-  shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
-  shippingAddresssId String?
+  shippingAddress    Address @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
+  shippingAddresssId String
 
   currency     Currency @relation(fields: [currencyCode], references: [code])
   currencyCode String
 
-  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
-  shippingOptionId String?
+  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId String
 
-  deliveryDate DateTime?
+  deliveryDate DateTime
 
   remark String?
 

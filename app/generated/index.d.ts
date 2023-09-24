@@ -11,5 +11,6 @@ export const Routes: {
   AdminProductsPage(query?: ParsedUrlQueryInput): RouteUrlObject;
   DashboardPage(query?: ParsedUrlQueryInput): RouteUrlObject;
   IndexPage(query?: ParsedUrlQueryInput): RouteUrlObject;
+  PosHomePage(query?: ParsedUrlQueryInput): RouteUrlObject;
   ProductDetailPage(query: { id: string | number } & ParsedUrlQueryInput): RouteUrlObject;
 }

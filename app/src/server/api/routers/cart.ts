@@ -298,6 +298,7 @@ export const cartRouter = createTRPCRouter({
     update: publicProcedure
       .input(z.object({
         cartId: z.string(),
+        name: z.string(),
         phoneNumber: z.string(),
         socialChannel: z.string(),
         socialHandle: z.string(),
@@ -326,6 +327,7 @@ export const cartRouter = createTRPCRouter({
             socialChannel: input.socialChannel,
             socialHandle: input.socialHandle,
             remark: input.remark,
+            name: input.name,
             shippingAddress: {
               upsert: {
                 update: {
@@ -481,6 +483,7 @@ export const cartRouter = createTRPCRouter({
               },
             } : undefined,
             deliveryDate: cart.deliveryDate,
+            name: cart.name,
             phoneNumber: cart.phoneNumber,
             socialChannel: cart.socialChannel,
             socialHandle: cart.socialHandle,

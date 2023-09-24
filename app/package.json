@@ -43,6 +43,8 @@
     "dayjs": "^1.11.9",
     "eslint-plugin-formatjs": "^4.10.3",
     "googleapis": "^126.0.1",
+    "is-image": "^4.0.0",
+    "ismobilejs": "^1.1.1",
     "lucide-react": "^0.268.0",
     "mime-types": "^2.1.35",
     "next": "^13.4.2",

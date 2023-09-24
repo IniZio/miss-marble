@@ -67,6 +67,7 @@ const ViewShoppingCartButton: React.FC = () => {
       socialChannel: data.socialChannel,
       socialHandle: data.socialHandle,
       remark: data.remark,
+      name: data.name,
       shippingAddress: {
         name: data.name,
         address1: data.address1,

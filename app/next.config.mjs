@@ -28,6 +28,7 @@ const config = {
   publicRuntimeConfig: {
     SUPABASE_URL: process.env.SUPABASE_URL ?? '',
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? '',
+    ORDER_ASSETS_CDN_URL: process.env.ORDER_ASSETS_CDN_URL ?? '',
   },
 };
 

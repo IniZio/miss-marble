@@ -8,5 +8,6 @@ exports.Routes = {
   AdminProductsPage: (query) => ({ pathname: "/admin/products", query }),
   DashboardPage: (query) => ({ pathname: "/demo", query }),
   IndexPage: (query) => ({ pathname: "/", query }),
+  PosHomePage: (query) => ({ pathname: "/pos", query }),
   ProductDetailPage: (query) => ({ pathname: "/products/[id]", query })
 }
