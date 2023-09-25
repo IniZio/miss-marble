@@ -59,6 +59,8 @@ export default async function handler(
         case 'decorations':
         case 'toppings':
           return ((value || '') as string).split(', ').filter(Boolean).join(', ');
+        case 'paid_sentence':
+          return ((value || '') as string).replace(/寫字朱古力牌[^,|，]*(,|，)/, '').trim();
         default:
           return ((value || '') as string).trim();
         }
