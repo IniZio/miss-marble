@@ -42,7 +42,7 @@ model Asset {
 model Product {
   id String @id @default(uuid())
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   gallery Asset[]
@@ -63,7 +63,7 @@ model ProductField {
   // SELECT | MULTISELECT | TEXT | ASSET
   type  String
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   prices MoneyAmount[]
@@ -78,10 +78,10 @@ model ProductField {
 }
 
 model ProductFieldToProduct {
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
-  field   ProductField @relation(fields: [fieldId], references: [id])
+  field   ProductField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   fieldId String
 
   required Boolean @default(false)
@@ -92,10 +92,10 @@ model ProductFieldToProduct {
 model ProductFieldOption {
   id String @id @default(uuid())
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
-  field   ProductField @relation(fields: [fieldId], references: [id])
+  field   ProductField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   fieldId String
 
   variants               ProductVariant[]
@@ -110,7 +110,7 @@ model ProductFieldOption {
 model ProductVariant {
   id String @id @default(uuid())
 
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
   prices MoneyAmount[]
@@ -125,10 +125,10 @@ model ProductVariant {
 model ProductVariantFieldValue {
   id String @id @default(uuid())
 
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   variantId String
 
-  fieldOption   ProductFieldOption @relation(fields: [fieldOptionId], references: [id])
+  fieldOption   ProductFieldOption @relation(fields: [fieldOptionId], references: [id], onDelete: Cascade)
   fieldOptionId String
 
   deletedAt DateTime?
@@ -138,7 +138,7 @@ model ProductCollection {
   id   String @id @default(uuid())
   slug String @unique
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   products Product[]
@@ -154,16 +154,16 @@ model Cart {
   socialHandle  String?
   socialChannel String?
 
-  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
+  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id], onDelete: Cascade)
   billingAddresssId String?
 
-  shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
+  shippingAddress    Address? @relation("shippingAddress", fields: [shippingAddresssId], references: [id], onDelete: Cascade)
   shippingAddresssId String?
 
-  currency     Currency @relation(fields: [currencyCode], references: [code])
+  currency     Currency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
   currencyCode String
 
-  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id], onDelete: Cascade)
   shippingOptionId String?
 
   deliveryDate DateTime?
@@ -183,13 +183,13 @@ model LineItem {
 
   quantity Int
 
-  product   Product? @relation(fields: [productId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String?
 
-  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
   productVariantId String?
 
-  cart   Cart?   @relation(fields: [cartId], references: [id])
+  cart   Cart?   @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId String?
 
   productFieldValues CartProductFieldValue[]
@@ -198,25 +198,25 @@ model LineItem {
   shippingTotal Int
   total         Int
 
-  order   Order?  @relation(fields: [orderId], references: [id])
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String?
 }
 
 model CartProductFieldValue {
   id String @id @default(uuid())
 
-  lineItem   LineItem @relation(fields: [lineItemId], references: [id])
+  lineItem   LineItem @relation(fields: [lineItemId], references: [id], onDelete: Cascade)
   lineItemId String
 
-  field   ProductField @relation(fields: [fieldId], references: [id])
+  field   ProductField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   fieldId String
 
-  fieldOption   ProductFieldOption? @relation(fields: [fieldOptionId], references: [id])
+  fieldOption   ProductFieldOption? @relation(fields: [fieldOptionId], references: [id], onDelete: Cascade)
   fieldOptionId String?
 
   fieldValue String?
 
-  fieldOptionAsset   Asset?  @relation(fields: [fieldOptionAssetId], references: [id])
+  fieldOptionAsset   Asset?  @relation(fields: [fieldOptionAssetId], references: [id], onDelete: Cascade)
   fieldOptionAssetId String?
 }
 
@@ -241,7 +241,7 @@ model Currency {
   code   String @unique
   symbol String
 
-  name              Translation @relation(fields: [nameTranslationId], references: [id])
+  name              Translation @relation(fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   carts        Cart[]
@@ -252,7 +252,7 @@ model Currency {
 model MoneyAmount {
   id String @id @default(uuid())
 
-  currency     Currency @relation(fields: [currencyCode], references: [code])
+  currency     Currency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
   currencyCode String
 
   amount              Int
@@ -266,21 +266,21 @@ model MoneyAmount {
 model ShippingOption {
   id String @id @default(uuid())
 
-  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
-  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id])
+  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id], onDelete: Cascade)
   instructionsTranslationId String?
 
   // FLAT_RATE | CALCULATED | MANUAL
   priceType String
 
-  price   MoneyAmount? @relation(fields: [priceId], references: [id])
+  price   MoneyAmount? @relation(fields: [priceId], references: [id], onDelete: Cascade)
   priceId String?
 
   carts Cart[]
 
-  shippingProvider   ShippingProvider? @relation(fields: [shippingProviderId], references: [id])
+  shippingProvider   ShippingProvider? @relation(fields: [shippingProviderId], references: [id], onDelete: Cascade)
   shippingProviderId String?
   orders             Order[]
 }
@@ -289,7 +289,7 @@ model ShippingOption {
 model ShippingProvider {
   id String @id @default(uuid())
 
-  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   options ShippingOption[]
@@ -298,20 +298,20 @@ model ShippingProvider {
 model PaymentOption {
   id String @id @default(uuid())
 
-  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
-  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id])
+  instructions              Translation? @relation(name: "instructions", fields: [instructionsTranslationId], references: [id], onDelete: Cascade)
   instructionsTranslationId String?
 
-  paymentProvider   PaymentProvider? @relation(fields: [paymentProviderId], references: [id])
+  paymentProvider   PaymentProvider? @relation(fields: [paymentProviderId], references: [id], onDelete: Cascade)
   paymentProviderId String?
 }
 
 model PaymentProvider {
   id String @id @default(uuid())
 
-  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id])
+  name              Translation @relation(name: "name", fields: [nameTranslationId], references: [id], onDelete: Cascade)
   nameTranslationId String
 
   paymentOptions PaymentOption[]
@@ -320,10 +320,11 @@ model PaymentProvider {
 model Order {
   id String @id @default(uuid())
   externalId String? @unique
+  externalData String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart Cart? @relation(fields: [cartId], references: [id])
+  cart Cart? @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId        String?
 
   items LineItem[]
@@ -333,16 +334,16 @@ model Order {
   socialHandle  String?
   socialChannel String?
 
-  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id])
+  billingAddress    Address? @relation("billingAddress", fields: [billingAddresssId], references: [id], onDelete: Cascade)
   billingAddresssId String?
 
-  shippingAddress    Address @relation("shippingAddress", fields: [shippingAddresssId], references: [id])
+  shippingAddress    Address @relation("shippingAddress", fields: [shippingAddresssId], references: [id], onDelete: Cascade)
   shippingAddresssId String
 
-  currency     Currency @relation(fields: [currencyCode], references: [code])
+  currency     Currency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
   currencyCode String
 
-  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
+  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id], onDelete: Cascade)
   shippingOptionId String
 
   deliveryDate DateTime
@@ -355,4 +356,6 @@ model Order {
   shippingTotal Int
 
   paymentStatus String @default("NOT_PAID")
+
+  @@index([externalData], name: "externalData")
 }
