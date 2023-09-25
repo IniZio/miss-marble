@@ -1,11 +1,11 @@
 {
-  "name": "Miss Marble",
-  "short_name": "Miss Marble",
-  "start_url": "./",
+  "name": "Miss Marble | Admin",
+  "short_name": "Miss Marble | Admin",
+  "start_url": "./admin",
   "display": "standalone",
   "background_color": "#ffffff",
   "lang": "en",
-  "scope": "/",
+  "scope": "/admin",
   "theme_color": "#FFF",
   "icons": [{
     "src": "/logos/manifest-icon-192.png",

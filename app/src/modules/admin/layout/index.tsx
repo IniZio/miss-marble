@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { SidebarNav } from './side-nav';
 import { Toaster } from '@/components/ui/toaster';
 import { Routes } from 'generated';
+import Head from 'next/head';
 
 const sidebarNavItems = [
   {
@@ -22,6 +23,9 @@ const sidebarNavItems = [
 export const AdminLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
+      <Head>
+        <link rel="manifest" href="/manifest.admin.json" />
+      </Head>
       <div className="flex-col flex h-screen">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">

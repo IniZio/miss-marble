@@ -52,7 +52,6 @@ const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
         <meta name="apple-mobile-web-app-status-bar-style" content="white" />
         <meta name="theme-color" content="#F9FAFB" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
-        <link rel="manifest" href="/manifest.json" />
 
         <link rel="icon" href="/logo.svg" sizes="any" type="image/svg+xml" />
 
