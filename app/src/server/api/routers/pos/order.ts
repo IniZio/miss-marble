@@ -25,11 +25,13 @@ export const orderRouter = createTRPCRouter({
           {
             phoneNumber: {
               contains: input.keyword,
+              mode: 'insensitive'
             },
           },
           {
             name: {
               contains: input.keyword,
+              mode: 'insensitive'
             },
           },
           {
