@@ -54,7 +54,7 @@ export const listOrderSchema = z.object({
   // currency: currencySchema,
   shippingOption: apiShippingOptionSchema,
   deliveryDate: z.date(),
-  remarks: z.string().nullish(),
+  remark: z.string().nullish(),
 
   subtotal: z.number(),
   discountTotal: z.number(),

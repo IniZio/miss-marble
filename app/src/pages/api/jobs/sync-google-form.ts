@@ -80,7 +80,7 @@ export default async function handler(
   const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
   // const getProductFieldByAlias = (alias: string) => productFields.find((field) => field.alias === alias);
 
-  const records = await googleSheet.getAllRows()
+  const records = (await googleSheet.getAllRows()).reverse()
 
   const extenalOrders = await prisma.order.findMany({
     where: {
