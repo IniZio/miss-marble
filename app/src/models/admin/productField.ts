@@ -19,6 +19,7 @@ export const apiListAdminProductFieldSchema = z.object({
   alias: z.string(),
   type: z.nativeEnum(ProductFieldType),
   name: apiTranslationSchema,
+  remark: z.string().nullish(),
 })
 
 export type ApiListAdminProductField = z.infer<typeof apiListAdminProductFieldSchema>;

@@ -75,7 +75,7 @@ export default async function handler(
   }
 
   console.log('[Sync Google Form]: Starting to sync...')
-  const productFields = await prisma.productField.findMany({});
+  const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
   // const getProductFieldByAlias = (alias: string) => productFields.find((field) => field.alias === alias);
 
   const records = await googleSheet.getAllRows()
@@ -260,6 +260,6 @@ export default async function handler(
     }
   // });
 
-  console.log('[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.')
+  console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   res.status(200).json({ message: `[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.` })
 }
