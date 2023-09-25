@@ -62,9 +62,9 @@ export const order2Lines = (order: ListOrder) =>
       [`📿 `, getFieldValueString(item, 'decorations'), getFieldValueString(item, 'toppings')],
       [`      `, getFieldValueString(item, 'shape'), getFieldValueString(item, 'color')],
       [`      `, getFieldValueString(item, 'taste'), getFieldValueString(item, 'letter')],
-      [`      `, getFieldValueString(item, 'innerTaste'), getFieldValueString(item, 'bottomTaste')],
+      [`      `, getFieldValueString(item, 'inner_taste'), getFieldValueString(item, 'bottom_taste')],
       [`✍️️ `, getFieldValueString(item, 'sentence')],
-      [`🍫️ `, getFieldValueString(item, 'paidSentence')]
+      [`🍫️ `, getFieldValueString(item, 'paid_sentence')]
     ])),
 
     [`📲 `, order.socialChannel, order.socialHandle],
