@@ -28,6 +28,11 @@ export const orderRouter = createTRPCRouter({
             },
           },
           {
+            name: {
+              contains: input.keyword,
+            },
+          },
+          {
             socialHandle: {
               contains: input.keyword,
               mode: 'insensitive',
