@@ -23,8 +23,21 @@ export interface DateRangePickerProps {
 export function DateRangePicker({
   className,
   value,
-  onChange
+  onChange: onChangeProp,
 }: DateRangePickerProps & React.HTMLAttributes<HTMLDivElement>) {
+  // Instead of unselect, set it to the date user is clicking on
+  const onChange = React.useCallback(
+    (v?: DateRange) => {
+      if (!v?.from && !v?.to) {
+        onChangeProp({ from: value?.from, to: value?.from })
+        return;
+      }
+
+      onChangeProp(v);
+    },
+    [onChangeProp, value]
+  )
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>

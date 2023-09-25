@@ -19,8 +19,8 @@ const HomeScreen: React.FC = () => {
   }));
   const [keyword, setKeyword] = useState('');
   const { data: orders, isLoading } = useGetOrders({
-    dateStart: dateRange?.from ?? dateRange?.to ?? new Date(),
-    dateEnd: dateRange?.to ?? dateRange?.from ?? new Date(),
+    dateStart: dayjs(dateRange?.from ?? dateRange?.to ?? new Date()).startOf('day').toDate(),
+    dateEnd: dayjs(dateRange?.to ?? dateRange?.from ?? new Date()).endOf('day').toDate(),
     keyword
   });
 
