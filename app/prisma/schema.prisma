@@ -358,4 +358,7 @@ model Order {
   paymentStatus String @default("NOT_PAID")
 
   @@index([externalData], name: "externalData")
+  @@index([deliveryDate], name: "deliveryDate")
+  @@index([phoneNumber], name: "phoneNumber")
+  @@index([socialHandle], name: "socialHandle")
 }
