@@ -461,7 +461,7 @@ export const cartRouter = createTRPCRouter({
               },
             },
             deliveryDate: cart.deliveryDate!,
-            paymentStatus: 'CAPTURED',
+            paymentStatus: 'NOT_PAID',
             name: cart.name!,
             phoneNumber: cart.phoneNumber,
             socialChannel: cart.socialChannel,
