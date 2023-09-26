@@ -392,13 +392,13 @@ export const cartRouter = createTRPCRouter({
         }
 
         const googleSheetOrders: Record<keyof typeof fields, string>[] = cart.items.map(item => ({
-          paid: "",
+          paid: "FALSE",
           created_at: day().tz("Asia/Hong_Kong").format('M/D/YYYY H:mm:ss'),
           name: cart.shippingAddress?.name,
           phone: cart.phoneNumber,
-          date: day(cart.deliveryDate).tz("Asia/Hong_Kong").format('M/D'),
+          date: day(cart.deliveryDate).tz("Asia/Hong_Kong").format('\'M/D'),
           time: day(cart.deliveryDate).tz("Asia/Hong_Kong").format('Hmm') + '-' + day(cart.deliveryDate).add(1, 'hour').tz("Asia/Hong_Kong").add(1, 'hour').format('Hmm'),
-          cake: getFieldValueString(item, 'product'),
+          cake: (item.product?.name.text as JsonObject).zh_Hant_HK,
           letter: getFieldValueString(item, 'letter'),
           taste: getFieldValueString(item, 'taste'),
           inner_taste: getFieldValueString(item, 'inner_taste'),
@@ -410,15 +410,15 @@ export const cartRouter = createTRPCRouter({
           paid_sentence: getFieldValueString(item, 'paid_sentence'),
           toppings: getFieldValueString(item, 'toppings'),
           decorations: getFieldValueString(item, 'decorations'),
-          social_name: getFieldValueString(item, 'social_name'),
-          order_from: getFieldValueString(item, 'order_from'),
-          delivery_method: getFieldValueString(item, 'delivery_method'),
+          social_name: cart.socialHandle,
+          order_from: cart.socialChannel,
+          delivery_method: (cart.shippingOption?.name.text as JsonObject)?.zh_Hant_HK ?? '',
           delivery_address: (cart.shippingAddress?.address1 ?? '') + (cart.shippingAddress?.address2 ?? ''),
           remarks: cart.remark,
         }) as Record<keyof typeof fields, string>);
 
+        const row: string[] = [];
         for (const googleSheetOrder of googleSheetOrders) {
-          const row: string[] = [];
           Object.entries(fields).forEach(([field, columns]) => {
             // @ts-expect-error ???
             row[Array.isArray(columns) ? columns[0]! : columns] = googleSheetOrder[field as keyof typeof fields];
@@ -430,6 +430,7 @@ export const cartRouter = createTRPCRouter({
         await prisma.order.create({
           data: {
             externalId: `${createdAt.toISOString()}/${cart.phoneNumber}`,
+            externalData: JSON.stringify(row),
             createdAt,
             cart: {
               connect: {
@@ -461,7 +462,7 @@ export const cartRouter = createTRPCRouter({
               },
             },
             deliveryDate: cart.deliveryDate!,
-            paymentStatus: 'NOT_PAID',
+            paymentStatus: 'AWAITING',
             name: cart.name!,
             phoneNumber: cart.phoneNumber,
             socialChannel: cart.socialChannel,
