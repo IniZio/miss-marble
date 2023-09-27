@@ -227,7 +227,7 @@ export default async function handler(
             },
             shippingOption: {
               connect: {
-                id: getField<string>(r, 'delivery_method')?.includes('送上門') ? delivery?.id : pickup?.id,
+                id: getField<string>(r, 'delivery_method')?.includes('自取') ? pickup?.id : delivery?.id,
               },
             },
             deliveryDate: getField<Date>(r, 'date'),
