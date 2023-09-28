@@ -11,7 +11,7 @@ const SCOPES = [
 const spreadSheetId = process.env.GOOGLE_FORM_SPREADSHEET_ID!;
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
-const json = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'marble-service-account.json')) as unknown as string) as any;
+const json = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? fs.readFileSync(path.join(process.cwd(), 'marble-service-account.json')) as unknown as string) as any;
 
 class GoogleSheetRespository {
   googleSheet: sheets_v4.Sheets
