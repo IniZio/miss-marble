@@ -57,3 +57,6 @@
 /environments/prod/.blackbox/pubring.kbx~
 /environments/prod/.blackbox/secring.gpg
 /environments/prod/app/.env
+.vercel
+/environments/dev/.env
+/environments/prod/.env

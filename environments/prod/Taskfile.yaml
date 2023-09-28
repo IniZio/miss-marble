@@ -28,8 +28,7 @@ tasks:
   deploy:app:
     dir: app
     cmds:
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < .env
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
+      - vercel deploy --yes --prod --token=$VERCEL_TOKEN ../../..
 
   deploy:scheduler:
     dir: scheduler

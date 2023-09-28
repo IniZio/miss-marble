@@ -2,12 +2,13 @@ version: '3'
 
 output: prefixed
 
+dotenv:
+  - "./.env"
+
 tasks:
   setup-env:
     interactive: true
     cmds:
-      - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
-      - cd app && fly scale memory 512
       - cd scheduler && flyctl launch --force-machines --build-only  --copy-config
 
   decrypt: |
@@ -22,14 +23,14 @@ tasks:
     cmds:
       - task: decrypt
       - task: deploy:app
-      - task: deploy:scheduler
+      # - task: deploy:scheduler
       - task: shred
 
   deploy:app:
     dir: app
     cmds:
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < .env
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
+      - vercel deploy --yes --token=$VERCEL_TOKEN ../../..
+
 
   deploy:scheduler:
     dir: scheduler

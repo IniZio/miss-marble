@@ -24,6 +24,9 @@ jobs:
         - name: Install flyctl
           uses: superfly/flyctl-actions/setup-flyctl@1.4
 
+        - name: Install Vercel CLI
+          run: npm install --global vercel@latest
+
         - name: Import GPG keys
           run: |
             echo -e "${BLACKBOX_PUBKEY}" | gpg --import --no-tty --batch --yes
@@ -35,4 +38,7 @@ jobs:
         - name: Deploy app
           run: task -d environments/${{ inputs.environment }} deploy
           env:
+            VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+            VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
             FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
