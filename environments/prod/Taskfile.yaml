@@ -6,8 +6,6 @@ tasks:
   setup-env:
     interactive: true
     cmds:
-      - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
-      - cd app && fly scale memory 512
       - cd scheduler && flyctl launch --force-machines --build-only  --copy-config
 
   decrypt: |
@@ -34,4 +32,5 @@ tasks:
     dir: scheduler
     cmds:
       - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml secrets import --stage < ../app/.env
+      - task -d ../../../scheduler copy-prisma
       - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../scheduler

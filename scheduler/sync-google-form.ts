@@ -1,125 +1,115 @@
+import cron from 'node-cron';
+
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { GOOGLE_FORM_ORDER_FIELDS } from '@/constants';
-import googleSheet from '@/server/api/integrations/google-sheet';
-import { cartRouter } from '@/server/api/routers/cart';
-import { prisma } from '@/server/db'
+import { GOOGLE_FORM_ORDER_FIELDS } from './constants';
+import googleSheet from './integrations/google-sheet';
 import { addHours, addYears, isBefore, isValid, parse } from 'date-fns';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { PrismaClient } from '@prisma/client'
 
 dayjs.extend(customParseFormat)
 dayjs.extend(timezone)
 
-type ResponseData = {
-  message: string
-}
+let isSyncing = false;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  const shippingOptions = await prisma.shippingOption.findMany({ include: { name: true } });
-  // @ts-expect-error Assume have zh name
-  const delivery = shippingOptions.find((option) => option.name.text?.zh_Hant_HK?.includes('送上門'));
-    // @ts-expect-error Assume have zh name
-  const pickup = shippingOptions.find((option) => option.name.text?.zh_Hant_HK?.includes('門市'));
-
-  const fields = GOOGLE_FORM_ORDER_FIELDS;
-
-  function getField<T>(record: unknown[], key: keyof typeof fields): T {
-    const field: number | number[] = fields[key] as number | number[];
-    const convertValue = (value?: unknown): unknown => {
-      switch(key) {
-        case 'paid':
-          return value === 'TRUE' ? 'CAPTURED' : 'AWAITING';
-        case 'created_at':
-          value = parse(value as string, 'M/d/y H:mm:ss', new Date());
-          if (!isValid(value)) {
-            value = undefined;
-            value = new Date();
-          }
-          return value;
-        case 'date':
-          const createdAt = getField<Date>(record, 'created_at');
-          value = parse(`${value as string} ${getField<string>(record, 'time').replace(':', '').slice(0, 4)}+08`, 'M/d HmmX', createdAt ? new Date(createdAt) : new Date());
-          if (!isValid(value)) {
-            return undefined;
-          }
-
-          if(isBefore(value as Date, createdAt)) {
-            value = addYears(value as Date, 1);
-          }
-          // value = addHours(value, 8);
-          return value;
-        case 'decorations':
-        case 'toppings':
-          return ((value || '') as string).split(', ').filter(Boolean).join(', ');
-        case 'paid_sentence':
-          return ((value || '') as string).replace(/寫字朱古力牌[^,|，]*(,|，)/, '').trim();
-        default:
-          return ((value || '') as string).trim();
-        }
-    }
-
-    if (Array.isArray(field)) {
-      return field.map(f => record[f]).map(convertValue).filter(Boolean).join(', ') as T;
-    }
-    return convertValue(record[field]) as T;
+const syncGoogleForm = async () => {
+  if (isSyncing) {
+    return;
   }
+  isSyncing = true;
 
-  function getExternalId(record: unknown[]): string {
-    return `${getField<Date>(record, 'created_at').toISOString()}/${getField<string>(record, 'phone')}`;
-  }
+  const prisma = new PrismaClient()
 
-  console.log('[Sync Google Form]: Starting to sync...')
-  const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
-  // const getProductFieldByAlias = (alias: string) => productFields.find((field) => field.alias === alias);
-
-  const records = (await googleSheet.getAllRows()).reverse()
-
-  const extenalOrders = await prisma.order.findMany({
-    where: {
-      externalId: {
-        not: {
-          equals: null,
-        }
-      },
-    },
-  });
-  const externnalOrderByExternalId = extenalOrders.reduce((acc, order) => {
-    if (!order.externalId) {
-      return acc;
-    }
-
-    acc[order.externalId] = order;
-    return acc;
-  }, {} as Record<string, typeof extenalOrders[0]>);
-
-  let createCount = 0, updateCount = 0, skipCount = 0, deleteCount = 0, errorCount = 0;
   try {
-    const { count } = await prisma.order.deleteMany({
+    const shippingOptions = await prisma.shippingOption.findMany({ include: { name: true } });
+    // @ts-expect-error Assume have zh name
+    const delivery = shippingOptions.find((option) => option.name.text?.zh_Hant_HK?.includes('送上門'));
+    // @ts-expect-error Assume have zh name
+    const pickup = shippingOptions.find((option) => option.name.text?.zh_Hant_HK?.includes('門市'));
+
+    const fields = GOOGLE_FORM_ORDER_FIELDS;
+
+    function getField<T>(record: unknown[], key: keyof typeof fields): T {
+      const field: number | number[] = fields[key] as number | number[];
+      const convertValue = (value?: unknown): unknown => {
+        switch(key) {
+          case 'paid':
+            return value === 'TRUE' ? 'CAPTURED' : 'AWAITING';
+          case 'created_at':
+            value = parse(`${value as string}+08`, 'M/d/y H:mm:ssX', new Date());
+            if (!isValid(value)) {
+              value = undefined;
+              value = new Date();
+            }
+            return value;
+          case 'date':
+            const createdAt = getField<Date>(record, 'created_at');
+            value = parse(`${value as string} ${getField<string>(record, 'time').replace(':', '').slice(0, 4)}+08`, 'M/d HmmX', createdAt ? new Date(createdAt) : new Date());
+            if (!isValid(value)) {
+              return undefined;
+            }
+
+            if(isBefore(value as Date, createdAt)) {
+              value = addYears(value as Date, 1);
+            }
+            // value = addHours(value, 8);
+            return value;
+          case 'decorations':
+          case 'toppings':
+            return ((value || '') as string).split(', ').filter(Boolean).join(', ');
+          case 'paid_sentence':
+            return ((value || '') as string).replace(/寫字朱古力牌[^,|，]*(,|，)/, '').trim();
+          default:
+            return ((value || '') as string).trim();
+          }
+      }
+
+      if (Array.isArray(field)) {
+        return field.map(f => record[f]).map(convertValue).filter(Boolean).join(', ') as T;
+      }
+      return convertValue(record[field]) as T;
+    }
+
+    function getExternalId(record: unknown[]): string {
+      return `${getField<Date>(record, 'created_at').toISOString()}/${getField<string>(record, 'phone')}`;
+    }
+
+    console.log('[Sync Google Form]: Starting to sync...')
+    const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
+    // const getProductFieldByAlias = (alias: string) => productFields.find((field) => field.alias === alias);
+
+    const records = (await googleSheet.getAllRows()).reverse();
+
+    const extenalOrders = await prisma.order.findMany({
       where: {
         externalId: {
           not: {
             equals: null,
-          },
-          notIn: extenalOrders.map((order) => order.externalId).filter(Boolean),
+          }
         },
       },
     });
-    deleteCount += count;
-  } catch (e) {
-    console.error(e);
-  }
+    const externnalOrderByExternalId = extenalOrders.reduce((acc, order) => {
+      if (!order.externalId) {
+        return acc;
+      }
 
-  // await prisma.$transaction(async (tx) => {
+      acc[order.externalId] = order;
+      return acc;
+    }, {} as Record<string, typeof extenalOrders[0]>);
+
+    let count = 0;
+    let createCount = 0, updateCount = 0, skipCount = 0, deleteCount = 0, errorCount = 0;
+
     for (const r of records) {
+      count++;
+
       if (!getField<string>(r, 'date')) {
+        skipCount++;
         continue;
       }
 
@@ -127,6 +117,8 @@ export default async function handler(
         const externalData = JSON.stringify(r);
 
         const existing = externnalOrderByExternalId[getExternalId(r)];
+        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${existing?.externalData === externalData ? 'Updating' : 'Creating'} ${getExternalId(r)}`);
+        // console.log(`[Sync Google Form]: Syncing ${++count}/${records.length}... ${existing?.externalData}, ${externalData}, ${existing?.externalData === externalData ? 'Updating' : 'Creating'} ${getExternalId(r)}`);
 
         if (existing) {
           const shouldUpdate = existing.externalData !== externalData;
@@ -134,7 +126,6 @@ export default async function handler(
             skipCount++;
             continue;
           }
-
 
           updateCount++;
           await prisma.cartProductFieldValue.deleteMany({
@@ -262,8 +253,31 @@ export default async function handler(
         errorCount++;
       }
     }
-  // });
 
-  console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
-  res.status(200).json({ message: `[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.` })
+    // try {
+    //   const { count } = await prisma.order.deleteMany({
+    //     where: {
+    //       externalId: {
+    //         not: {
+    //           equals: null,
+    //         },
+    //         notIn: records.map(getExternalId).filter(Boolean),
+    //       },
+    //     },
+    //   });
+    //   deleteCount += count;
+    // } catch (e) {
+    //   console.error(e);
+    // }
+
+    console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
+  } finally {
+    await prisma.$disconnect();
+    isSyncing = false;
+  }
 }
+
+cron.schedule('*/5 * * * *', syncGoogleForm);
+syncGoogleForm();
+
+console.log(`Registered cronjob sync-google-form ${new Date().toISOString()}`);

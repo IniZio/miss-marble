@@ -1,1 +1,0 @@
-require('./sync-google-form');

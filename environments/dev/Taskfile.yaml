@@ -23,7 +23,7 @@ tasks:
     cmds:
       - task: decrypt
       - task: deploy:app
-      # - task: deploy:scheduler
+      - task: deploy:scheduler
       - task: shred
 
   deploy:app:
@@ -36,4 +36,5 @@ tasks:
     dir: scheduler
     cmds:
       - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml secrets import --stage < ../app/.env
+      - task -d ../../../scheduler copy-prisma
       - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../scheduler

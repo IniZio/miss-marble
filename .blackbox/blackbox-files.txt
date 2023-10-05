@@ -1,1 +1,2 @@
 app/marble-service-account.json
+scheduler/marble-service-account.json

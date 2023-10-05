@@ -5,5 +5,11 @@ dotenv:
   - "./.env"
 
 tasks:
+  copy-prisma:
+    cp -r ../app/prisma .
+
   start:
-    node .
+    pnpm start
+
+  dev:
+    pnpm dev

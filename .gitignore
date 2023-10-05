@@ -60,3 +60,4 @@
 .vercel
 /environments/dev/.env
 /environments/prod/.env
+/scheduler/marble-service-account.json

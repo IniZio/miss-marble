@@ -4,12 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./dist/index.js",
+    "dev": "tsx watch index.ts",
+    "build": "tsup index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-cron": "^3.0.2"
+    "@prisma/client": "^5.4.1",
+    "date-fns": "^2.30.0",
+    "dayjs": "^1.11.10",
+    "googleapis": "^126.0.1",
+    "node-cron": "^3.0.2",
+    "prisma": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.2",
+    "@types/node-cron": "^3.0.9",
+    "tsx": "^3.13.0",
+    "tsup": "^7.2.0"
   }
 }
