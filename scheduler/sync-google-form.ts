@@ -84,23 +84,28 @@ const syncGoogleForm = async () => {
 
     const records = (await googleSheet.getAllRows()).reverse();
 
-    const extenalOrders = await prisma.order.findMany({
-      where: {
-        externalId: {
-          not: {
-            equals: null,
-          }
-        },
-      },
-    });
-    const externnalOrderByExternalId = extenalOrders.reduce((acc, order) => {
-      if (!order.externalId) {
-        return acc;
-      }
+    // const extenalOrders = await prisma.order.findMany({
+    //   select: {
+    //     id: true,
+    //     externalId: true,
+    //     externalData: true,
+    //   },
+    //   where: {
+    //     externalId: {
+    //       not: {
+    //         equals: null,
+    //       }
+    //     },
+    //   },
+    // });
+    // const externnalOrderByExternalId = extenalOrders.reduce((acc, order) => {
+    //   if (!order.externalId) {
+    //     return acc;
+    //   }
 
-      acc[order.externalId] = order;
-      return acc;
-    }, {} as Record<string, typeof extenalOrders[0]>);
+    //   acc[order.externalId] = order;
+    //   return acc;
+    // }, {} as Record<string, typeof extenalOrders[0]>);
 
     let count = 0;
     let createCount = 0, updateCount = 0, skipCount = 0, deleteCount = 0, errorCount = 0;
@@ -116,12 +121,16 @@ const syncGoogleForm = async () => {
       try {
         const externalData = JSON.stringify(r);
 
-        const existing = externnalOrderByExternalId[getExternalId(r)];
-        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${existing?.externalData === externalData ? 'Updating' : 'Creating'} ${getExternalId(r)}`);
-        // console.log(`[Sync Google Form]: Syncing ${++count}/${records.length}... ${existing?.externalData}, ${externalData}, ${existing?.externalData === externalData ? 'Updating' : 'Creating'} ${getExternalId(r)}`);
+        const existing = await prisma.order.findUnique({
+          where: {
+            externalId: getExternalId(r),
+          },
+        });
+        const shouldUpdate = existing && (existing.externalData !== externalData);
+
+        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'Updating' : existing ? "Skipping" : 'Creating'}`);
 
         if (existing) {
-          const shouldUpdate = existing.externalData !== externalData;
           if (!shouldUpdate) {
             skipCount++;
             continue;
