@@ -19,9 +19,19 @@ export interface DatePickerProps {
   onChange: (value?: Date) => void
 }
 
-export function DatePicker({ className, value, onChange }: DatePickerProps) {
+export function DatePicker({ className, value, onChange: onChangeProp }: DatePickerProps) {
+  const [open, setOpen] = React.useState(false)
+
+  const onChange = React.useCallback(
+    (v?: Date) => {
+      setOpen(false)
+      onChangeProp(v)
+    },
+    [onChangeProp]
+  );
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}

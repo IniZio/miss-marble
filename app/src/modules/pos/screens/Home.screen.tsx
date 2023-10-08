@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import OrderStats from '../components/OrderStats';
 import { getSupabase } from '@/clients/supabase';
 import OrderCard from '../components/OrderCard';
+import { DatePicker } from '@/components/ui/date-picker';
 
 const HomeScreen: React.FC = () => {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(() => ({
@@ -57,11 +58,13 @@ const HomeScreen: React.FC = () => {
 
             />
           </Button>
-          <DateRangePicker
+          <DatePicker
             className="w-full"
-            value={dateRange}
-            // @ts-expect-error Dunno
-            onChange={setDateRange}
+            value={dateRange?.from}
+            onChange={date => setDateRange({
+              from: dayjs(date).startOf('day').toDate(),
+              to: dayjs(date).endOf('day').toDate()
+            })}
           />
           <Button variant="outline"
             className="w-9 px-0 flex-shrink-0"
