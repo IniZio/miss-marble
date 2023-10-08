@@ -95,16 +95,16 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     if (navigator.share) {
       navigator
         .share({
-          title: `Order for ${dayjs(order.deliveryDate).format("MM/DD")}`,
+          title: `Order for ${order.phoneNumber} on ${dayjs(order.deliveryDate).format("MM/DD")}`,
           text: lines.map(line => line.join(' ')).join("\n"),
-          url: location.href,
+          url: location.href + `/orders/${order.id}`,
         })
         .then(() => console.log("Successful share"))
         .catch((error) => console.log("Error sharing", error))
     } else {
       window.open(whatsappHref, "_blank")
     }
-  }, [order.deliveryDate, lines, whatsappHref])
+  }, [order.deliveryDate, order.id, lines, whatsappHref])
 
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -177,13 +177,13 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     <>
       <Card>
         <CardContent className="relative h-full p-3 pb-8">
-        <p className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
+        <div className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
           {lines.map((line, index) => (
             <div key={index} className="my-0.5">
               {line.join(' ')}
             </div>
           ))}
-        </p>
+        </div>
         <div className="absolute top-5 right-5 flex flex-col gap-2">
           {orderAssets.map((assetName) => (
             <div key={assetName} className="relative">
