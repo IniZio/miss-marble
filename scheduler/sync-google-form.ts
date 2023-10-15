@@ -42,18 +42,17 @@ const syncGoogleForm = async () => {
           case 'created_at':
             value = parse(`${value as string}+08`, 'M/d/y H:mm:ssX', new Date());
             if (!isValid(value)) {
-              value = undefined;
-              value = new Date();
+              value = undefined
             }
             return value;
           case 'date':
-            const createdAt = getField<Date>(record, 'created_at');
+            const createdAt = getField<Date | undefined>(record, 'created_at');
             value = parse(`${value as string} ${getField<string>(record, 'time').replace(':', '').slice(0, 4)}+08`, 'M/d HmmX', createdAt ? new Date(createdAt) : new Date());
             if (!isValid(value)) {
               return undefined;
             }
 
-            if(isBefore(value as Date, createdAt)) {
+            if(createdAt && isBefore(value as Date, createdAt)) {
               value = addYears(value as Date, 1);
             }
             // value = addHours(value, 8);
@@ -75,45 +74,38 @@ const syncGoogleForm = async () => {
     }
 
     function getExternalId(record: unknown[]): string {
-      return `${getField<Date>(record, 'created_at').toISOString()}/${getField<string>(record, 'phone')}`;
+      return `${getField<Date | undefined>(record, 'created_at')?.toISOString()}/${getField<string>(record, 'phone')}/${getField<string>(record, 'index') || '-'}`;
     }
 
     console.log('[Sync Google Form]: Starting to sync...')
     const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
-    // const getProductFieldByAlias = (alias: string) => productFields.find((field) => field.alias === alias);
 
     const records = (await googleSheet.getAllRows()).reverse();
 
-    // const extenalOrders = await prisma.order.findMany({
-    //   select: {
-    //     id: true,
-    //     externalId: true,
-    //     externalData: true,
-    //   },
-    //   where: {
-    //     externalId: {
-    //       not: {
-    //         equals: null,
-    //       }
-    //     },
-    //   },
-    // });
-    // const externnalOrderByExternalId = extenalOrders.reduce((acc, order) => {
-    //   if (!order.externalId) {
-    //     return acc;
-    //   }
-
-    //   acc[order.externalId] = order;
-    //   return acc;
-    // }, {} as Record<string, typeof extenalOrders[0]>);
+    const existingOrders = await prisma.order.findMany({
+      select: {
+        id: true,
+        externalId: true,
+      },
+      where: {
+        externalId: {
+          not: {
+            equals: null,
+          }
+        },
+      },
+    });
+    const existingExternalIdsSet = new Set(existingOrders.map((order) => order.externalId!));
 
     let count = 0;
     let createCount = 0, updateCount = 0, skipCount = 0, deleteCount = 0, errorCount = 0;
 
     for (const r of records) {
       count++;
+      existingExternalIdsSet.delete(getExternalId(r));
 
       if (!getField<string>(r, 'date')) {
+        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... skipping`);
         skipCount++;
         continue;
       }
@@ -128,7 +120,7 @@ const syncGoogleForm = async () => {
         });
         const shouldUpdate = existing && (existing.externalData !== externalData);
 
-        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'Updating' : existing ? "Skipping" : 'Creating'}`);
+        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
 
         if (existing) {
           if (!shouldUpdate) {
@@ -154,7 +146,7 @@ const syncGoogleForm = async () => {
           },
           create: {
             externalData,
-            createdAt: getField<Date>(r, 'created_at'),
+            createdAt: getField<Date | undefined>(r, 'created_at') ?? new Date(),
             paymentStatus: getField<string>(r, 'paid'),
             externalId: getExternalId(r),
             currency: {
@@ -206,7 +198,7 @@ const syncGoogleForm = async () => {
           },
           update: {
             externalData,
-            createdAt: getField<Date>(r, 'created_at'),
+            createdAt: getField<Date | undefined>(r, 'created_at') ?? new Date(),
             paymentStatus: getField<string>(r, 'paid'),
             externalId: getExternalId(r),
             currency: {
@@ -263,21 +255,23 @@ const syncGoogleForm = async () => {
       }
     }
 
-    // try {
-    //   const { count } = await prisma.order.deleteMany({
-    //     where: {
-    //       externalId: {
-    //         not: {
-    //           equals: null,
-    //         },
-    //         notIn: records.map(getExternalId).filter(Boolean),
-    //       },
-    //     },
-    //   });
-    //   deleteCount += count;
-    // } catch (e) {
-    //   console.error(e);
-    // }
+      for (const externalId of existingExternalIdsSet) {
+        try {
+          await prisma.order.delete({
+            where: {
+              externalId,
+            },
+          });
+          deleteCount++;
+          console.log(`[Sync Google Form]: Deleting ${externalId}`)
+        } catch (e) {
+          if (e.code === 'P2025') {
+            continue;
+          }
+
+          console.error(e);
+        }
+      }
 
     console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   } finally {

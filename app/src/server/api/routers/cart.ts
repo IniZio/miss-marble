@@ -415,6 +415,7 @@ export const cartRouter = createTRPCRouter({
           delivery_method: (cart.shippingOption?.name.text as JsonObject)?.zh_Hant_HK ?? '',
           delivery_address: (cart.shippingAddress?.address1 ?? '') + (cart.shippingAddress?.address2 ?? ''),
           remarks: cart.remark,
+          index: '-'
         }) as Record<keyof typeof fields, string>);
 
         const row: string[] = [];

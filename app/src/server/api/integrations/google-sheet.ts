@@ -68,7 +68,7 @@ class GoogleSheetRespository {
     const res = await this.googleSheet.spreadsheets.values.get({
       auth: this.jwtClient,
       spreadsheetId: this.spreadSheetId,
-      range: 'A1:CM'
+      range: 'A1:CN'
     });
     return (res.data.values ?? []).slice(1);
   }
