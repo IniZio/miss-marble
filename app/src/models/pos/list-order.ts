@@ -5,6 +5,11 @@ import { ProductFieldType, apiProductFieldOptionSchema, productFieldSchema } fro
 import { assetSchema } from '../asset';
 import { translationSchema } from '../translation';
 
+export enum OrderFulfillmentStatus {
+  PENDING = 'PENDING',
+  SCHEDULED = 'SCHEDULED',
+}
+
 export const addresssSchema = z.object({
   name: z.string(),
   address1: z.string(),
@@ -55,6 +60,7 @@ export const listOrderSchema = z.object({
   shippingOption: apiShippingOptionSchema,
   deliveryDate: z.date(),
   remark: z.string().nullish(),
+  fulfillmentStatus: z.nativeEnum(OrderFulfillmentStatus),
 
   subtotal: z.number(),
   discountTotal: z.number(),

@@ -14,6 +14,7 @@ import { PrismaClient } from '@prisma/client'
 dayjs.extend(customParseFormat)
 dayjs.extend(timezone)
 
+let lastSyncedAt: Date | undefined;
 let isSyncing = false;
 
 const syncGoogleForm = async () => {
@@ -38,13 +39,15 @@ const syncGoogleForm = async () => {
       const convertValue = (value?: unknown): unknown => {
         switch(key) {
           case 'paid':
-            return value === 'TRUE' ? 'CAPTURED' : 'AWAITING';
+            return value === 'TRUE' ? 'CAPTURED' : 'PENDING';
           case 'created_at':
             value = parse(`${value as string}+08`, 'M/d/y H:mm:ssX', new Date());
             if (!isValid(value)) {
               value = undefined
             }
             return value;
+          case 'printed':
+            return value === 'TRUE' ? true : false;
           case 'date':
             const createdAt = getField<Date | undefined>(record, 'created_at');
             value = parse(`${value as string} ${getField<string>(record, 'time').replace(':', '').slice(0, 4)}+08`, 'M/d HmmX', createdAt ? new Date(createdAt) : new Date());
@@ -118,7 +121,7 @@ const syncGoogleForm = async () => {
             externalId: getExternalId(r),
           },
         });
-        const shouldUpdate = existing && (existing.externalData !== externalData);
+        const shouldUpdate = existing && (existing.externalData !== externalData || !lastSyncedAt);
 
         console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
 
@@ -140,6 +143,9 @@ const syncGoogleForm = async () => {
           createCount++;
         }
 
+        const printed = getField<boolean>(r, 'printed');
+        const fulfillmentStatus = printed ? 'SCHEDULED' : 'PENDING';
+
         await prisma.order.upsert({
           where: {
             externalId: getExternalId(r),
@@ -148,6 +154,7 @@ const syncGoogleForm = async () => {
             externalData,
             createdAt: getField<Date | undefined>(r, 'created_at') ?? new Date(),
             paymentStatus: getField<string>(r, 'paid'),
+            fulfillmentStatus,
             externalId: getExternalId(r),
             currency: {
               connect: {
@@ -200,6 +207,7 @@ const syncGoogleForm = async () => {
             externalData,
             createdAt: getField<Date | undefined>(r, 'created_at') ?? new Date(),
             paymentStatus: getField<string>(r, 'paid'),
+            fulfillmentStatus,
             externalId: getExternalId(r),
             currency: {
               connect: {
@@ -276,6 +284,7 @@ const syncGoogleForm = async () => {
     console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   } finally {
     await prisma.$disconnect();
+    lastSyncedAt = new Date();
     isSyncing = false;
   }
 }

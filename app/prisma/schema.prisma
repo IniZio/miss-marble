@@ -356,6 +356,7 @@ model Order {
   shippingTotal Int
 
   paymentStatus String @default("NOT_PAID")
+  fulfillmentStatus String @default("NOT_FULFILLED")
 
   @@index([externalData], name: "externalData")
   @@index([deliveryDate], name: "deliveryDate")

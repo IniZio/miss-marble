@@ -23,9 +23,10 @@ import dayjs from 'dayjs'
 import Spinner from '@/components/ui/spinner'
 import { isImage } from '@/lib/isImage'
 import { Card, CardContent } from '@/components/ui/card'
-import { type ListOrder } from '@/models/pos/list-order'
+import { OrderFulfillmentStatus, type ListOrder } from '@/models/pos/list-order'
 import { Textarea } from '@/components/ui/textarea'
 import getConfig from 'next/config'
+import { Badge } from '@/components/ui/badge'
 
 export interface OrderProps {
   order: ListOrder
@@ -104,7 +105,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     } else {
       window.open(whatsappHref, "_blank")
     }
-  }, [order.deliveryDate, order.id, lines, whatsappHref])
+  }, [order.phoneNumber, order.deliveryDate, order.id, lines, whatsappHref])
 
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -177,6 +178,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     <>
       <Card>
         <CardContent className="relative h-full p-3 pb-8">
+          {order.fulfillmentStatus === OrderFulfillmentStatus.PENDING ? <Badge>NEW</Badge> : null}
         <div className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
           {lines.map((line, index) => (
             <div key={index} className="my-0.5">

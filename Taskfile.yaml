@@ -32,7 +32,7 @@ tasks:
 
   dev:scheduler:
     dir: scheduler
-    cmds: [task start]
+    cmds: [task dev]
 
   dep:
     cmds:

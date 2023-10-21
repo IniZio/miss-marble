@@ -463,7 +463,7 @@ export const cartRouter = createTRPCRouter({
               },
             },
             deliveryDate: cart.deliveryDate!,
-            paymentStatus: 'AWAITING',
+            paymentStatus: 'PENDING',
             name: cart.name!,
             phoneNumber: cart.phoneNumber,
             socialChannel: cart.socialChannel,

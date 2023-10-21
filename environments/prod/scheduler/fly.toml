@@ -6,6 +6,9 @@
 app = "missmarble-scheduler"
 primary_region = "iad"
 
+[deploy]
+  release_command = "pnpm prisma migrate deploy"
+
 [http_service]
   internal_port = 0
   auto_stop_machines = false
