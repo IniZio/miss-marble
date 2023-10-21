@@ -22,7 +22,7 @@ tasks:
   deploy:
     cmds:
       - task: decrypt
-      - task: deploy:app
+      # - task: deploy:app
       - task: deploy:scheduler
       - task: shred
 
