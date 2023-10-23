@@ -8,12 +8,11 @@ import path from 'path';
 const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
 ];
-const spreadSheetId = process.env.GOOGLE_FORM_SPREADSHEET_ID!;
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
 const json = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? fs.readFileSync(path.join(process.cwd(), 'marble-service-account.json')) as unknown as string) as any;
 
-class GoogleSheetRespository {
+export class GoogleSheetRespository {
   googleSheet: sheets_v4.Sheets
   jwtClient = new google.auth.JWT(
     json.client_email,
@@ -24,9 +23,9 @@ class GoogleSheetRespository {
   spreadSheetId: string;
   snapshotSpreadSheetId?: string;
 
-  constructor({ spreadSheetId: _spreadSheetId = spreadSheetId, snapshotSpreadSheetId }: {spreadSheetId?: string, snapshotSpreadSheetId?: string} = {}) {
+  constructor({ spreadSheetId, snapshotSpreadSheetId }: {spreadSheetId: string, snapshotSpreadSheetId?: string}) {
     this.googleSheet = google.sheets('v4');
-    this.spreadSheetId = _spreadSheetId;
+    this.spreadSheetId = spreadSheetId;
     this.snapshotSpreadSheetId = snapshotSpreadSheetId
   }
 
@@ -74,8 +73,8 @@ class GoogleSheetRespository {
   }
 }
 
-const googlesheet = new GoogleSheetRespository({
-  spreadSheetId: spreadSheetId,
+const googleorder = new GoogleSheetRespository({
+  spreadSheetId: process.env.GOOGLE_FORM_SPREADSHEET_ID!,
 })
 
-export default googlesheet;
+export default googleorder;

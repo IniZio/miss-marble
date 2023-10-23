@@ -1,1 +1,2 @@
-import './sync-google-form';
+import './sync-google-order';
+import './sync-google-inventory'

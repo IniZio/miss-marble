@@ -17,7 +17,7 @@ dayjs.extend(timezone)
 let lastSyncedAt: Date | undefined;
 let isSyncing = false;
 
-const syncGoogleForm = async () => {
+const syncGoogleOrder = async () => {
   if (isSyncing) {
     return;
   }
@@ -80,7 +80,7 @@ const syncGoogleForm = async () => {
       return `${getField<Date | undefined>(record, 'created_at')?.toISOString()}/${getField<string>(record, 'phone')}/${getField<string>(record, 'index') || '-'}`;
     }
 
-    console.log('[Sync Google Form]: Starting to sync...')
+    console.log('[Sync Google Order]: Starting to sync...')
     const productFields = await prisma.productField.findMany({ where: { remark: 'google-form' } });
 
     const records = (await googleSheet.getAllRows()).reverse();
@@ -108,7 +108,7 @@ const syncGoogleForm = async () => {
       existingExternalIdsSet.delete(getExternalId(r));
 
       if (!getField<string>(r, 'date')) {
-        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... skipping`);
+        console.log(`[Sync Google Order]: Syncing ${count}/${records.length}... skipping`);
         skipCount++;
         continue;
       }
@@ -123,7 +123,7 @@ const syncGoogleForm = async () => {
         });
         const shouldUpdate = existing && (existing.externalData !== externalData || !lastSyncedAt);
 
-        console.log(`[Sync Google Form]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
+        console.log(`[Sync Google Order]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
 
         if (existing) {
           if (!shouldUpdate) {
@@ -271,7 +271,7 @@ const syncGoogleForm = async () => {
             },
           });
           deleteCount++;
-          console.log(`[Sync Google Form]: Deleting ${externalId}`)
+          console.log(`[Sync Google Order]: Deleting ${externalId}`)
         } catch (e) {
           if (e.code === 'P2025') {
             continue;
@@ -281,7 +281,7 @@ const syncGoogleForm = async () => {
         }
       }
 
-    console.log(`[Sync Google Form]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
+    console.log(`[Sync Google Order]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   } finally {
     await prisma.$disconnect();
     lastSyncedAt = new Date();
@@ -289,7 +289,7 @@ const syncGoogleForm = async () => {
   }
 }
 
-cron.schedule('*/5 * * * *', syncGoogleForm);
-syncGoogleForm();
+cron.schedule('*/5 * * * *', syncGoogleOrder);
+syncGoogleOrder();
 
 console.log(`Registered cronjob sync-google-form ${new Date().toISOString()}`);

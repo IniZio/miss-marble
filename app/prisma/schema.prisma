@@ -37,6 +37,7 @@ model Asset {
 
   products               Product[]
   cartProductFieldValues CartProductFieldValue[]
+  inventoryItems         InventoryItem[]
 }
 
 model Product {
@@ -149,7 +150,7 @@ model Cart {
 
   items LineItem[]
 
-  name String?
+  name          String?
   phoneNumber   String?
   socialHandle  String?
   socialChannel String?
@@ -318,18 +319,18 @@ model PaymentProvider {
 }
 
 model Order {
-  id String @id @default(uuid())
-  externalId String? @unique
+  id           String   @id @default(uuid())
+  externalId   String?  @unique
   externalData String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  cart Cart? @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  cartId        String?
+  cart   Cart?   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String?
 
   items LineItem[]
 
-  name String
+  name          String
   phoneNumber   String?
   socialHandle  String?
   socialChannel String?
@@ -355,11 +356,70 @@ model Order {
   discountTotal Int
   shippingTotal Int
 
-  paymentStatus String @default("NOT_PAID")
+  paymentStatus     String @default("NOT_PAID")
   fulfillmentStatus String @default("NOT_FULFILLED")
 
   @@index([externalData], name: "externalData")
   @@index([deliveryDate], name: "deliveryDate")
   @@index([phoneNumber], name: "phoneNumber")
   @@index([socialHandle], name: "socialHandle")
+}
+
+model InventoryItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  externalId String? @unique
+  externalData String?
+
+  sku String @unique
+  name String
+
+  thumbnail           Asset?             @relation(fields: [thumbnailId], references: [id])
+  thumbnailId         String?            @map("thumbnailId")
+
+  category            InventoryCategory? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  stockLocations StockLocation[]
+  inventoryLevels InventoryLevel[]
+}
+
+model InventoryCategory {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  items InventoryItem[]
+}
+
+model StockLocation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  inventoryItems InventoryItem[]
+  inventoryLevels InventoryLevel[]
+}
+
+model InventoryLevel {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item   InventoryItem @relation(fields: [itemId], references: [id])
+  itemId String
+
+  stockLocation   StockLocation @relation(fields: [stockLocationId], references: [id])
+  stockLocationId String
+
+  name String
+  quantity Int
+
+  @@unique([itemId, stockLocationId, name], name: "inventoryItemStockLocation")
 }

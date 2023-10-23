@@ -28,3 +28,14 @@ export const GOOGLE_FORM_ORDER_FIELDS = {
   printed: 90,
   index: 91,
 } as const;
+
+export const GOOGLE_FORM_INVENTORY_FIELDS = {
+  id: 1,
+  name: 2,
+  category: 3,
+  thumbnail: 4,
+  quantity: 8,
+  unit: 9,
+  level_name: 11,
+  safe_quantity: 13,
+} as const;
