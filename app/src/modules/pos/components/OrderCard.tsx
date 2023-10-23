@@ -14,7 +14,7 @@ import {
   XIcon,
   Share2Icon,
 } from "lucide-react"
-import { format } from "date-fns"
+import { differenceInDays } from "date-fns"
 // import isImage from "is-image"
 import { type ChangeEvent, useCallback, useMemo, useRef, useState } from "react"
 import { getSupabase } from '@/clients/supabase'
@@ -174,11 +174,23 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     [onUpdate]
   )
 
+  const urgency = useMemo(() => {
+    const days = differenceInDays(new Date(), order.createdAt)
+    console.log(days);
+    if (days <= 1) {
+      return "urgent"
+    } else if (days <= 2) {
+      return "soon"
+    } else {
+      return "normal"
+    }
+  }, [order.createdAt])
+
   return (
     <>
       <Card>
         <CardContent className="relative h-full p-3 pb-8">
-          {order.fulfillmentStatus === OrderFulfillmentStatus.PENDING ? <Badge>NEW</Badge> : null}
+          {order.fulfillmentStatus === OrderFulfillmentStatus.PENDING ? <Badge variant={urgency == 'urgent' ? 'destructive' : urgency === 'soon' ? 'default' : 'secondary'}>NEW</Badge> : null}
         <div className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
           {lines.map((line, index) => (
             <div key={index} className="my-0.5">
