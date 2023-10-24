@@ -10,6 +10,7 @@ CREATE TABLE "InventoryItem" (
     "externalId" TEXT,
     "externalData" TEXT,
     "sku" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "thumbnailId" TEXT,
     "categoryId" TEXT,
 
