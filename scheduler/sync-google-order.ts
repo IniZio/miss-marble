@@ -17,7 +17,7 @@ dayjs.extend(timezone)
 let lastSyncedAt: Date | undefined;
 let isSyncing = false;
 
-const syncGoogleOrder = async () => {
+export const syncGoogleOrder = async () => {
   if (isSyncing) {
     return;
   }
@@ -288,8 +288,3 @@ const syncGoogleOrder = async () => {
     isSyncing = false;
   }
 }
-
-cron.schedule('*/5 * * * *', syncGoogleOrder);
-syncGoogleOrder();
-
-console.log(`Registered cronjob sync-google-form ${new Date().toISOString()}`);

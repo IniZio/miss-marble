@@ -56,7 +56,7 @@ function generateSku(): string {
   return result;
 }
 
-const syncGoogleInventory = async () => {
+export const syncGoogleInventory = async () => {
   if (isSyncing) {
     return;
   }
@@ -241,8 +241,3 @@ const syncGoogleInventory = async () => {
     isSyncing = false;
   }
 }
-
-cron.schedule('*/5 * * * *', syncGoogleInventory);
-syncGoogleInventory();
-
-console.log(`Registered cronjob sync-google-form ${new Date().toISOString()}`);
