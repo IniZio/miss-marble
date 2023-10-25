@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+import fs from 'fs';
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -15,6 +16,8 @@ import { getSupabase } from './integrations/supabase';
 import { createId } from '@paralleldrive/cuid2';
 import mime from 'mime-types';
 import sharp from 'sharp';
+import { pipeline } from 'stream/promises';
+
 
 dayjs.extend(customParseFormat)
 dayjs.extend(timezone)
@@ -125,28 +128,32 @@ export const syncGoogleInventory = async () => {
         }
 
         let asset: Asset | undefined;
-        if (getField(r, 'thumbnail') && !existing?.thumbnailId) {
-          const [file, buffer] = await googleDriveRepo.downloadFile(getField(r, 'thumbnail'));
-          const fileName = file.name ?? `${createId()}.${mime.extension(file.mimeType!)}`;
-          const src = sharp(buffer);
-          const metadata = await src.metadata();
-          const resizedBuffer = await src.resize(300, Math.round(metadata.height! * (300 / metadata.width!))).withMetadata().toBuffer();
+        try {
+          if (getField(r, 'thumbnail') && !existing?.thumbnailId) {
+            const [file, stream] = await googleDriveRepo.downloadFile(getField(r, 'thumbnail'));
+            const resizedStream = sharp().resize(300).withMetadata();
 
-          await getSupabase().storage.createBucket('admin-assets', { public: true }).catch(() => { });
-          await getSupabase().storage
-            .from("admin-assets")
-            .upload(fileName,  resizedBuffer, { upsert: true, contentType: file.mimeType! });
-          const { data: { publicUrl } } = getSupabase().storage.from('admin-assets').getPublicUrl(fileName);
+            await pipeline(stream, resizedStream);
+            const fileName = file.name ?? `${createId()}.${mime.extension(file.mimeType!)}`;
 
-          asset = await prisma.asset.create({
-            data: {
-              provider: 'supabase',
-              bucket: 'admin-assets',
-              objectKey: fileName,
-              mimeType: file.mimeType!,
-              url: publicUrl,
-            }
-          });
+            await getSupabase().storage.createBucket('admin-assets', { public: true }).catch(() => { });
+            await getSupabase().storage
+              .from("admin-assets")
+              .upload(fileName, resizedStream, { upsert: true, contentType: file.mimeType!, duplex: 'half' });
+            const { data: { publicUrl } } = getSupabase().storage.from('admin-assets').getPublicUrl(fileName);
+
+            asset = await prisma.asset.create({
+              data: {
+                provider: 'supabase',
+                bucket: 'admin-assets',
+                objectKey: fileName,
+                mimeType: file.mimeType!,
+                url: publicUrl,
+              }
+            });
+          }
+        } catch (e) {
+          console.error(e);
         }
 
         const inventoryItem = await prisma.inventoryItem.upsert({

@@ -3,6 +3,7 @@
 import fs from 'fs';
 import { google, type drive_v3 } from 'googleapis';
 import path from 'path';
+import stream from 'stream';
 
 
 const SCOPES = [
@@ -49,10 +50,10 @@ export class GoogleDriveRespository {
     const media = await this.googleDrive.files.get({
       fileId: fileId,
       alt: 'media',
-    }, { responseType: 'arraybuffer' });
+    }, { responseType: 'stream' });
     const file = await this.googleDrive.files.get({
       fileId: fileId,
     });
-    return [file.data, media.data as unknown as ArrayBuffer] as const;
+    return [file.data, media.data as unknown as stream.PassThrough] as const;
   }
 }
