@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import timezone from 'dayjs/plugin/timezone';
 import { PrismaClient } from '@prisma/client'
+import { prisma } from './db';
 
 dayjs.extend(customParseFormat)
 dayjs.extend(timezone)
@@ -22,8 +23,6 @@ export const syncGoogleOrder = async () => {
     return;
   }
   isSyncing = true;
-
-  const prisma = new PrismaClient()
 
   try {
     const shippingOptions = await prisma.shippingOption.findMany({ include: { name: true } });
@@ -283,7 +282,6 @@ export const syncGoogleOrder = async () => {
 
     console.log(`[Sync Google Order]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   } finally {
-    await prisma.$disconnect();
     lastSyncedAt = new Date();
     isSyncing = false;
   }

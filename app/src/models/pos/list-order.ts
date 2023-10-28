@@ -48,7 +48,7 @@ export const orderLineItemSchema = z.object({
 
 export const listOrderSchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
   items: z.array(orderLineItemSchema),
   name: z.string(),
   phoneNumber: z.string(),
@@ -58,7 +58,7 @@ export const listOrderSchema = z.object({
   shippingAddress: addresssSchema,
   // currency: currencySchema,
   shippingOption: apiShippingOptionSchema,
-  deliveryDate: z.date(),
+  deliveryDate: z.coerce.date(),
   remark: z.string().nullish(),
   fulfillmentStatus: z.nativeEnum(OrderFulfillmentStatus),
 

@@ -17,6 +17,7 @@ import { createId } from '@paralleldrive/cuid2';
 import mime from 'mime-types';
 import sharp from 'sharp';
 import { pipeline } from 'stream/promises';
+import { prisma } from './db';
 
 
 dayjs.extend(customParseFormat)
@@ -64,8 +65,6 @@ export const syncGoogleInventory = async () => {
     return;
   }
   isSyncing = true;
-
-  const prisma = new PrismaClient()
 
   try {
     console.log('[Sync Google Inventory]: Starting to sync...')
@@ -243,7 +242,6 @@ export const syncGoogleInventory = async () => {
 
     console.log(`[Sync Google Inventory]: Finished syncing. ${createCount} added, ${updateCount} updated, ${skipCount} skipped, ${deleteCount} deleted.`)
   } finally {
-    await prisma.$disconnect();
     lastSyncedAt = new Date();
     isSyncing = false;
   }

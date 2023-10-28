@@ -20,16 +20,17 @@ tasks:
 
   deploy:
     cmds:
-      # - task: decrypt
+      - task: decrypt
       - task: deploy:app
-      # - task: deploy:scheduler
-      # - task: shred
+      - task: deploy:scheduler
+      - task: shred
 
   deploy:app:
     dir: app
     cmds:
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < ../app/.env
-      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
+      - vercel deploy --yes --prod ../../..
+      # - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < ../app/.env
+      # - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
 
   deploy:scheduler:
     dir: scheduler

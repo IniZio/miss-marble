@@ -361,7 +361,9 @@ model Order {
   fulfillmentStatus String @default("NOT_FULFILLED")
 
   @@index([externalData], name: "externalData")
+  @@index([paymentStatus], name: "paymentStatus")
   @@index([deliveryDate], name: "deliveryDate")
+  @@index([name], name: "name")
   @@index([phoneNumber], name: "phoneNumber")
   @@index([socialHandle], name: "socialHandle")
 }
