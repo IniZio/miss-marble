@@ -6,6 +6,8 @@ tasks:
   setup-env:
     interactive: true
     cmds:
+      - cd app && flyctl launch --force-machines --build-only --vm-memory 512 --copy-config
+      - cd app && fly scale memory 512
       - cd scheduler && flyctl launch --force-machines --build-only  --copy-config
 
   decrypt: |
@@ -18,15 +20,16 @@ tasks:
 
   deploy:
     cmds:
-      - task: decrypt
+      # - task: decrypt
       - task: deploy:app
-      - task: deploy:scheduler
-      - task: shred
+      # - task: deploy:scheduler
+      # - task: shred
 
   deploy:app:
     dir: app
     cmds:
-      - vercel deploy --yes --prod --token=$VERCEL_TOKEN ../../..
+      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml secrets import --stage < ../app/.env
+      - flyctl --config {{ .TASKFILE_DIR }}/app/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../app
 
   deploy:scheduler:
     dir: scheduler
