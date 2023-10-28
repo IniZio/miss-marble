@@ -3,9 +3,9 @@ import { prisma } from '@/server/db';
 import dayjs from 'dayjs';
 import { type NextApiHandler } from 'next'
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = (req, res) => {
   for (let i = 0; i < 7; i++) {
-    await findOrders({ prisma }, {
+    void findOrders({ prisma }, {
       dateStart: dayjs().startOf('day').add(i, 'days').subtract(8, 'hours').toDate(),
       dateEnd: dayjs().endOf('day').add(i, 'days').subtract(8, 'hours').toDate()
     });

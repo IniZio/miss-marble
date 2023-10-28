@@ -14,10 +14,10 @@ export const prisma =
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
-// const redis = new Redis(process.env.REDIS_URL!);
 const cacheMiddleware: Prisma.Middleware = createPrismaRedisCache({
-  // storage: { type: "redis", options: { client: redis, invalidation: { referencesTTL: 300 }, log: console } },
-  storage: { type: 'memory' },
+  storage: process.env.REDIS_URL ?
+    { type: "redis", options: { client: new Redis(process.env.REDIS_URL!), invalidation: { referencesTTL: 300 }, log: console } } :
+    { type: 'memory' },
   cacheTime: 300,
   onHit: (key) => {
     console.log("hit", key);
