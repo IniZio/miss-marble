@@ -14,22 +14,22 @@ export const prisma =
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
-const cacheMiddleware: Prisma.Middleware = createPrismaRedisCache({
-  storage: process.env.REDIS_URL ?
-    { type: "redis", options: { client: new Redis(process.env.REDIS_URL!), invalidation: { referencesTTL: 300 }, log: console } } :
-    { type: 'memory' },
-  cacheTime: 300,
-  onHit: (key) => {
-    console.log("hit", key);
-  },
-  onMiss: (key) => {
-    console.log("miss", key);
-  },
-  onError: (key) => {
-    console.log("error", key);
-  },
-});
+// const cacheMiddleware: Prisma.Middleware = createPrismaRedisCache({
+//   storage: process.env.REDIS_URL ?
+//     { type: "redis", options: { client: new Redis(process.env.REDIS_URL!), invalidation: { referencesTTL: 300 }, log: console } } :
+//     { type: 'memory' },
+//   cacheTime: 300,
+//   onHit: (key) => {
+//     console.log("hit", key);
+//   },
+//   onMiss: (key) => {
+//     console.log("miss", key);
+//   },
+//   onError: (key) => {
+//     console.log("error", key);
+//   },
+// });
 
-prisma.$use(cacheMiddleware);
+// prisma.$use(cacheMiddleware);
 
 if (env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
