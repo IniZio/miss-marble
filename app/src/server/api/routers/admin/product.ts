@@ -75,6 +75,11 @@ export const productRouter = createTRPCRouter({
           update: input.name
         },
         gallery: {
+          deleteMany: {
+            id: {
+              notIn: input.gallery.map((asset) => asset.id),
+            }
+          },
           connect: input.gallery.map((asset) => ({
             id: asset.id,
           })),
