@@ -11,9 +11,12 @@ const syncGoogle = async () => {
   }
 
   isSyncing = true;
-  await syncGoogleOrder();
-  await syncGoogleInventory();
-  isSyncing = false;
+  try {
+    await syncGoogleOrder();
+    await syncGoogleInventory();
+  } finally {
+    isSyncing = false;
+  }
 }
 
 cron.schedule('*/10 * * * *',syncGoogle);
