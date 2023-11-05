@@ -422,7 +422,10 @@ model InventoryLevel {
   stockLocationId String
 
   name String
-  quantity Int
+  quantity Int @default(0)
+  safeQuantity Int @default(0)
+  isBelowSafeQuantity Boolean @default(false)
+  unit String?
 
   @@unique([itemId, stockLocationId, name], name: "inventoryItemStockLocation")
 }

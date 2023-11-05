@@ -133,7 +133,7 @@ export const syncGoogleInventory = async () => {
             const resizedStream = sharp().resize(300).withMetadata();
 
             await pipeline(stream, resizedStream);
-            const fileName = file.name ?? `${createId()}.${mime.extension(file.mimeType!)}`;
+            const fileName = `${createId()}.${mime.extension(file.mimeType!)}`;
 
             await getSupabase().storage.createBucket('admin-assets', { public: true }).catch(() => { });
             await getSupabase().storage
@@ -228,10 +228,16 @@ export const syncGoogleInventory = async () => {
               },
             },
             name: getField(r, 'level_name'),
-            quantity: getField(r, 'quantity'),
+            quantity: getField<number>(r, 'quantity'),
+            unit: getField(r, 'unit'),
+            safeQuantity: getField<number>(r, 'safe_quantity'),
+            isBelowSafeQuantity: getField<number>(r, 'quantity') < getField<number>(r, 'safe_quantity'),
           },
           update: {
-            quantity: getField(r, 'quantity'),
+            quantity: getField<number>(r, 'quantity'),
+            unit: getField(r, 'unit'),
+            safeQuantity: getField<number>(r, 'safe_quantity'),
+            isBelowSafeQuantity: getField<number>(r, 'quantity') < getField<number>(r, 'safe_quantity'),
           },
         });
       } catch (e) {
