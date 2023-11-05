@@ -46,7 +46,7 @@ const HomeScreen: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col h-screen max-h-screen">
+    <div className="flex flex-col h-screen">
       <Tabs defaultValue="home" className="m-4 mb-0">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="home" asChild>

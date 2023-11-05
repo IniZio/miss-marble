@@ -1,5 +1,5 @@
-import cron from 'node-cron';
 import fs from 'fs';
+import os from 'os'
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -18,6 +18,7 @@ import mime from 'mime-types';
 import sharp from 'sharp';
 import { pipeline } from 'stream/promises';
 import { prisma } from './db';
+import path from 'path';
 
 
 dayjs.extend(customParseFormat)
@@ -111,7 +112,7 @@ export const syncGoogleInventory = async () => {
             externalId: getField(r, 'id'),
           },
         });
-        const shouldUpdate = existing && (existing.externalData !== externalData || !lastSyncedAt);
+        const shouldUpdate = existing && (existing.externalData !== externalData || (getField(r, 'thumbnail') && !existing?.thumbnailId));
 
         console.log(`[Sync Google Inventory]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
 
@@ -130,15 +131,24 @@ export const syncGoogleInventory = async () => {
         try {
           if (getField(r, 'thumbnail') && !existing?.thumbnailId) {
             const [file, stream] = await googleDriveRepo.downloadFile(getField(r, 'thumbnail'));
-            const resizedStream = sharp().resize(300).withMetadata();
+            // Create a temporary file
+            const tempFilePath = path.join(os.tmpdir(), `${createId()}.${mime.extension(file.mimeType!)}`);
+            const writeStream = fs.createWriteStream(tempFilePath);
+            stream.pipe(writeStream);
 
-            await pipeline(stream, resizedStream);
+            await new Promise((resolve, reject) => {
+              writeStream.on('finish', resolve);
+              writeStream.on('error', reject);
+            });
+
+            // Resize the image using Sharp directly from the file
+            const resizedStream = fs.createReadStream(tempFilePath).pipe(sharp().resize(500).withMetadata());
             const fileName = `${createId()}.${mime.extension(file.mimeType!)}`;
 
             await getSupabase().storage.createBucket('admin-assets', { public: true }).catch(() => { });
             await getSupabase().storage
               .from("admin-assets")
-              .upload(fileName, resizedStream, { upsert: true, contentType: file.mimeType!, duplex: 'half' });
+              .upload(fileName, stream, { upsert: true, contentType: file.mimeType!, duplex: 'half' });
             const { data: { publicUrl } } = getSupabase().storage.from('admin-assets').getPublicUrl(fileName);
 
             asset = await prisma.asset.create({
@@ -150,9 +160,17 @@ export const syncGoogleInventory = async () => {
                 url: publicUrl,
               }
             });
+
+            // Delete the temporary file
+            fs.unlink(tempFilePath, (err) => {
+              if (err) {
+                console.error(`Failed to delete temporary file: ${tempFilePath}`, err);
+              }
+            });
           }
         } catch (e) {
-          console.error(e);
+          // console.error(e);
+          console.warn(`[Sync Google Inventory]: Failed to download thumbnail for ${getField(r, 'name')}`);
         }
 
         const inventoryItem = await prisma.inventoryItem.upsert({

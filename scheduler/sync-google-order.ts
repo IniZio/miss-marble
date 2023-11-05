@@ -5,7 +5,7 @@ import cron from 'node-cron';
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { GOOGLE_FORM_ORDER_FIELDS } from './constants';
 import googleSheet from './integrations/google-sheet';
-import { addHours, addYears, isBefore, isValid, parse } from 'date-fns';
+import { addHours, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, isValid, parse } from 'date-fns';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import timezone from 'dayjs/plugin/timezone';
@@ -102,17 +102,18 @@ export const syncGoogleOrder = async () => {
     let count = 0;
     let createCount = 0, updateCount = 0, skipCount = 0, deleteCount = 0, errorCount = 0;
 
+    const now = new Date();
     for (const r of records) {
       count++;
-      existingExternalIdsSet.delete(getExternalId(r));
 
-      if (!getField<string>(r, 'date')) {
+      if (!getField<Date | undefined>(r, 'date') || (getField<Date>(r, 'date') < now  && differenceInMonths(getField<Date>(r, 'date'), now) >= 1)) {
         console.log(`[Sync Google Order]: Syncing ${count}/${records.length}... skipping`);
         skipCount++;
         continue;
       }
 
       try {
+        existingExternalIdsSet.delete(getExternalId(r));
         const externalData = JSON.stringify(r);
 
         const existing = await prisma.order.findUnique({
@@ -120,7 +121,7 @@ export const syncGoogleOrder = async () => {
             externalId: getExternalId(r),
           },
         });
-        const shouldUpdate = existing && (existing.externalData !== externalData || !lastSyncedAt);
+        const shouldUpdate = existing && (existing.externalData !== externalData);
 
         console.log(`[Sync Google Order]: Syncing ${count}/${records.length}... ${shouldUpdate ? 'updating' : existing ? "skipping" : 'creating'}`);
 

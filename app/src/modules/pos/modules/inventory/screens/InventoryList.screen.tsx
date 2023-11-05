@@ -54,7 +54,7 @@ const InventoryListScreen: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col h-screen max-h-screen">
+    <div className="flex flex-col h-screen">
       <Tabs defaultValue="inventory" className="m-4 mb-0">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="home" asChild>
@@ -71,7 +71,7 @@ const InventoryListScreen: React.FC = () => {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <div className="flex-1 flex-col flex h-screen">
+      <div className="flex-1 flex-col flex h-full max-h-full overflow-auto">
         <div className="p-4 space-y-4">
           <Input value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="搜尋" />
         </div>
