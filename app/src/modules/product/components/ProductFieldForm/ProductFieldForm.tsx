@@ -40,7 +40,7 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ fields, onAddToCart
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      {fields.map(productField => (
+      {fields.sort((a, b) => a.displayOrder - b.displayOrder).map(productField => (
         <div key={productField.id} className="space-y-2">
           <label htmlFor={productField.id} className={cn("text-sm font-medium transition-colors", errors[productField.id] && 'text-destructive')}>
             <Translated t={productField.name} />

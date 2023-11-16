@@ -23,6 +23,7 @@ export const apiProductFieldSchema = z.object({
 
 export const apiProductFieldToProductSchema = z.object({
   field: apiProductFieldSchema,
+  displayOrder: z.number().default(0),
   required: z.boolean().default(false),
 });
 
@@ -30,6 +31,7 @@ export const productFieldSchema = apiProductFieldToProductSchema
   .transform((productFieldToProduct) => ({
     ...productFieldToProduct.field,
     required: productFieldToProduct.required,
+    displayOrder: productFieldToProduct.displayOrder,
   }))
 
 export type ProductField = z.infer<typeof productFieldSchema>;

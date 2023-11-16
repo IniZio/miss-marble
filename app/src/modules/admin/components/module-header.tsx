@@ -3,18 +3,17 @@ import { type PropsWithChildren } from 'react'
 
 const ModuleHeader: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   return (
-    <div className="max-w-2xl">
+    <div>
       <div className="flex items-center justify-between">
         {children}
       </div>
-      <Separator className="my-6" />
     </div>
   )
 }
 
 const ModuleHeaderTitle: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   return (
-    <h2 className="text-lg font-medium">{children}</h2>
+    <h2 className="text-lg font-semibold">{children}</h2>
   )
 }
 

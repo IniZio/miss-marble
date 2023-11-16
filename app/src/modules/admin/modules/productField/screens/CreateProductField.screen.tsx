@@ -47,14 +47,16 @@ export interface CreateProductFieldProps {}
       <ModuleHeader>
         <div>
           <ModuleHeaderTitle>
-            <FormattedMessage id="admin.productFieldDetail.creating" defaultMessage="New product field" />
+            <FormattedMessage id="admin.productFieldDetail.creating" defaultMessage="New product option" />
           </ModuleHeaderTitle>
         </div>
       </ModuleHeader>
 
-      <div className="mt-4">
+      <Card className="mt-4">
+        <CardContent className="pt-6">
         <ProductFieldForm onSubmit={onSubmit} />
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

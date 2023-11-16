@@ -42,6 +42,9 @@ export function DataTable<TData, TValue>({
     manualPagination: true,
     pageCount,
     onPaginationChange,
+    state: {
+      pagination: pagination,
+    },
   })
 
   return (

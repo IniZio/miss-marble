@@ -58,9 +58,11 @@ export interface ProductFieldDetailScreenProps {
         </div>
       </ModuleHeader>
 
-      <div className="mt-4">
+      <Card className="mt-4">
+        <CardContent className="pt-6">
         <ProductFieldForm productFieldDetail={productFieldDetail} onSubmit={onSubmit} />
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

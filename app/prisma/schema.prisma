@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DB_URL")
+  provider  = "postgresql"
+  url       = env("DB_URL")
   directUrl = env("DIRECT_DB_URL")
 }
 
@@ -70,11 +70,12 @@ model ProductField {
 
   prices MoneyAmount[]
 
-  products     ProductFieldToProduct[]
-  fieldOptions ProductFieldOption[]
-
-  deletedAt              DateTime?
+  products               ProductFieldToProduct[]
+  fieldOptions           ProductFieldOption[]
   cartProductFieldValues CartProductFieldValue[]
+
+  deletedAt  DateTime?
+  isReserved Boolean   @default(false)
 
   remark String?
 }
@@ -87,6 +88,7 @@ model ProductFieldToProduct {
   fieldId String
 
   required Boolean @default(false)
+  displayOrder Int @default(0)
 
   @@id([productId, fieldId])
 }
@@ -369,24 +371,24 @@ model Order {
 }
 
 model InventoryItem {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  externalId String? @unique
+  externalId   String? @unique
   externalData String?
 
-  sku String @unique
+  sku  String @unique
   name String
 
-  thumbnail           Asset?             @relation(fields: [thumbnailId], references: [id])
-  thumbnailId         String?            @map("thumbnailId")
+  thumbnail   Asset?  @relation(fields: [thumbnailId], references: [id])
+  thumbnailId String? @map("thumbnailId")
 
-  category            InventoryCategory? @relation(fields: [categoryId], references: [id])
+  category   InventoryCategory? @relation(fields: [categoryId], references: [id])
   categoryId String?
 
-  stockLocations StockLocation[]
+  stockLocations  StockLocation[]
   inventoryLevels InventoryLevel[]
 }
 
@@ -407,7 +409,7 @@ model StockLocation {
 
   name String @unique
 
-  inventoryItems InventoryItem[]
+  inventoryItems  InventoryItem[]
   inventoryLevels InventoryLevel[]
 }
 
@@ -421,11 +423,11 @@ model InventoryLevel {
   stockLocation   StockLocation @relation(fields: [stockLocationId], references: [id])
   stockLocationId String
 
-  name String
-  quantity Int @default(0)
-  safeQuantity Int @default(0)
+  name                String
+  quantity            Int     @default(0)
+  safeQuantity        Int     @default(0)
   isBelowSafeQuantity Boolean @default(false)
-  unit String?
+  unit                String?
 
   @@unique([itemId, stockLocationId, name], name: "inventoryItemStockLocation")
 }

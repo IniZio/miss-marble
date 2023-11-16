@@ -23,17 +23,21 @@ const columns: ColumnDef<ListAdminProductField>[] = [
     accessorFn: (row) => row,
     header: () => <FormattedMessage id="admin.productFieldList.header.name" defaultMessage="Name" />,
     cell: ({ cell }) => <Button variant="link" asChild><Link href={Routes.AdminProductFieldDetailPage({ id: cell.getValue<ListAdminProductField>?.().id })}><Translated t={cell.getValue<ListAdminProductField>().name} /></Link></Button>,
-    size: 75,
   },
-  {
-    accessorKey: "alias",
-    header: () => <FormattedMessage id="admin.productFieldList.header.alias" defaultMessage="Alias" />,
-    // cell: ({ cell }) => <Image alt="product" src={cell.getValue<string>()} height={64} width={64} />,
-    size: 50,
-  },
+  // {
+  //   accessorKey: "alias",
+  //   header: () => <FormattedMessage id="admin.productFieldList.header.alias" defaultMessage="Alias" />,
+  //   // cell: ({ cell }) => <Image alt="product" src={cell.getValue<string>()} height={64} width={64} />,
+  //   size: 50,
+  // },
   {
     accessorKey: "type",
     header: () => <FormattedMessage id="admin.productFieldList.header.type" defaultMessage="Type" />,
+    // cell: ({ cell }) => <Image alt="product" src={cell.getValue<ProductFieldType>()} height={64} width={64} />,
+  },
+  {
+    accessorKey: "remark",
+    header: () => <FormattedMessage id="admin.productFieldList.header.remark" defaultMessage="Remarks" />,
     // cell: ({ cell }) => <Image alt="product" src={cell.getValue<ProductFieldType>()} height={64} width={64} />,
   },
 ]
@@ -54,7 +58,7 @@ const ProductFieldListScreen: React.FC = () => {
           </Button>
         </ModuleHeaderActions>
       </ModuleHeader>
-      <div className="mt-4 max-w-2xl">
+      <div className="mt-6">
         {productFieldsPage.items ? (
           <DataTable
             columns={columns}

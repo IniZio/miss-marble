@@ -47,7 +47,7 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ productFieldDetail,
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <div>
           <div className="sm:max-w-2xl space-y-6">
-            <div className="grid gap-x-2 grid-cols-2">
+            <div className="flex space-x-2">
               <FormField
                 control={form.control}
                 name="name.text.zh_Hant_HK"

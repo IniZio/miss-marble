@@ -8,6 +8,7 @@ import { buttonVariants } from '@/components/ui/button'
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
+    icon: React.ReactNode,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     href: any;
     title: string
@@ -20,7 +21,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   return (
     <nav
       className={cn(
-        "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 pr-4 h-full",
+        "flex flex-col px-8 py-12 space-y-2 h-full",
         className
       )}
       {...props}
@@ -35,10 +36,15 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
             pathname.startsWith(item.href.pathname)
               ? "bg-muted hover:bg-muted"
               : "hover:bg-transparent hover:underline",
-            "justify-start"
+            "justify-start space-x-4 text-xs font-medium text-muted-foreground"
           )}
         >
-          {item.title}
+          <div className="flex items-center justify-center">
+            {item.icon}
+          </div>
+          <span>
+            {item.title}
+          </span>
         </Link>
       ))}
     </nav>

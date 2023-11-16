@@ -52,9 +52,11 @@ const CreateProductScreen: React.FC<ProductDetailScreenProps> = () => {
         </ModuleHeaderTitle>
       </ModuleHeader>
 
-      <div className="mt-4">
-        <ProductForm onSubmit={onSubmit} />
-      </div>
+      <Card className="mt-4">
+        <CardContent className="pt-6">
+          <ProductForm onSubmit={onSubmit} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

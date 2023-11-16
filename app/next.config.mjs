@@ -19,9 +19,13 @@ const config = {
   },
 
   images: {
-    domains: [
-      "knphfeplvrmhsbghyeaj.supabase.co",
-      "bhfxofyfiivgltozmejg.supabase.co"
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*',
+        port: '',
+        pathname: '**',
+      },
     ],
   },
 

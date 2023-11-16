@@ -37,4 +37,4 @@ tasks:
     cmds:
       - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml secrets import --stage < ../app/.env
       - task -d ../../../scheduler copy-prisma
-      - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml deploy --now --auto-confirm --force-machines --remote-only ../../../scheduler
+      - flyctl --config {{ .TASKFILE_DIR }}/scheduler/fly.toml deploy --now --auto-confirm --force-machines --local-only ../../../scheduler

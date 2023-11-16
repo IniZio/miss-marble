@@ -47,7 +47,7 @@ const ProductListScreen: React.FC = () => {
           </Button>
         </ModuleHeaderActions>
       </ModuleHeader>
-      <div className="mt-4 max-w-2xl">
+      <div className="mt-6">
         {productsPage.items ? (
           <DataTable
             columns={columns}

@@ -123,7 +123,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) =>
                             {productFieldPage?.items?.map((productField) => (
                               <SelectItem key={productField.id} value={productField.id}>
                                 <Translated t={productField.name} />
-                                {productField.remark}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -147,7 +146,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) =>
                       </FormItem>
                     )}
                   />
-                  <div className="flex-1"></div>
                   <div className="flex items-center justify-end">
                     <Button type="button" variant="ghost" onClick={() => fieldToProductFieldArray.remove(index)}>
                       <X />

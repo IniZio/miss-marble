@@ -159,11 +159,18 @@ export const productFieldRouter = createTRPCRouter({
     const pageIndex = input.pageIndex ?? 0;
     const pageSize = input.pageSize ?? 10;
 
-    const totalCount = await ctx.prisma.product.count();
+    const totalCount = await ctx.prisma.productField.count({
+      where: {
+        isReserved: false,
+      },
+    });
     const pageCount = Math.ceil(totalCount / pageSize);
     const items = await ctx.prisma.productField.findMany({
       skip: pageIndex * pageSize,
       take: pageSize, // get an extra item at the end which we'll use as next cursor
+      where: {
+        isReserved: false,
+      },
       include: {
         name: true,
         // fieldOptions: {
