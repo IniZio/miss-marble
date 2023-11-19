@@ -126,6 +126,22 @@ export const productFieldRouter = createTRPCRouter({
   delete: publicProcedure.input(
     z.string(),
   ).mutation(async ({ input, ctx }) => {
+    const hasLineItem = await ctx.prisma.lineItem.count({
+      where: {
+        productFieldValues: {
+          some: {
+            fieldId: input,
+          },
+        },
+      },
+    });
+    if (hasLineItem) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Cannot delete product field that has line item',
+      });
+    }
+
     await ctx.prisma.productField.delete({
       where: {
         id: input,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, { useCallback, useEffect, useState } from 'react';
 import { NextPageWithLayout } from '@/lib/types';
 import { AdminLayout } from '../../../layout';
