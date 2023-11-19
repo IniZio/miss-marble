@@ -24,6 +24,7 @@ import { useGetProductFieldDetail } from '../actions/getProductFieldDetail';
 import ProductFieldForm from '../components/ProductFieldForm';
 import { useSaveProductField } from '../actions/saveProductField';
 import { type EditAdminProductField } from '../models/productFIeld';
+import { useDeleteProductField } from '../actions/deleteProductFIeld';
 
 export interface ProductFieldDetailScreenProps {
   productFieldId: string;
@@ -32,6 +33,7 @@ export interface ProductFieldDetailScreenProps {
   const ProductFieldDetailScreen: React.FC<ProductFieldDetailScreenProps> = ({ productFieldId }) => {
   const { data: productFieldDetail } = useGetProductFieldDetail(productFieldId);
   const [saveProductField, { isLoading: isCreatingProduct }] = useSaveProductField();
+  const [deleteProductField, { isLoading: isDeletingProductField }] = useDeleteProductField();
 
   const router = useRouter();
   const { toast } = useToast();
@@ -42,6 +44,14 @@ export interface ProductFieldDetailScreenProps {
       title: 'Product field updated',
     });
   }, [saveProductField, toast])
+
+  const onDelete = useCallback(async () => {
+    await deleteProductField(productFieldId);
+    toast({
+      title: 'Product field deleted',
+    });
+    await router.replace(Routes.AdminProductFieldListPage());
+  } , [deleteProductField, productFieldId, router, toast]);
 
   if (!productFieldDetail) {
     return <p>Loading...</p>
@@ -60,7 +70,7 @@ export interface ProductFieldDetailScreenProps {
 
       <Card className="mt-4">
         <CardContent className="pt-6">
-        <ProductFieldForm productFieldDetail={productFieldDetail} onSubmit={onSubmit} />
+        <ProductFieldForm productFieldDetail={productFieldDetail} onSubmit={onSubmit} onDelete={onDelete} />
         </CardContent>
       </Card>
     </div>

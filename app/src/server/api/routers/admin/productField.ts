@@ -123,6 +123,17 @@ export const productFieldRouter = createTRPCRouter({
 
     return productField;
   }),
+  delete: publicProcedure.input(
+    z.string(),
+  ).mutation(async ({ input, ctx }) => {
+    await ctx.prisma.productField.delete({
+      where: {
+        id: input,
+      },
+    });
+
+    return true;
+  }),
   detail: publicProcedure.input(
     z.string(),
   ).query(async ({ input, ctx }) => {

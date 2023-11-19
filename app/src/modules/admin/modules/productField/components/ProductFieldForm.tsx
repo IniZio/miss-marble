@@ -16,9 +16,10 @@ export interface ProductFieldFormProps {
   productFieldDetail?: GetAdminProductFieldDetail;
   isCreatingProduct?: boolean;
   onSubmit: (data: EditAdminProductField) => Promise<void>;
+  onDelete?: () => void;
 }
 
-const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ productFieldDetail, onSubmit }) => {
+const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ productFieldDetail, onSubmit, onDelete }) => {
   const form = useForm<EditAdminProductField>({
     resolver: zodResolver(editAdminProductFieldSchema),
     defaultValues: productFieldDetail ?? undefined,
@@ -151,9 +152,19 @@ const ProductFieldForm: React.FC<ProductFieldFormProps> = ({ productFieldDetail,
           </div>
         </div>
 
-        <Button type="submit" disabled={!form.formState.isDirty} isLoading={isSubmitting}>
-          <FormattedMessage id="admin.productDetail.save" defaultMessage="Save" />
-        </Button>
+        <div className="flex sm:max-w-2xl">
+          <Button type="submit" disabled={!form.formState.isDirty} isLoading={isSubmitting}>
+            <FormattedMessage id="admin.productDetail.save" defaultMessage="Save" />
+          </Button>
+
+          <div className="flex-1"></div>
+
+          {onDelete && (
+            <Button type="button" variant="destructive" onClick={onDelete}>
+              <FormattedMessage id="admin.productDetail.delete" defaultMessage="Delete" />
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
