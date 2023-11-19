@@ -22,6 +22,7 @@ export interface ProductFormProps {
   productDetail?: GetAdminProductDetail;
   isCreatingProduct?: boolean;
   onSubmit: (data: EditAdminProduct) => Promise<void>;
+  onDelete?: () => void;
 }
 
 const mapper = productDetailSchema.transform(product => ({
@@ -33,7 +34,7 @@ const mapper = productDetailSchema.transform(product => ({
   })),
 }));
 
-const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onDelete, onSubmit }) => {
   const { data: productFieldPage } = useGetProductFields({ pageIndex: 0, pageSize: 1000 });
 
   const form = useForm<EditAdminProduct>({
@@ -157,9 +158,19 @@ const ProductForm: React.FC<ProductFormProps> = ({ productDetail, onSubmit }) =>
           </div>
         </div>
 
-        <Button type="submit" disabled={!form.formState.isDirty} isLoading={isSubmitting}>
-          <FormattedMessage id="admin.productDetail.save" defaultMessage="Save" />
-        </Button>
+        <div className="flex sm:max-w-2xl">
+          <Button type="submit" disabled={!form.formState.isDirty} isLoading={isSubmitting}>
+            <FormattedMessage id="admin.productDetail.save" defaultMessage="Save" />
+          </Button>
+
+          <div className="flex-1"></div>
+
+          {onDelete && (
+            <Button type="button" variant="destructive" onClick={onDelete}>
+              <FormattedMessage id="admin.productDetail.delete" defaultMessage="Delete" />
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );

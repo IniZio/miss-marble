@@ -199,4 +199,11 @@ export const productRouter = createTRPCRouter({
       totalCount,
     };
   }),
+  delete: publicProcedure.input(z.string()).mutation(async ({ input, ctx }) => {
+    await ctx.prisma.product.delete({
+      where: { id: input },
+    });
+
+    return true;
+  }),
 });

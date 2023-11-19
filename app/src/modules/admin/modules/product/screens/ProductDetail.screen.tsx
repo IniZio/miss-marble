@@ -26,6 +26,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
 import { Routes } from 'generated';
 import { ModuleHeader, ModuleHeaderDescription, ModuleHeaderTitle } from '../../../components/module-header';
+import { useDeleteProduct } from '../actions/deleteProduct';
 
 export interface ProductDetailScreenProps {
   productId: string;
@@ -34,6 +35,7 @@ export interface ProductDetailScreenProps {
   const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ productId }) => {
   const { data: productDetail } = useGetProductDetail(productId);
   const [saveProduct, { isLoading: isCreatingProduct }] = useSaveProduct();
+  const [deleteProduct, { isLoading: isDeletingProduct }] = useDeleteProduct();
 
   const router = useRouter();
   const { toast } = useToast();
@@ -44,6 +46,14 @@ export interface ProductDetailScreenProps {
       title: 'Product updated',
     });
   }, [saveProduct, toast])
+
+  const onDelete = useCallback(async () => {
+    await deleteProduct(productId);
+    toast({
+      title: 'Product deleted',
+    });
+    await router.replace(Routes.AdminProductsPage());
+  }, [deleteProduct, productId, router, toast])
 
   if (!productDetail) {
     return <p>Loading...</p>
@@ -62,7 +72,7 @@ export interface ProductDetailScreenProps {
 
       <Card className="mt-4">
         <CardContent className="pt-6">
-          <ProductForm productDetail={productDetail} onSubmit={onSubmit} />
+          <ProductForm productDetail={productDetail} onSubmit={onSubmit} onDelete={onDelete} />
         </CardContent>
       </Card>
     </div>
