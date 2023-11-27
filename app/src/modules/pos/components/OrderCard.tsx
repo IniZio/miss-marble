@@ -23,7 +23,7 @@ import dayjs from 'dayjs'
 import Spinner from '@/components/ui/spinner'
 import { isImage } from '@/lib/isImage'
 import { Card, CardContent } from '@/components/ui/card'
-import { OrderFulfillmentStatus, type ListOrder } from '@/models/pos/list-order'
+import { OrderFulfillmentStatus, type ListOrder, OrderPaymentStatus } from '@/models/pos/list-order'
 import { Textarea } from '@/components/ui/textarea'
 import getConfig from 'next/config'
 import { Badge } from '@/components/ui/badge'
@@ -190,6 +190,7 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
     <>
       <Card>
         <CardContent className="relative h-full p-3 pb-8">
+          {order.paymentStatus === OrderPaymentStatus.PENDING ? <Badge className="mr-2" variant="destructive">NOT PAID</Badge> : null}
           {order.fulfillmentStatus === OrderFulfillmentStatus.PENDING ? <Badge variant={urgency == 'urgent' ? 'destructive' : urgency === 'soon' ? 'default' : 'secondary'}>NEW</Badge> : null}
         <div className={"whitespace-pre-wrap text-sm font-medium leading-6" + (orderAssets.length ? " mr-12" : "")}>
           {lines.map((line, index) => (

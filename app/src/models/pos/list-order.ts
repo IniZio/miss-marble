@@ -10,6 +10,11 @@ export enum OrderFulfillmentStatus {
   SCHEDULED = 'SCHEDULED',
 }
 
+export enum OrderPaymentStatus {
+  PENDING = 'PENDING',
+  CAPTURED = 'CAPTURED',
+}
+
 export const addresssSchema = z.object({
   name: z.string(),
   address1: z.string(),
@@ -60,6 +65,7 @@ export const listOrderSchema = z.object({
   shippingOption: apiShippingOptionSchema,
   deliveryDate: z.coerce.date(),
   remark: z.string().nullish(),
+  paymentStatus: z.nativeEnum(OrderPaymentStatus),
   fulfillmentStatus: z.nativeEnum(OrderFulfillmentStatus),
 
   subtotal: z.number(),

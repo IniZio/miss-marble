@@ -13,7 +13,6 @@ export function findOrders(ctx: {prisma: PrismaClient}, input: {
       deliveryDate: 'asc',
     },
     where: {
-      paymentStatus: 'CAPTURED',
       deliveryDate: {
         gte: input.dateStart,
         lte: input.dateEnd,
