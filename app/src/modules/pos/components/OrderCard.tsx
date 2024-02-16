@@ -176,7 +176,6 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
 
   const urgency = useMemo(() => {
     const days = differenceInDays(new Date(), order.createdAt)
-    console.log(days);
     if (days <= 1) {
       return "urgent"
     } else if (days <= 2) {

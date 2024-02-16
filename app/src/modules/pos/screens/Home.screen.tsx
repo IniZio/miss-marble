@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGetOrders } from '../actions/getOrders';
 import { type DateRange } from 'react-day-picker';
 import { FormattedMessage } from 'react-intl';
@@ -6,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { DateRangePicker } from '@/components/ui/daterange-picker';
 import { Input } from '@/components/ui/input';
 import dayjs from 'dayjs';
-import { ArrowLeftIcon, ArrowRight, ArrowRightIcon, StoreIcon, WarehouseIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRight, ArrowRightIcon, Download, DownloadIcon, StoreIcon, WarehouseIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OrderStats from '../components/OrderStats';
 import { getSupabase } from '@/clients/supabase';
@@ -16,6 +17,9 @@ import TabBar from '../components/TabBar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Routes } from 'generated';
 import Link from 'next/link';
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig()
 
 const HomeScreen: React.FC = () => {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(() => ({
@@ -30,6 +34,17 @@ const HomeScreen: React.FC = () => {
   });
 
   const [orderAssets, setOrderAssets] = useState<string[]>([])
+  const relatedOrderAssets = useMemo(() => {
+    return orders?.map((order) =>
+      orderAssets.filter(
+        (asset) =>
+          !asset.endsWith(".docx") &&
+          order.createdAt?.toISOString() &&
+          (asset === order.createdAt?.toISOString() ||
+            asset.startsWith(`${order.createdAt?.toISOString()}-`))
+      )
+    ).flat()
+  }, [orderAssets, orders]);
   const refreshOrderAssets = useCallback(() => {
     return getSupabase().storage
       .from("order-assets")
@@ -40,6 +55,20 @@ const HomeScreen: React.FC = () => {
       })
       .then(({ data }) => data && setOrderAssets(data.map((i) => i.name)))
   }, [])
+  const downloadRelatedOrderAssets = useCallback(() => {
+    relatedOrderAssets?.forEach((assetName) => {
+      // Add a delay to prevent the browser from blocking the download
+      setTimeout(() => {
+        const link = document.createElement("a");
+        link.href = `${publicRuntimeConfig.ORDER_ASSETS_CDN_URL}/order-assets/${assetName}`;
+        link.download = `${publicRuntimeConfig.ORDER_ASSETS_CDN_URL}/order-assets/${assetName}`;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 100);
+    });
+  }, [relatedOrderAssets]);
   useEffect(() => {
     void refreshOrderAssets()
   }, [refreshOrderAssets])
@@ -47,7 +76,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Tabs defaultValue="home" className="m-4 mb-0">
+      {/* <Tabs defaultValue="home" className="m-4 mb-0">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="home" asChild>
             <Link href={Routes.PosHomePage()}>
@@ -62,7 +91,7 @@ const HomeScreen: React.FC = () => {
             </Link>
           </TabsTrigger>
         </TabsList>
-      </Tabs>
+      </Tabs> */}
       <div className="flex-1 flex-col flex h-full max-h-full overflow-auto">
         <div className="p-4 space-y-4">
           <Input value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="搜尋電話 / 姓名" />
@@ -96,6 +125,13 @@ const HomeScreen: React.FC = () => {
               <ArrowRightIcon
                 className="h-5 w-5 cursor-pointer"
               />
+            </Button>
+            <Button variant="outline"
+              className="px-2 flex-shrink-0 gap-x-2"
+              onClick={downloadRelatedOrderAssets}
+            >
+              <DownloadIcon />
+              圖片
             </Button>
           </div>
         </div>
