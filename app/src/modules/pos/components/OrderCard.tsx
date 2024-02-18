@@ -98,14 +98,13 @@ function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
         .share({
           title: `Order for ${order.phoneNumber} on ${dayjs(order.deliveryDate).format("MM/DD")}`,
           text: lines.map(line => line.join(' ')).join("\n"),
-          url: location.href + `/orders/${order.id}`,
         })
         .then(() => console.log("Successful share"))
         .catch((error) => console.log("Error sharing", error))
     } else {
       window.open(whatsappHref, "_blank")
     }
-  }, [order.phoneNumber, order.deliveryDate, order.id, lines, whatsappHref])
+  }, [order.phoneNumber, order.deliveryDate, lines, whatsappHref])
 
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
