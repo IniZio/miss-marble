@@ -27,6 +27,6 @@ const syncGoogle = async (jobtype: 'order' | 'inventory') => {
 
 cron.schedule('* * * * *', () => refreshAppCache());
 cron.schedule('0,10,20,30,40,50 * * * *', () => syncGoogle('order'));
-cron.schedule('5,15,25,35,45,55 * * * *', () => syncGoogle('inventory'));
+// cron.schedule('5,15,25,35,45,55 * * * *', () => syncGoogle('inventory'));
 
 syncGoogle('order');
