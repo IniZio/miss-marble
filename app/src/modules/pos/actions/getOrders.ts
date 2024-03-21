@@ -15,6 +15,8 @@ export function useGetOrders({
     dateStart,
     dateEnd,
     keyword,
+  }, {
+    refetchInterval: 1000 * 60 * 1, // 1 minutes
   });
 
   const parsedData = useMemo(() => data?.map((order) => listOrderSchema.parse(order)), [data]);

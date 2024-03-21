@@ -18,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Routes } from 'generated';
 import Link from 'next/link';
 import getConfig from 'next/config';
+import { useInterval } from 'react-use';
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -74,6 +75,9 @@ const HomeScreen: React.FC = () => {
     void refreshOrderAssets()
   }, [refreshOrderAssets])
 
+  useInterval(() => {
+    void refreshOrderAssets()
+  }, 1000 * 60 * 1);
 
   return (
     <div className="flex flex-col h-screen">
