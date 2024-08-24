@@ -401,8 +401,6 @@ export const cartRouter = createTRPCRouter({
           cake: (item.product?.name.text as JsonObject).zh_Hant_HK,
           letter: getFieldValueString(item, 'letter'),
           taste: getFieldValueString(item, 'taste'),
-          inner_taste: getFieldValueString(item, 'inner_taste'),
-          bottom_taste: getFieldValueString(item, 'bottom_taste'),
           size: getFieldValueString(item, 'size'),
           shape: getFieldValueString(item, 'shape'),
           color: getFieldValueString(item, 'color'),
@@ -415,7 +413,10 @@ export const cartRouter = createTRPCRouter({
           delivery_method: (cart.shippingOption?.name.text as JsonObject)?.zh_Hant_HK ?? '',
           delivery_address: (cart.shippingAddress?.address1 ?? '') + (cart.shippingAddress?.address2 ?? ''),
           remarks: cart.remark,
-          index: '-'
+          index: '-',
+          printed_at: '-',
+          delivery_time: '-',
+          printed: '-',
         }) as Record<keyof typeof fields, string>);
 
         const row: string[] = [];
