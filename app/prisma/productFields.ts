@@ -28,17 +28,12 @@ export async function seed(prisma: PrismaClient) {
 async function seedGoogleOrderProductFields(prisma: PrismaClient) {
   const GOOGLE_ORDER_PRODUCT_FIELD_FIELDS: (keyof typeof GOOGLE_FORM_ORDER_FIELDS)[] = [
     'cake',
-    'letter',
     'taste',
-    'inner_taste',
-    'bottom_taste',
     'size',
-    'shape',
     'color',
     'sentence',
     'paid_sentence',
     'toppings',
-    'decorations',
   ];
 
   for (const alias of GOOGLE_ORDER_PRODUCT_FIELD_FIELDS) {

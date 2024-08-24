@@ -76,7 +76,7 @@ export const order2Lines = (order: ListOrder) =>
     ])),
 
     [`📲 `, order.socialChannel, order.socialHandle],
-    [`🚚 `, order.shippingOption.name.text.zh_Hant_HK, order.shippingAddress.address1, order.shippingAddress.address2],
+    [`🚚 `, order.shippingAddress.name || order.shippingOption.name.text.zh_Hant_HK, order.shippingAddress.address1, order.shippingAddress.address2],
     [`📝 `, order.remark],
   ].map(line => line.filter(Boolean)).filter(line => line.length > 1)
 

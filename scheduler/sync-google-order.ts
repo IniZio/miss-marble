@@ -215,7 +215,8 @@ export const syncGoogleOrder = async () => {
             total: 0,
             shippingAddress: {
               create: {
-                name: getField<string>(r, "name"),
+                // HACK: Use this field as delivery method free text
+                name: getField<string>(r, "delivery_method"),
                 address1: getField<string>(r, "delivery_address") ?? "",
                 address2: getField<string>(r, "delivery_time") ?? "",
               },
@@ -271,9 +272,10 @@ export const syncGoogleOrder = async () => {
             total: 0,
             shippingAddress: {
               update: {
-                name: getField<string>(r, "name"),
+                // HACK: Use this field as delivery method free text
+                name: getField<string>(r, "delivery_method"),
                 address1: getField<string>(r, "delivery_address") ?? "",
-                address2: "",
+                address2: getField<string>(r, "delivery_time") ?? "",
               },
             },
             shippingOption: {
