@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import { createHash } from 'crypto';
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -159,7 +160,7 @@ export const syncGoogleOrder = async () => {
 
       try {
         existingExternalIdsSet.delete(getExternalId(r));
-        const externalData = JSON.stringify(r);
+        const externalData = createHash('sha256').update(JSON.stringify(r)).digest('hex');
 
         const existing = await prisma.order.findUnique({
           where: {
