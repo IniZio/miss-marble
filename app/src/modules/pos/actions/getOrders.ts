@@ -11,7 +11,7 @@ export function useGetOrders({
   dateEnd: Date
   keyword?: string,
 }) {
-  const { data, isLoading, refetch } = api.pos.order.list.useQuery({
+  const { data, isLoading, isFetching, refetch } = api.pos.order.list.useQuery({
     dateStart,
     dateEnd,
     keyword,
@@ -21,5 +21,5 @@ export function useGetOrders({
 
   const parsedData = useMemo(() => data?.map((order) => listOrderSchema.parse(order)), [data]);
 
-  return { data: parsedData, isLoading, refetch };
+  return { data: parsedData, isLoading, isFetching, refetch };
 }

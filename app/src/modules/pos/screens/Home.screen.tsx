@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { DateRangePicker } from '@/components/ui/daterange-picker';
 import { Input } from '@/components/ui/input';
 import dayjs from 'dayjs';
-import { ArrowLeftIcon, ArrowRight, ArrowRightIcon, Download, DownloadIcon, StoreIcon, WarehouseIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRight, ArrowRightIcon, Download, DownloadIcon, RefreshCwIcon, StoreIcon, WarehouseIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OrderStats from '../components/OrderStats';
 import { getSupabase } from '@/clients/supabase';
@@ -28,7 +28,7 @@ const HomeScreen: React.FC = () => {
     to: dayjs(new Date()).endOf('day').toDate(),
   }));
   const [keyword, setKeyword] = useState('');
-  const { data: orders, isLoading, refetch: refetchOrders } = useGetOrders({
+  const { data: orders, isLoading, isFetching, refetch: refetchOrders } = useGetOrders({
     dateStart: dayjs(dateRange?.from ?? dateRange?.to ?? new Date()).startOf('day').toDate(),
     dateEnd: dayjs(dateRange?.to ?? dateRange?.from ?? new Date()).endOf('day').toDate(),
     keyword
@@ -57,20 +57,6 @@ const HomeScreen: React.FC = () => {
       .then(({ data }) => data && setOrderAssets(data.map((i) => i.name)))
       .then(() => refetchOrders())
   }, [refetchOrders])
-  const downloadRelatedOrderAssets = useCallback(() => {
-    relatedOrderAssets?.forEach((assetName) => {
-      // Add a delay to prevent the browser from blocking the download
-      setTimeout(() => {
-        const link = document.createElement("a");
-        link.href = `${publicRuntimeConfig.ORDER_ASSETS_CDN_URL}/order-assets/${assetName}`;
-        link.download = `${publicRuntimeConfig.ORDER_ASSETS_CDN_URL}/order-assets/${assetName}`;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }, 100);
-    });
-  }, [relatedOrderAssets]);
   useEffect(() => {
     void refreshOrderAssets()
   }, [refreshOrderAssets])
@@ -133,10 +119,9 @@ const HomeScreen: React.FC = () => {
             </Button>
             <Button variant="outline"
               className="px-2 flex-shrink-0 gap-x-2"
-              onClick={downloadRelatedOrderAssets}
+              onClick={() => refetchOrders()}
             >
-              <DownloadIcon />
-              圖片
+              <RefreshCwIcon size={20} className={isFetching ? "animate-spin" : ""} />
             </Button>
           </div>
         </div>
