@@ -77,7 +77,7 @@ const HomeScreen: React.FC = () => {
 
   useInterval(() => {
     void refreshOrderAssets()
-  }, 1000 * 60 * 1);
+  }, 1000 * 60 * 5);
 
   return (
     <div className="flex flex-col h-screen">

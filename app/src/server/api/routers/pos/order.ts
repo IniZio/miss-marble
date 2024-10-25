@@ -12,6 +12,29 @@ const orderAssetInput = z.object({
   name: z.string(),
 });
 
+class Cache<T> {
+  private cache: Record<string, { data?: T, expiry: number }> = {};
+  private ttl: number;
+
+  constructor(ttl: number) {
+    this.ttl = ttl;
+  }
+
+  get(key: string) {
+    const cachedItem = this.cache[key];
+    if (cachedItem && cachedItem.expiry > Date.now()) {
+      return cachedItem.data;
+    }
+    return null;
+  }
+
+  set(key: string, value?: T) {
+    this.cache[key] = { data: value, expiry: Date.now() + this.ttl };
+  }
+}
+
+const ordersCache = new Cache<Awaited<ReturnType<typeof findOrders>>>(1000 * 60 * 5);
+
 export function findOrders(ctx: {prisma: PrismaClient}, input: {
   dateStart: Date,
   dateEnd: Date,
@@ -161,6 +184,12 @@ export const orderRouter = createTRPCRouter({
       keyword: z.string().default(''),
     }),
   ).query(async ({ input, ctx }) => {
+    const cacheKey = `${input.dateStart.toISOString()}-${input.dateEnd.toISOString()}-${input.keyword}`;
+    const cachedItems = ordersCache.get(cacheKey);
+    if (cachedItems) {
+      return cachedItems;
+    }
+
     const items = await findOrders(ctx, input);
 
     return items;
