@@ -83,7 +83,8 @@ export const order2Lines = (order: ListOrder) =>
 const { publicRuntimeConfig } = getConfig()
 
 function OrderCard({ order, orderAssets, onUpdate }: OrderProps) {
-  const lines = useMemo(() => order2Lines(order), [order])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const lines = useMemo(() => order2Lines(order), [order.id])
   const [editMode, setEditMode] = useState(false)
   const toggleEditMode = useCallback(() => setEditMode(!editMode), [editMode])
   const [assignOrderAssets] = useAssignOrderAssets();

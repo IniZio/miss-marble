@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useGetOrders } from '../actions/getOrders';
 import { type DateRange } from 'react-day-picker';
 import { FormattedMessage } from 'react-intl';
@@ -35,17 +35,6 @@ const HomeScreen: React.FC = () => {
   });
 
   const [orderAssets, setOrderAssets] = useState<string[]>([])
-  const relatedOrderAssets = useMemo(() => {
-    return orders?.map((order) =>
-      orderAssets.filter(
-        (asset) =>
-          !asset.endsWith(".docx") &&
-          order.createdAt?.toISOString() &&
-          (asset === order.createdAt?.toISOString() ||
-            asset.startsWith(`${order.createdAt?.toISOString()}-`))
-      )
-    ).flat()
-  }, [orderAssets, orders]);
   const refreshOrderAssets = useCallback(() => {
     return getSupabase().storage
       .from("order-assets")
