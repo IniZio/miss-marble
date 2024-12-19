@@ -38,12 +38,12 @@ export const syncGoogleOrder = async () => {
     const shippingOptions = await prisma.shippingOption.findMany({
       include: { name: true },
     });
-    // @ts-expect-error Assume have zh name
     const delivery = shippingOptions.find((option) =>
+      // @ts-expect-error Assume have zh name
       option.name.text?.zh_Hant_HK?.includes("送上門"),
     );
-    // @ts-expect-error Assume have zh name
     const pickup = shippingOptions.find((option) =>
+      // @ts-expect-error Assume have zh name
       option.name.text?.zh_Hant_HK?.includes("門市"),
     );
 
@@ -146,7 +146,10 @@ export const syncGoogleOrder = async () => {
     for (const r of records) {
       count++;
 
+      const externalId = getExternalId(r);
+
       if (
+        !externalId ||
         !getField<Date | undefined>(r, "date") ||
         (getField<Date>(r, "date") < now &&
           differenceInMonths(getField<Date>(r, "date"), now) >= 1)
@@ -159,12 +162,12 @@ export const syncGoogleOrder = async () => {
       }
 
       try {
-        existingExternalIdsSet.delete(getExternalId(r));
+        existingExternalIdsSet.delete(externalId);
         const externalData = createHash('sha256').update(JSON.stringify(r)).digest('hex');
 
         const existing = await prisma.order.findUnique({
           where: {
-            externalId: getExternalId(r),
+            externalId: externalId,
           },
         });
         const shouldUpdate = existing && existing.externalData !== externalData;
@@ -196,7 +199,7 @@ export const syncGoogleOrder = async () => {
 
         await prisma.order.upsert({
           where: {
-            externalId: getExternalId(r),
+            externalId: externalId,
           },
           create: {
             externalData,
@@ -204,7 +207,7 @@ export const syncGoogleOrder = async () => {
               getField<Date | undefined>(r, "created_at") ?? new Date(),
             paymentStatus: getField<string>(r, "paid"),
             fulfillmentStatus,
-            externalId: getExternalId(r),
+            externalId: externalId,
             currency: {
               connect: {
                 code: "hkd",
@@ -261,7 +264,7 @@ export const syncGoogleOrder = async () => {
               getField<Date | undefined>(r, "created_at") ?? new Date(),
             paymentStatus: getField<string>(r, "paid"),
             fulfillmentStatus,
-            externalId: getExternalId(r),
+            externalId: externalId,
             currency: {
               connect: {
                 code: "hkd",
