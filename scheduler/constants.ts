@@ -19,7 +19,7 @@ export const GOOGLE_FORM_ORDER_FIELDS = {
   delivery_method: 15,
   delivery_address: 16,
   delivery_time: 17,
-  remarks: [18],
+  remarks: [18, 19],
   printed_at: 89,
   printed: 90,
   index: 91,
